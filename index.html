@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- Meta viewport for mobile responsiveness -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <title>NoteCoco - Habit Tracker</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,13 +47,16 @@
       font-family: var(--primary-font);
     }
 
-    /* Overall smaller scale: 75% of original 16px => 12px */
     html, body {
       height: 100%;
       background-color: var(--argentina-white);
       color: var(--text-color);
-      font-size: 12px; 
+      /* Slightly larger base font for desktop */
+      font-size: 14px;
+      line-height: 1.4;
     }
+
+    /* On mobile, .mobile-view will override with 100% below. */
 
     body {
       overflow: hidden; /* Only main or columns scroll */
@@ -455,7 +461,15 @@
       }
     }
 
-    /* Additional .mobile-view overrides: show/hide, stacking changes, etc. */
+    /* 
+     * Additional .mobile-view overrides: 
+     * Larger font and line-height for readability, 
+     * hide sidebar, stack columns, etc.
+     */
+    body.mobile-view {
+      font-size: 100%; /* Typically 16px on many devices */
+      line-height: 1.5;
+    }
     body.mobile-view aside.sidebar {
       width: 100%;
       height: auto;
