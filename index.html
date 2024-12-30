@@ -49,7 +49,7 @@
       height: 100%;
       background-color: var(--argentina-white);
       color: var(--text-color);
-      font-size: 12px; /* Reduced font size */
+      font-size: 12px; 
     }
 
     body {
@@ -72,7 +72,7 @@
     }
     header h1 {
       font-family: var(--secondary-font);
-      font-size: 1.5rem; /* Slightly reduced */
+      font-size: 1.5rem; 
       font-weight: 700;
       letter-spacing: 1px;
     }
@@ -143,7 +143,7 @@
       margin-bottom: var(--spacing-small);
       border-radius: var(--card-radius);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      font-size: 0.85rem; /* Slightly smaller */
+      font-size: 0.85rem; 
       cursor: pointer;
       transition: transform var(--transition-speed), box-shadow var(--transition-speed);
     }
@@ -151,7 +151,7 @@
     .list-item:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      background-color: #e6f2ff; /* Light blue background on hover */
+      background-color: #e6f2ff; 
     }
 
     /* Header Section within List Item */
@@ -454,6 +454,31 @@
         font-size: 0.75rem;
       }
     }
+
+    /* Additional .mobile-view overrides: show/hide, stacking changes, etc. */
+    body.mobile-view aside.sidebar {
+      width: 100%;
+      height: auto;
+      position: static;
+      display: none; /* Example: hide sidebar on mobile */
+    }
+    body.mobile-view main {
+      left: 0;
+      top: var(--header-height);
+      width: 100%;
+      padding: var(--spacing-small);
+      overflow-x: hidden; /* Might reduce horizontal scrolling */
+    }
+    body.mobile-view .kanban-board {
+      flex-direction: column; /* Stack columns vertically on mobile */
+      align-items: stretch;
+    }
+    body.mobile-view .kanban-column {
+      max-width: 100%;
+      min-width: auto;
+      margin-bottom: var(--spacing-medium);
+      max-height: none;
+    }
   </style>
 </head>
 <body>
@@ -524,7 +549,7 @@
         <label><strong>Attach Files/Images:</strong></label>
         <input type="file" id="note-attachments" multiple accept="image/*,application/pdf,.doc,.docx,.txt" />
         <small style="font-size: 0.7rem;">Max 2MB. Allowed: Images, PDF, DOC, DOCX, TXT.</small>
-	<br></br>
+        <br></br>
         <label><strong>Notebook:</strong></label>
         <select id="note-notebook"></select>
 
@@ -590,8 +615,13 @@
     <p>&copy; 2024 NoteCoco. All rights reserved.</p>
   </footer>
 
-  <!-- Below is the existing script logic, unchanged -->
   <script>
+    /* Check if on a mobile device */
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      document.body.classList.add('mobile-view');
+    }
+
     let notebooks = [];
     let notes = [];
     let tasks = [];
