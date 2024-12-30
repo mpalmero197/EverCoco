@@ -1,0 +1,1975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NoteCoco - Habit Tracker</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@500;700&display=swap" 
+    rel="stylesheet"
+  >
+  <style>
+    :root {
+      --argentina-blue: #75aadb;
+      --argentina-white: #ffffff;
+      --text-color: #333333;
+      --card-bg: var(--argentina-white);
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --card-radius: 10px;
+      --primary-font: 'Roboto', sans-serif;
+      --secondary-font: 'Montserrat', sans-serif;
+      --transition-speed: 0.3s;
+
+      /* Layout sizes */
+      --header-height: 70px;
+      --footer-height: 70px;
+      --sidebar-width: 200px; /* Reduced from 260px */
+
+      /* Spacing */
+      --spacing-small: 0.5rem;
+      --spacing-medium: 1rem;
+      --spacing-large: 1.5rem;
+
+      /* Border */
+      --border-color: #eaeaea;
+    }
+
+    /* Base / Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--primary-font);
+    }
+
+    /* Overall smaller scale: 75% of original 16px => 12px */
+    html, body {
+      height: 100%;
+      background-color: var(--argentina-white);
+      color: var(--text-color);
+      font-size: 12px; /* Reduced font size */
+    }
+
+    body {
+      overflow: hidden; /* Only main or columns scroll */
+    }
+
+    /* Header (fixed) */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-height);
+      background-color: var(--argentina-blue);
+      color: var(--argentina-white);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 0 var(--spacing-medium);
+    }
+    header h1 {
+      font-family: var(--secondary-font);
+      font-size: 1.5rem; /* Slightly reduced */
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* Footer (fixed) */
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--footer-height);
+      background-color: var(--argentina-blue);
+      color: var(--argentina-white);
+      box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 0 var(--spacing-medium);
+    }
+    footer p {
+      font-size: 0.85rem;
+      font-family: var(--secondary-font);
+    }
+
+    /* Sidebar (fixed) */
+    aside.sidebar {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      width: var(--sidebar-width);
+      height: calc(100vh - var(--header-height) - var(--footer-height));
+      background-color: #f0f8ff;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+      border-right: 1px solid var(--border-color);
+      padding: var(--spacing-medium);
+      overflow-y: auto;
+      z-index: 998;
+    }
+    .sidebar h2 {
+      margin-bottom: var(--spacing-medium);
+      font-size: 1rem;
+      text-align: center;
+      color: var(--argentina-blue);
+      font-family: var(--secondary-font);
+      font-weight: 700;
+    }
+    .sidebar-section {
+      margin-bottom: var(--spacing-large);
+    }
+    .sidebar-section h3 {
+      font-family: var(--secondary-font);
+      font-weight: 600;
+      margin-bottom: var(--spacing-small);
+      color: var(--argentina-blue);
+      font-size: 0.9rem;
+    }
+    .sidebar-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    /* Unified List Item Styling */
+    .list-item {
+      display: flex;
+      flex-direction: column; 
+      background-color: var(--card-bg);
+      border-left: 4px solid var(--argentina-blue);
+      padding: var(--spacing-small) var(--spacing-medium);
+      margin-bottom: var(--spacing-small);
+      border-radius: var(--card-radius);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      font-size: 0.85rem; /* Slightly smaller */
+      cursor: pointer;
+      transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    }
+
+    .list-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      background-color: #e6f2ff; /* Light blue background on hover */
+    }
+
+    /* Header Section within List Item */
+    .item-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    /* Title Styling */
+    .item-header .title {
+      flex: 1;
+      margin-right: var(--spacing-small);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--secondary-font);
+      font-weight: 600;
+    }
+
+    /* "x" Button Styling */
+    .inline-delete-btn {
+      flex: none;
+      background: none;
+      border: none;
+      color: var(--argentina-blue);
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: background-color var(--transition-speed), opacity var(--transition-speed);
+    }
+
+    .inline-delete-btn:hover {
+      background-color: rgba(117, 170, 219, 0.2);
+      opacity: 0.9;
+    }
+
+    /* "Mark as Completed" Button Styling */
+    .complete-btn {
+      background-color: #3498db; 
+      color: #ffffff;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      margin-left: var(--spacing-small);
+      transition: background-color var(--transition-speed), transform var(--transition-speed);
+      font-family: var(--secondary-font);
+    }
+
+    .complete-btn:hover {
+      background-color: #2980b9;
+      transform: scale(1.05);
+    }
+
+    /* Streak Information Styling */
+    .streak-info {
+      font-size: 0.75rem;
+      color: #555;
+      margin-top: 0.25rem;
+      font-family: var(--primary-font);
+    }
+
+    /* Recurrence Options Styling */
+    .recurrence-options {
+      margin: var(--spacing-medium) 0;
+      display: flex;
+      gap: var(--spacing-small);
+      flex-wrap: wrap;
+    }
+
+    .recurrence-options label {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    /* Custom Days Checkboxes Styling */
+    .custom-days {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: var(--spacing-medium);
+      flex-wrap: wrap;
+    }
+    .custom-days label {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    /* Attachments Styling */
+    .attachments img {
+      max-width: 100%;
+      display: block;
+      margin-bottom: 0.5rem;
+      border-radius: 6px;
+    }
+
+    .attachments a {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--argentina-blue);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color var(--transition-speed);
+      font-size: 0.8rem;
+    }
+
+    .attachments a:hover {
+      color: #4a90e2;
+      text-decoration: underline;
+    }
+
+    /* Completed Habit Styling */
+    .list-item.completed {
+      background-color: #d4edda; 
+      border-left-color: #28a745; 
+      transition: background-color var(--transition-speed), border-left-color var(--transition-speed);
+    }
+
+    .list-item.completed:hover {
+      background-color: #c3e6cb;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Main content area (scrollable) */
+    main {
+      position: absolute;
+      top: var(--header-height);
+      left: var(--sidebar-width);
+      right: 0;
+      bottom: var(--footer-height);
+      padding: var(--spacing-medium);
+      background-color: #f9f9f9;
+      overflow-x: auto;
+    }
+
+    /****** KANBAN BOARD LAYOUT ******/
+    .kanban-board {
+      display: flex;
+      gap: var(--spacing-medium);
+      align-items: flex-start;
+      height: 100%;
+    }
+
+    .kanban-column {
+      background-color: var(--card-bg);
+      border-radius: var(--card-radius);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      padding: var(--spacing-medium);
+      flex: 1;
+      min-width: 280px;
+      max-width: 350px;
+      overflow-y: auto;
+      max-height: calc(100vh - var(--header-height) - var(--footer-height) - var(--spacing-large)*2);
+    }
+
+    .kanban-column h2 {
+      text-align: center;
+      color: var(--argentina-blue);
+      margin-bottom: var(--spacing-small);
+      font-size: 1.2rem;
+      font-family: var(--secondary-font);
+      font-weight: 700;
+    }
+
+    .kanban-column p {
+      line-height: 1.4;
+      margin-bottom: var(--spacing-small);
+      font-size: 0.85rem;
+      color: #555;
+      font-family: var(--primary-font);
+    }
+
+    .kanban-column input,
+    .kanban-column textarea,
+    .kanban-column select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+      font-family: var(--primary-font);
+    }
+
+    .kanban-column input:focus,
+    .kanban-column textarea:focus,
+    .kanban-column select:focus {
+      border-color: var(--argentina-blue);
+      box-shadow: 0 0 5px rgba(117, 170, 219, 0.5);
+      outline: none;
+    }
+
+    /* Tag multi-select container */
+    .multi-select {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    .multi-select label {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    /* Button Styling */
+    .btn {
+      background-color: var(--argentina-blue);
+      color: var(--argentina-white);
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background-color var(--transition-speed), transform var(--transition-speed);
+      font-family: var(--secondary-font);
+      display: inline-block;
+      margin-top: var(--spacing-small);
+    }
+
+    .btn:hover {
+      background-color: #5f94c8; 
+      transform: scale(1.05);
+    }
+
+    /* Notification Styling */
+    .notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      font-family: var(--primary-font);
+      font-size: 0.85rem;
+    }
+
+    .notification.success {
+      background-color: #2ecc71; 
+      color: #ffffff;
+    }
+
+    .notification.error {
+      background-color: #e74c3c; 
+      color: #ffffff;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; right: 0; }
+      to { opacity: 1; right: 20px; }
+    }
+
+    @keyframes fadeout {
+      from { opacity: 1; right: 20px; }
+      to { opacity: 0; right: 0; }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      aside.sidebar {
+        width: 160px;
+      }
+      main {
+        left: 160px;
+      }
+      .kanban-column {
+        min-width: 220px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      aside.sidebar {
+        width: 140px;
+        padding: var(--spacing-small);
+      }
+      main {
+        left: 140px;
+        padding: var(--spacing-small);
+      }
+      header h1 {
+        font-size: 1.1rem;
+      }
+      footer p {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>NoteCoco</h1>
+  </header>
+
+  <aside class="sidebar">
+    <h2>My Dashboard</h2>
+
+    <div class="sidebar-section">
+      <h3>Notebooks</h3>
+      <ul id="sidebar-notebooks-list"></ul>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>All Notes</h3>
+      <ul id="sidebar-notes-list"></ul>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>All Tasks</h3>
+      <ul id="sidebar-tasks-list"></ul>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>All Habits</h3>
+      <ul id="sidebar-habits-list"></ul>
+    </div>
+  </aside>
+
+  <main>
+    <!-- Kanban Board with 5 columns -->
+    <div class="kanban-board">
+      <!-- Tag Manager -->
+      <section class="kanban-column">
+        <h2>Tag Manager</h2>
+        <p>Create, rename, or delete tags. Double-click a tag to rename it.</p>
+        <input type="text" id="new-tag-name" placeholder="Enter new tag..." />
+        <button class="btn" onclick="addTag()">Add Tag</button>
+        <ul id="tags-list"></ul>
+      </section>
+
+      <!-- Notebook Manager -->
+      <section class="kanban-column">
+        <h2>Notebooks</h2>
+        <p>Create and manage notebooks (Personal is locked).</p>
+        <input type="text" id="new-notebook-input" placeholder="e.g. Work" />
+        <button class="btn" onclick="addNotebook()">Add Notebook</button>
+        <ul id="notebooks-list"></ul>
+      </section>
+
+      <!-- Notes -->
+      <section class="kanban-column">
+        <h2>Notes</h2>
+        <p>Create notes with a title, body, tags, and optional notebook.</p>
+	
+        <label><strong>Filter Notebook:</strong></label>
+        <select id="notebook-filter" onchange="displayNotes()"></select>
+
+        <p><strong>Select Existing Tags:</strong></p>
+        <div id="create-tags-multi" class="multi-select"></div>
+        <input type="text" id="create-tags-new" placeholder="Comma-separated new tags..." />
+
+        <input type="text" id="note-title" placeholder="Note Title..." />
+        <textarea id="note-body" rows="3" placeholder="Note Body..."></textarea>
+
+        <label><strong>Attach Files/Images:</strong></label>
+        <input type="file" id="note-attachments" multiple accept="image/*,application/pdf,.doc,.docx,.txt" />
+        <small style="font-size: 0.7rem;">Max 2MB. Allowed: Images, PDF, DOC, DOCX, TXT.</small>
+	<br></br>
+        <label><strong>Notebook:</strong></label>
+        <select id="note-notebook"></select>
+
+        <button class="btn" onclick="addNote()">Add Note</button>
+        <ul id="notes-list"></ul>
+      </section>
+
+      <!-- Tasks -->
+      <section class="kanban-column">
+        <h2>Tasks</h2>
+        <p>Manage tasks with due dates.</p>
+        <input type="text" id="task-input" placeholder="New Task..." />
+        <input type="date" id="task-date-input" />
+        <button class="btn" onclick="addTask()">Add Task</button>
+        <ul id="tasks-list"></ul>
+      </section>
+
+      <!-- Habits -->
+      <section class="kanban-column">
+        <h2>Habits</h2>
+        <p>Track your habits.</p>
+        
+        <input type="text" id="habit-input" placeholder="New Habit..." />
+        
+        <!-- Recurrence Options -->
+        <div class="recurrence-options">
+          <label>
+            <input type="radio" name="recurrence" value="daily" checked>
+            Daily
+          </label>
+          <label>
+            <input type="radio" name="recurrence" value="weekly">
+            Weekly
+          </label>
+          <label>
+            <input type="radio" name="recurrence" value="monthly">
+            Monthly
+          </label>
+          <label>
+            <input type="radio" name="recurrence" value="custom">
+            Custom Days
+          </label>
+        </div>
+        
+        <!-- Custom Days Checkboxes (Hidden by Default) -->
+        <div id="custom-days" class="custom-days" style="display: none;">
+          <label><input type="checkbox" value="Monday"> M</label>
+          <label><input type="checkbox" value="Tuesday"> T</label>
+          <label><input type="checkbox" value="Wednesday"> W</label>
+          <label><input type="checkbox" value="Thursday"> T</label>
+          <label><input type="checkbox" value="Friday"> F</label>
+          <label><input type="checkbox" value="Saturday"> S</label>
+          <label><input type="checkbox" value="Sunday"> S</label>
+        </div>
+        
+        <button class="btn" onclick="addHabit()">Add Habit</button>
+        <ul id="habits-list"></ul>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 NoteCoco. All rights reserved.</p>
+  </footer>
+
+  <!-- Below is the existing script logic, unchanged -->
+  <script>
+    let notebooks = [];
+    let notes = [];
+    let tasks = [];
+    let habits = [];
+    let allTags = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedNotebooks = localStorage.getItem('cocoNotebooks');
+      const savedNotes = localStorage.getItem('cocoNotes');
+      const savedTasks = localStorage.getItem('cocoTasks');
+      const savedHabits = localStorage.getItem('cocoHabits');
+      const savedTags = localStorage.getItem('cocoAllTags');
+
+      if (savedNotebooks) notebooks = JSON.parse(savedNotebooks);
+      if (savedNotes) notes = JSON.parse(savedNotes);
+      if (savedTasks) tasks = JSON.parse(savedTasks);
+      if (savedHabits) habits = JSON.parse(savedHabits);
+      if (savedTags) allTags = JSON.parse(savedTags);
+
+      ensurePersonalNotebook();
+      resetStreaksIfNeeded();
+
+      displayTags();
+      displayNotebooks();
+      displayNotes();
+      displayTasks();
+      displayHabits();
+      displaySidebar();
+
+      renderTagCheckboxes('create-tags-multi');
+
+      // Toggle Custom Days Checkboxes based on selected recurrence
+      document.querySelectorAll('input[name="recurrence"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          const customDaysDiv = document.getElementById('custom-days');
+          if (e.target.value === 'custom') {
+            customDaysDiv.style.display = 'flex';
+          } else {
+            customDaysDiv.style.display = 'none';
+            customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+          }
+        });
+      });
+    });
+
+    function ensurePersonalNotebook() {
+      const personal = notebooks.some(nb => nb.name === 'Personal');
+      if (!personal) {
+        notebooks.push({ id: Date.now(), name: 'Personal' });
+      }
+      saveToLocalStorage();
+    }
+
+    function saveToLocalStorage() {
+      localStorage.setItem('cocoNotebooks', JSON.stringify(notebooks));
+      localStorage.setItem('cocoNotes', JSON.stringify(notes));
+      localStorage.setItem('cocoTasks', JSON.stringify(tasks));
+      localStorage.setItem('cocoHabits', JSON.stringify(habits));
+      localStorage.setItem('cocoAllTags', JSON.stringify(allTags));
+    }
+
+    /* TAG MANAGER */
+    function addTag() {
+      const input = document.getElementById('new-tag-name');
+      const val = input.value.trim();
+      if (!val) return;
+
+      if (!allTags.includes(val)) {
+        allTags.push(val);
+        allTags.sort();
+      }
+      input.value = '';
+      saveToLocalStorage();
+      displayTags();
+      renderTagCheckboxes('create-tags-multi');
+    }
+
+    function displayTags() {
+      const list = document.getElementById('tags-list');
+      list.innerHTML = '';
+
+      allTags.forEach(tag => {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'item-header';
+
+        const span = document.createElement('span');
+        span.className = 'title';
+        span.textContent = tag;
+        headerDiv.appendChild(span);
+
+        const xBtn = document.createElement('button');
+        xBtn.textContent = 'x';
+        xBtn.className = 'inline-delete-btn';
+        xBtn.setAttribute('aria-label', 'Delete Tag');
+        xBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteTag(tag);
+        };
+        headerDiv.appendChild(xBtn);
+
+        li.appendChild(headerDiv);
+
+        li.ondblclick = () => renameTag(tag);
+
+        list.appendChild(li);
+      });
+    }
+
+    function deleteTag(tagName) {
+      allTags = allTags.filter(t => t !== tagName);
+      notes.forEach(n => {
+        if (n.tags.includes(tagName)) {
+          n.tags = n.tags.filter(tt => tt !== tagName);
+        }
+      });
+      saveToLocalStorage();
+      displayTags();
+      displayNotes();
+      displaySidebar();
+      renderTagCheckboxes('create-tags-multi');
+    }
+
+    function renameTag(oldTag) {
+      const newName = prompt('Enter new tag name:', oldTag);
+      if (!newName || !newName.trim()) return;
+      const final = newName.trim();
+
+      allTags = allTags.filter(t => t !== oldTag);
+      if (!allTags.includes(final)) {
+        allTags.push(final);
+      }
+      notes.forEach(n => {
+        if (n.tags.includes(oldTag)) {
+          n.tags = n.tags.map(tt => (tt === oldTag ? final : tt));
+          n.tags = [...new Set(n.tags)];
+        }
+      });
+      allTags.sort();
+      saveToLocalStorage();
+      displayTags();
+      displayNotes();
+      displaySidebar();
+      renderTagCheckboxes('create-tags-multi');
+    }
+
+    function renderTagCheckboxes(containerId, selectedTags = []) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      allTags.forEach(tag => {
+        const label = document.createElement('label');
+        const chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.value = tag;
+        if (selectedTags.includes(tag)) {
+          chk.checked = true;
+        }
+        label.appendChild(chk);
+        label.appendChild(document.createTextNode(tag));
+        container.appendChild(label);
+      });
+    }
+
+    function renderTagCheckboxesInline(container, selectedTags = []) {
+      container.innerHTML = '';
+      allTags.forEach(tag => {
+        const label = document.createElement('label');
+        label.style.display = 'flex';
+        label.style.alignItems = 'center';
+        label.style.gap = '0.25rem';
+
+        const chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.value = tag;
+        if (selectedTags.includes(tag)) {
+          chk.checked = true;
+        }
+        label.appendChild(chk);
+        label.appendChild(document.createTextNode(tag));
+        container.appendChild(label);
+      });
+    }
+
+    /* NOTEBOOKS */
+    function addNotebook() {
+      const nbInput = document.getElementById('new-notebook-input');
+      const val = nbInput.value.trim();
+      if (!val) return;
+
+      if (val.toLowerCase() === 'personal') {
+        alert('The "Personal" notebook already exists and cannot be recreated.');
+        nbInput.value = '';
+        return;
+      }
+
+      notebooks.push({ id: Date.now(), name: val });
+      nbInput.value = '';
+      saveToLocalStorage();
+      displayNotebooks();
+      displayNotes();
+      displaySidebar();
+    }
+
+    function displayNotebooks() {
+      const list = document.getElementById('notebooks-list');
+      list.innerHTML = '';
+
+      notebooks.forEach(nb => {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.setAttribute('data-id', nb.id);
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'item-header';
+
+        const span = document.createElement('span');
+        span.className = 'title';
+        span.textContent = nb.name;
+        headerDiv.appendChild(span);
+
+        if (nb.name !== 'Personal') {
+          const xBtn = document.createElement('button');
+          xBtn.textContent = 'x';
+          xBtn.className = 'inline-delete-btn';
+          xBtn.setAttribute('aria-label', 'Delete Notebook');
+          xBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteNotebook(nb.id);
+          };
+          headerDiv.appendChild(xBtn);
+        }
+
+        li.appendChild(headerDiv);
+
+        li.ondblclick = () => {
+          if (nb.name === 'Personal') {
+            alert('The "Personal" notebook cannot be renamed.');
+          } else {
+            enterEditModeNotebook(nb.id);
+          }
+        };
+
+        li.onclick = () => showNotebookNotes(nb.id);
+
+        list.appendChild(li);
+      });
+      populateNotebookSelects();
+    }
+
+    function deleteNotebook(id) {
+      const nb = notebooks.find(n => n.id === id);
+      if (!nb) return;
+      if (nb.name === 'Personal') {
+        alert('The "Personal" notebook cannot be deleted.');
+        return;
+      }
+      notebooks = notebooks.filter(n => n.id !== id);
+      notes = notes.map(nt => nt.notebookName === nb.name ? { ...nt, notebookName: '' } : nt);
+      saveToLocalStorage();
+      displayNotebooks();
+      displayNotes();
+      displaySidebar();
+    }
+
+    function showNotebookNotes(id) {
+      const nb = notebooks.find(n => n.id === id);
+      if (!nb) return;
+      const filterSel = document.getElementById('notebook-filter');
+      filterSel.value = nb.name;
+      displayNotes();
+    }
+
+    function enterEditModeNotebook(id) {
+      const list = document.getElementById('notebooks-list');
+      const li = list.querySelector(`li[data-id="${id}"]`);
+      if (!li) return;
+
+      const nb = notebooks.find(n => n.id === id);
+      if (!nb) return;
+
+      li.innerHTML = '';
+
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'item-header';
+
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.value = nb.name;
+      inp.className = 'title';
+      headerDiv.appendChild(inp);
+
+      const confirmBtn = document.createElement('button');
+      confirmBtn.textContent = '✔';
+      confirmBtn.className = 'inline-delete-btn';
+      confirmBtn.setAttribute('aria-label', 'Confirm Rename');
+      confirmBtn.onclick = (e) => {
+        e.stopPropagation();
+        const newVal = inp.value.trim();
+        if (newVal) {
+          nb.name = newVal;
+          saveToLocalStorage();
+        }
+        displayNotebooks();
+        displayNotes();
+        displaySidebar();
+      };
+      headerDiv.appendChild(confirmBtn);
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = '✖';
+      cancelBtn.className = 'inline-delete-btn';
+      cancelBtn.setAttribute('aria-label', 'Cancel Rename');
+      cancelBtn.onclick = (e) => {
+        e.stopPropagation();
+        displayNotebooks();
+      };
+      headerDiv.appendChild(cancelBtn);
+
+      li.appendChild(headerDiv);
+    }
+
+    function populateNotebookSelects() {
+      const filterSel = document.getElementById('notebook-filter');
+      const noteNbSel = document.getElementById('note-notebook');
+      filterSel.innerHTML = '';
+      noteNbSel.innerHTML = '';
+
+      const allOpt = document.createElement('option');
+      allOpt.value = 'ALL';
+      allOpt.textContent = 'All Notebooks';
+      filterSel.appendChild(allOpt);
+
+      const noNbOpt = document.createElement('option');
+      noNbOpt.value = '';
+      noNbOpt.textContent = 'No Notebook';
+      noteNbSel.appendChild(noNbOpt);
+
+      notebooks.forEach(nb => {
+        const o1 = document.createElement('option');
+        o1.value = nb.name;
+        o1.textContent = nb.name;
+        filterSel.appendChild(o1);
+
+        const o2 = document.createElement('option');
+        o2.value = nb.name;
+        o2.textContent = nb.name;
+        noteNbSel.appendChild(o2);
+      });
+    }
+
+    /* NOTES */
+    function addNote() {
+      const tInput = document.getElementById('note-title');
+      const bInput = document.getElementById('note-body');
+      const nbSel = document.getElementById('note-notebook');
+      const newTags = document.getElementById('create-tags-new');
+      const ctm = document.getElementById('create-tags-multi');
+      const attachInput = document.getElementById('note-attachments');
+
+      const titleVal = tInput.value.trim();
+      const bodyVal = bInput.value.trim();
+      const nbVal = nbSel.value;
+
+      const existingTagsChecked = Array.from(ctm.querySelectorAll('input[type="checkbox"]'))
+        .filter(ch => ch.checked)
+        .map(ch => ch.value);
+
+      let newTagsArr = [];
+      if (newTags.value.trim()) {
+        newTagsArr = newTags.value.split(',')
+          .map(tt => tt.trim())
+          .filter(Boolean);
+      }
+
+      const combinedTags = [...existingTagsChecked, ...newTagsArr];
+      combinedTags.forEach(tt => {
+        if (!allTags.includes(tt)) {
+          allTags.push(tt);
+        }
+      });
+      allTags.sort();
+
+      const handleAttachments = (files) => {
+        return new Promise((resolve, reject) => {
+          if (!files.length) {
+            resolve([]);
+            return;
+          }
+          const attachments = [];
+          let processed = 0;
+          for (let file of files) {
+            if (file.size > 2 * 1024 * 1024) {
+              alert(`File "${file.name}" exceeds the 2MB limit.`);
+              processed++;
+              if (processed === files.length) {
+                resolve(attachments);
+              }
+              continue;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              attachments.push({
+                name: file.name,
+                type: file.type,
+                data: e.target.result
+              });
+              processed++;
+              if (processed === files.length) {
+                resolve(attachments);
+              }
+            };
+            reader.onerror = () => {
+              reject('Error reading file');
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      };
+
+      const files = attachInput.files;
+
+      handleAttachments(files)
+        .then((attachments) => {
+          if (titleVal || bodyVal) {
+            notes.push({
+              id: Date.now(),
+              title: titleVal,
+              body: bodyVal,
+              tags: combinedTags,
+              notebookName: nbVal,
+              attachments: attachments
+            });
+            tInput.value = '';
+            bInput.value = '';
+            newTags.value = '';
+            nbSel.value = '';
+            ctm.querySelectorAll('input[type="checkbox"]').forEach(ch => ch.checked = false);
+            attachInput.value = '';
+
+            saveToLocalStorage();
+            displayNotes();
+            displaySidebar();
+            displayTags();
+            renderTagCheckboxes('create-tags-multi');
+          }
+        })
+        .catch((error) => {
+          alert('Failed to attach files: ' + error);
+        });
+    }
+
+    function displayNotes() {
+      const list = document.getElementById('notes-list');
+      const filterSel = document.getElementById('notebook-filter');
+      const selVal = filterSel.value;
+      list.innerHTML = '';
+
+      let filtered = [];
+      if (selVal === 'ALL') filtered = notes;
+      else filtered = notes.filter(n => n.notebookName === selVal);
+
+      filtered.forEach(note => {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.setAttribute('data-id', note.id);
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'item-header';
+
+        const span = document.createElement('span');
+        span.className = 'title';
+        span.textContent = note.title || '[Untitled]';
+        headerDiv.appendChild(span);
+
+        const xBtn = document.createElement('button');
+        xBtn.textContent = 'x';
+        xBtn.className = 'inline-delete-btn';
+        xBtn.setAttribute('aria-label', 'Delete Note');
+        xBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteNote(note.id);
+        };
+        headerDiv.appendChild(xBtn);
+
+        li.appendChild(headerDiv);
+
+        if (note.body) {
+          const bodyDiv = document.createElement('div');
+          bodyDiv.className = 'details body';
+          bodyDiv.textContent = note.body;
+          li.appendChild(bodyDiv);
+        }
+
+        if (note.tags?.length) {
+          const tagDiv = document.createElement('div');
+          tagDiv.className = 'details tags';
+          tagDiv.textContent = `Tags: ${note.tags.join(', ')}`;
+          li.appendChild(tagDiv);
+        }
+
+        if (note.notebookName) {
+          const nbDiv = document.createElement('div');
+          nbDiv.className = 'details tags';
+          nbDiv.textContent = `Notebook: ${note.notebookName}`;
+          li.appendChild(nbDiv);
+        }
+
+        if (note.attachments && note.attachments.length) {
+          const attachDiv = document.createElement('div');
+          attachDiv.className = 'details attachments';
+          const attachTitle = document.createElement('p');
+          attachTitle.innerHTML = '<strong>Attachments:</strong>';
+          attachDiv.appendChild(attachTitle);
+
+          note.attachments.forEach((att) => {
+            if (att.type.startsWith('image/')) {
+              const img = document.createElement('img');
+              img.src = att.data;
+              img.alt = att.name;
+              img.style.maxWidth = '100%';
+              img.style.display = 'block';
+              img.style.marginBottom = '0.5rem';
+              attachDiv.appendChild(img);
+            } else {
+              const link = document.createElement('a');
+              link.href = att.data;
+              link.download = att.name;
+              link.textContent = att.name;
+              attachDiv.appendChild(link);
+            }
+          });
+
+          li.appendChild(attachDiv);
+        }
+
+        li.ondblclick = () => enterEditModeNote(note.id);
+
+        list.appendChild(li);
+      });
+    }
+
+    function deleteNote(id) {
+      notes = notes.filter(n => n.id !== id);
+      saveToLocalStorage();
+      displayNotes();
+      displaySidebar();
+    }
+
+    function enterEditModeNote(id) {
+      const list = document.getElementById('notes-list');
+      const li = list.querySelector(`li[data-id="${id}"]`);
+      if (!li) return;
+
+      const note = notes.find(n => n.id === id);
+      if (!note) return;
+
+      li.innerHTML = '';
+
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'item-header';
+
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.value = note.title;
+      inp.className = 'title';
+      headerDiv.appendChild(inp);
+
+      const xBtn = document.createElement('button');
+      xBtn.textContent = 'x';
+      xBtn.className = 'inline-delete-btn';
+      xBtn.setAttribute('aria-label', 'Delete Note');
+      xBtn.onclick = (e) => {
+        e.stopPropagation();
+        deleteNote(note.id);
+      };
+      headerDiv.appendChild(xBtn);
+
+      li.appendChild(headerDiv);
+
+      const bodyTextarea = document.createElement('textarea');
+      bodyTextarea.rows = 3;
+      bodyTextarea.value = note.body;
+      bodyTextarea.className = 'details body';
+      li.appendChild(bodyTextarea);
+
+      const tagCon = document.createElement('div');
+      tagCon.className = 'multi-select';
+      renderTagCheckboxesInline(tagCon, note.tags);
+      li.appendChild(tagCon);
+
+      const newT = document.createElement('input');
+      newT.type = 'text';
+      newT.placeholder = 'Comma-separated new tags...';
+      newT.className = 'details';
+      li.appendChild(newT);
+
+      const nbSel = document.createElement('select');
+      nbSel.className = 'details';
+      const noOpt = document.createElement('option');
+      noOpt.value = '';
+      noOpt.textContent = 'No Notebook';
+      nbSel.appendChild(noOpt);
+
+      notebooks.forEach(nbbb => {
+        const opt = document.createElement('option');
+        opt.value = nbbb.name;
+        opt.textContent = nbbb.name;
+        if (note.notebookName === nbbb.name) opt.selected = true;
+        nbSel.appendChild(opt);
+      });
+      li.appendChild(nbSel);
+
+      if (note.attachments && note.attachments.length) {
+        const attachDiv = document.createElement('div');
+        attachDiv.className = 'details attachments';
+        const attachTitle = document.createElement('p');
+        attachTitle.innerHTML = '<strong>Attachments:</strong>';
+        attachDiv.appendChild(attachTitle);
+
+        note.attachments.forEach((att) => {
+          if (att.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = att.data;
+            img.alt = att.name;
+            img.style.maxWidth = '100%';
+            img.style.display = 'block';
+            img.style.marginBottom = '0.5rem';
+            attachDiv.appendChild(img);
+          } else {
+            const link = document.createElement('a');
+            link.href = att.data;
+            link.download = att.name;
+            link.textContent = att.name;
+            attachDiv.appendChild(link);
+          }
+        });
+
+        li.appendChild(attachDiv);
+      }
+
+      const attachInput = document.createElement('input');
+      attachInput.type = 'file';
+      attachInput.id = 'edit-note-attachments';
+      attachInput.multiple = true;
+      attachInput.accept = 'image/*,application/pdf,.doc,.docx,.txt';
+      li.appendChild(attachInput);
+
+      const confirmB = document.createElement('button');
+      confirmB.textContent = '✔';
+      confirmB.className = 'btn';
+      confirmB.onclick = (e) => {
+        e.stopPropagation();
+        note.title = inp.value.trim() || '';
+        note.body = bodyTextarea.value.trim() || '';
+
+        const checked = Array.from(tagCon.querySelectorAll('input[type="checkbox"]'))
+          .filter(ch => ch.checked)
+          .map(ch => ch.value);
+
+        let newOnes = [];
+        if (newT.value.trim()) {
+          newOnes = newT.value.split(',')
+            .map(tt => tt.trim())
+            .filter(Boolean);
+        }
+        const combined = [...checked, ...newOnes];
+        combined.forEach(tt => {
+          if (!allTags.includes(tt)) {
+            allTags.push(tt);
+          }
+        });
+        allTags.sort();
+        note.tags = combined;
+
+        note.notebookName = nbSel.value;
+
+        const files = attachInput.files;
+        const handleAttachments = (files) => {
+          return new Promise((resolve, reject) => {
+            if (!files.length) {
+              resolve([]);
+              return;
+            }
+            const attachments = [];
+            let processed = 0;
+            for (let file of files) {
+              if (file.size > 2 * 1024 * 1024) {
+                alert(`File "${file.name}" exceeds the 2MB limit.`);
+                processed++;
+                if (processed === files.length) {
+                  resolve(attachments);
+                }
+                continue;
+              }
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                attachments.push({
+                  name: file.name,
+                  type: file.type,
+                  data: e.target.result
+                });
+                processed++;
+                if (processed === files.length) {
+                  resolve(attachments);
+                }
+              };
+              reader.onerror = () => {
+                reject('Error reading file');
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        };
+
+        handleAttachments(files)
+          .then((newAttachments) => {
+            if (newAttachments.length) {
+              note.attachments = [...note.attachments, ...newAttachments];
+            }
+            saveToLocalStorage();
+            displayNotes();
+            displaySidebar();
+            displayTags();
+            renderTagCheckboxes('create-tags-multi');
+          })
+          .catch((error) => {
+            alert('Failed to attach files: ' + error);
+          });
+      };
+      li.appendChild(confirmB);
+
+      const cancelB = document.createElement('button');
+      cancelB.textContent = '✖';
+      cancelB.className = 'btn';
+      cancelB.onclick = (ee) => {
+        ee.stopPropagation();
+        displayNotes();
+        displaySidebar();
+      };
+      li.appendChild(cancelB);
+    }
+
+    /* TASKS */
+    function addTask() {
+      const tInput = document.getElementById('task-input');
+      const dInput = document.getElementById('task-date-input');
+      const txt = tInput.value.trim();
+      const due = dInput.value;
+      if (txt) {
+        tasks.push({ id: Date.now(), text: txt, dueDate: due });
+        tInput.value = '';
+        dInput.value = '';
+        saveToLocalStorage();
+        displayTasks();
+        displaySidebar();
+      }
+    }
+
+    function displayTasks() {
+      const list = document.getElementById('tasks-list');
+      list.innerHTML = '';
+
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.setAttribute('data-id', task.id);
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'item-header';
+
+        const span = document.createElement('span');
+        span.className = 'title';
+        let disp = task.text;
+        if (task.dueDate) disp += ` (Due: ${task.dueDate})`;
+        span.textContent = disp;
+        headerDiv.appendChild(span);
+
+        const xBtn = document.createElement('button');
+        xBtn.textContent = 'x';
+        xBtn.className = 'inline-delete-btn';
+        xBtn.setAttribute('aria-label', 'Delete Task');
+        xBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteTask(task.id);
+        };
+        headerDiv.appendChild(xBtn);
+
+        li.appendChild(headerDiv);
+
+        li.ondblclick = () => enterEditModeTask(task.id);
+        li.onclick = () => enterEditModeTask(task.id);
+
+        list.appendChild(li);
+      });
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      saveToLocalStorage();
+      displayTasks();
+      displaySidebar();
+    }
+
+    function enterEditModeTask(id) {
+      const list = document.getElementById('tasks-list');
+      const li = list.querySelector(`li[data-id="${id}"]`);
+      if (!li) return;
+
+      const task = tasks.find(t => t.id === id);
+      if (!task) return;
+
+      li.innerHTML = '';
+
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'item-header';
+
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.value = task.text;
+      inp.className = 'title';
+      headerDiv.appendChild(inp);
+
+      const xBtn = document.createElement('button');
+      xBtn.textContent = 'x';
+      xBtn.className = 'inline-delete-btn';
+      xBtn.setAttribute('aria-label', 'Delete Task');
+      xBtn.onclick = (e) => {
+        e.stopPropagation();
+        deleteTask(task.id);
+      };
+      headerDiv.appendChild(xBtn);
+
+      li.appendChild(headerDiv);
+
+      const dueInput = document.createElement('input');
+      dueInput.type = 'date';
+      dueInput.value = task.dueDate || '';
+      dueInput.className = 'details';
+      li.appendChild(dueInput);
+
+      const confirmB = document.createElement('button');
+      confirmB.textContent = '✔';
+      confirmB.className = 'btn';
+      confirmB.onclick = (e) => {
+        e.stopPropagation();
+        task.text = inp.value.trim() || task.text;
+        task.dueDate = dueInput.value;
+        saveToLocalStorage();
+        displayTasks();
+        displaySidebar();
+      };
+      li.appendChild(confirmB);
+
+      const cancelB = document.createElement('button');
+      cancelB.textContent = '✖';
+      cancelB.className = 'btn';
+      cancelB.onclick = (ee) => {
+        ee.stopPropagation();
+        displayTasks();
+        displaySidebar();
+      };
+      li.appendChild(cancelB);
+    }
+
+    /* HABITS */
+    function addHabit() {
+      const hInput = document.getElementById('habit-input');
+      const txt = hInput.value.trim();
+      if (!txt) {
+        alert('Please enter a habit description.');
+        return;
+      }
+
+      const recurrence = document.querySelector('input[name="recurrence"]:checked').value;
+      let customDays = [];
+      if (recurrence === 'custom') {
+        const selectedDays = Array.from(document.querySelectorAll('#custom-days input[type="checkbox"]:checked'));
+        if (selectedDays.length === 0) {
+          alert('Please select at least one day for custom recurrence.');
+          return;
+        }
+        customDays = selectedDays.map(cb => cb.value);
+      }
+
+      habits.push({
+        id: Date.now(),
+        text: txt,
+        streak: 0,
+        lastCompleted: null,
+        recurrence: recurrence,
+        customDays: customDays
+      });
+
+      hInput.value = '';
+      clearRecurrenceOptions();
+      saveToLocalStorage();
+      displayHabits();
+      displaySidebar();
+    }
+
+    function clearRecurrenceOptions() {
+      document.querySelector('input[name="recurrence"][value="daily"]').checked = true;
+      document.getElementById('custom-days').style.display = 'none';
+      document.querySelectorAll('#custom-days input[type="checkbox"]').forEach(cb => cb.checked = false);
+    }
+
+    function displayHabits() {
+      const list = document.getElementById('habits-list');
+      list.innerHTML = '';
+
+      const currentDay = getCurrentDay();
+
+      habits.forEach(habit => {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        if (habit.lastCompleted === new Date().toDateString()) {
+          li.classList.add('completed');
+        }
+        li.setAttribute('data-id', habit.id);
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'item-header';
+
+        const span = document.createElement('span');
+        span.className = 'title';
+        span.textContent = habit.text;
+        headerDiv.appendChild(span);
+
+        const completeBtn = document.createElement('button');
+        completeBtn.textContent = 'Mark as Completed';
+        completeBtn.className = 'complete-btn';
+        completeBtn.onclick = (e) => {
+          e.stopPropagation();
+          markHabitAsCompleted(habit.id);
+        };
+        headerDiv.appendChild(completeBtn);
+
+        const xBtn = document.createElement('button');
+        xBtn.textContent = 'x';
+        xBtn.className = 'inline-delete-btn';
+        xBtn.setAttribute('aria-label', 'Delete Habit');
+        xBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteHabit(habit.id);
+        };
+        headerDiv.appendChild(xBtn);
+
+        li.appendChild(headerDiv);
+
+        const streakDiv = document.createElement('div');
+        streakDiv.className = 'streak-info';
+        streakDiv.textContent = `Streak: ${habit.streak} day(s)`;
+        li.appendChild(streakDiv);
+
+        if (habit.lastCompleted) {
+          const lastCompDiv = document.createElement('div');
+          lastCompDiv.className = 'streak-info';
+          lastCompDiv.textContent = `Last Completed: ${habit.lastCompleted}`;
+          li.appendChild(lastCompDiv);
+        }
+
+        li.ondblclick = () => enterEditModeHabit(habit.id);
+        li.onclick = () => enterEditModeHabit(habit.id);
+
+        list.appendChild(li);
+      });
+    }
+
+    function deleteHabit(id) {
+      habits = habits.filter(h => h.id !== id);
+      saveToLocalStorage();
+      displayHabits();
+      displaySidebar();
+    }
+
+    function enterEditModeHabit(id) {
+      const list = document.getElementById('habits-list');
+      const li = list.querySelector(`li[data-id="${id}"]`);
+      if (!li) return;
+
+      const habit = habits.find(h => h.id === id);
+      if (!habit) return;
+
+      li.innerHTML = '';
+
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'item-header';
+
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.value = habit.text;
+      inp.className = 'title';
+      headerDiv.appendChild(inp);
+
+      const xBtn = document.createElement('button');
+      xBtn.textContent = 'x';
+      xBtn.className = 'inline-delete-btn';
+      xBtn.setAttribute('aria-label', 'Delete Habit');
+      xBtn.onclick = (e) => {
+        e.stopPropagation();
+        deleteHabit(habit.id);
+      };
+      headerDiv.appendChild(xBtn);
+
+      li.appendChild(headerDiv);
+
+      const recurrenceDiv = document.createElement('div');
+      recurrenceDiv.className = 'recurrence-options';
+
+      const recurrenceOptions = ['daily', 'weekly', 'monthly', 'custom'];
+      const labels = ['Daily', 'Weekly', 'Monthly', 'Custom Days'];
+      recurrenceOptions.forEach((option, index) => {
+        const label = document.createElement('label');
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = `recurrence-${id}`;
+        radio.value = option;
+        radio.checked = habit.recurrence === option;
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(labels[index]));
+        recurrenceDiv.appendChild(label);
+      });
+
+      li.appendChild(recurrenceDiv);
+
+      const customDaysDiv = document.createElement('div');
+      customDaysDiv.className = 'custom-days';
+      if (habit.recurrence === 'custom') {
+        customDaysDiv.style.display = 'flex';
+      } else {
+        customDaysDiv.style.display = 'none';
+      }
+
+      const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      daysOfWeek.forEach(day => {
+        const dayLabel = document.createElement('label');
+        const dayCheckbox = document.createElement('input');
+        dayCheckbox.type = 'checkbox';
+        dayCheckbox.value = day;
+        if (habit.customDays.includes(day)) {
+          dayCheckbox.checked = true;
+        }
+        dayLabel.appendChild(dayCheckbox);
+        dayLabel.appendChild(document.createTextNode(day.charAt(0)));
+        customDaysDiv.appendChild(dayLabel);
+      });
+
+      li.appendChild(customDaysDiv);
+
+      document.querySelectorAll(`input[name="recurrence-${id}"]`).forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          if (e.target.value === 'custom') {
+            customDaysDiv.style.display = 'flex';
+          } else {
+            customDaysDiv.style.display = 'none';
+            customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+          }
+        });
+      });
+
+      const confirmB = document.createElement('button');
+      confirmB.textContent = '✔';
+      confirmB.className = 'btn';
+      confirmB.onclick = (e) => {
+        e.stopPropagation();
+        const newText = inp.value.trim();
+        if (!newText) {
+          alert('Habit text cannot be empty.');
+          return;
+        }
+        habit.text = newText;
+
+        const selectedRecurrence = li.querySelector(`input[name="recurrence-${id}"]:checked`).value;
+        habit.recurrence = selectedRecurrence;
+        if (selectedRecurrence === 'custom') {
+          const selectedDays = Array.from(customDaysDiv.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+          if (selectedDays.length === 0) {
+            alert('Please select at least one day for custom recurrence.');
+            return;
+          }
+          habit.customDays = selectedDays;
+        } else {
+          habit.customDays = [];
+        }
+
+        saveToLocalStorage();
+        displayHabits();
+        displaySidebar();
+      };
+      li.appendChild(confirmB);
+
+      const cancelB = document.createElement('button');
+      cancelB.textContent = '✖';
+      cancelB.className = 'btn';
+      cancelB.onclick = (ee) => {
+        ee.stopPropagation();
+        displayHabits();
+        displaySidebar();
+      };
+      li.appendChild(cancelB);
+    }
+
+    function markHabitAsCompleted(id) {
+      const habit = habits.find(h => h.id === id);
+      if (!habit) return;
+
+      const today = new Date();
+      const todayStr = today.toDateString();
+      const currentDay = today.toLocaleString('en-US', { weekday: 'long' });
+
+      if (habit.recurrence === 'custom' && !habit.customDays.includes(currentDay)) {
+        alert(`Today is not a scheduled day for this habit (${currentDay}).`);
+        return;
+      }
+
+      if (habit.lastCompleted === todayStr) {
+        alert('You have already marked this habit as completed today.');
+        return;
+      }
+
+      let shouldIncrement = false;
+      if (habit.lastCompleted) {
+        const lastDate = new Date(habit.lastCompleted);
+        const diffTime = today - lastDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (habit.recurrence === 'daily') {
+          shouldIncrement = (diffDays === 1);
+        } else if (habit.recurrence === 'weekly') {
+          shouldIncrement = (diffDays === 7);
+        } else if (habit.recurrence === 'monthly') {
+          shouldIncrement = (!isSameMonth(lastDate, today) && diffDays <= 31);
+        } else if (habit.recurrence === 'custom') {
+          const lastDay = lastDate.toLocaleString('en-US', { weekday: 'long' });
+          const lastScheduledIndex = habit.customDays.indexOf(lastDay);
+          if (lastScheduledIndex !== -1) {
+            const nextScheduledIndex = (lastScheduledIndex + 1) % habit.customDays.length;
+            const expectedNextDay = habit.customDays[nextScheduledIndex];
+            shouldIncrement = (currentDay === expectedNextDay);
+          }
+        }
+      } else {
+        shouldIncrement = true;
+      }
+
+      if (shouldIncrement) {
+        habit.streak += 1;
+      } else {
+        habit.streak = 1;
+      }
+
+      habit.lastCompleted = todayStr;
+
+      saveToLocalStorage();
+      displayHabits();
+      displaySidebar();
+
+      alert(`Good job! You've completed "${habit.text}". Current streak: ${habit.streak} day(s).`);
+    }
+
+    function isSameMonth(d1, d2) {
+      return d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
+    }
+
+    function getCurrentDay() {
+      return new Date().toLocaleString('en-US', { weekday: 'long' });
+    }
+
+    function resetStreaksIfNeeded() {
+      const today = new Date();
+      const currentDay = getCurrentDay();
+
+      habits.forEach(habit => {
+        if (habit.lastCompleted) {
+          const lastDate = new Date(habit.lastCompleted);
+          const diffTime = today - lastDate;
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+          let shouldReset = false;
+
+          if (habit.recurrence === 'daily') {
+            if (diffDays > 1) {
+              shouldReset = true;
+            }
+          } else if (habit.recurrence === 'weekly') {
+            if (diffDays > 7) {
+              shouldReset = true;
+            }
+          } else if (habit.recurrence === 'monthly') {
+            if (!isSameMonth(lastDate, today)) {
+              shouldReset = true;
+            }
+          } else if (habit.recurrence === 'custom') {
+            const lastDay = lastDate.toLocaleString('en-US', { weekday: 'long' });
+            const lastScheduledIndex = habit.customDays.indexOf(lastDay);
+            if (lastScheduledIndex === -1) {
+              shouldReset = true;
+            } else {
+              const nextScheduledIndex = (lastScheduledIndex + 1) % habit.customDays.length;
+              const expectedNextDay = habit.customDays[nextScheduledIndex];
+              if (currentDay !== expectedNextDay) {
+                shouldReset = true;
+              }
+            }
+          }
+
+          if (shouldReset && habit.streak > 0) {
+            habit.streak = 0;
+          }
+        }
+      });
+
+      saveToLocalStorage();
+      displayHabits();
+      displaySidebar();
+    }
+
+    /* SIDEBAR */
+    function displaySidebar() {
+      const nbUL = document.getElementById('sidebar-notebooks-list');
+      const ntUL = document.getElementById('sidebar-notes-list');
+      const tkUL = document.getElementById('sidebar-tasks-list');
+      const hbUL = document.getElementById('sidebar-habits-list');
+
+      nbUL.innerHTML = '';
+      ntUL.innerHTML = '';
+      tkUL.innerHTML = '';
+      hbUL.innerHTML = '';
+
+      notebooks.forEach(nb => {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.setAttribute('data-id', nb.id);
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'item-header';
+
+        const span = document.createElement('span');
+        span.className = 'title';
+        span.textContent = nb.name;
+        headerDiv.appendChild(span);
+
+        if (nb.name !== 'Personal') {
+          const xBtn = document.createElement('button');
+          xBtn.textContent = 'x';
+          xBtn.className = 'inline-delete-btn';
+          xBtn.setAttribute('aria-label', 'Delete Notebook');
+          xBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteNotebook(nb.id);
+          };
+          headerDiv.appendChild(xBtn);
+        }
+
+        li.appendChild(headerDiv);
+
+        li.ondblclick = () => {
+          if (nb.name === 'Personal') {
+            alert('The "Personal" notebook cannot be renamed.');
+          } else {
+            enterEditModeNotebook(nb.id);
+          }
+        };
+
+        li.onclick = () => showNotebookNotes(nb.id);
+
+        nbUL.appendChild(li);
+      });
+
+      notes.forEach(n => {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.setAttribute('data-id', n.id);
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'item-header';
+
+        const span = document.createElement('span');
+        span.className = 'title';
+        span.textContent = n.title || '[Untitled]';
+        headerDiv.appendChild(span);
+
+        const xBtn = document.createElement('button');
+        xBtn.textContent = 'x';
+        xBtn.className = 'inline-delete-btn';
+        xBtn.setAttribute('aria-label', 'Delete Note');
+        xBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteNote(n.id);
+        };
+        headerDiv.appendChild(xBtn);
+
+        li.appendChild(headerDiv);
+
+        li.ondblclick = () => enterEditModeNote(n.id);
+        li.onclick = () => enterEditModeNote(n.id);
+
+        ntUL.appendChild(li);
+      });
+
+      tasks.forEach(t => {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.setAttribute('data-id', t.id);
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'item-header';
+
+        const span = document.createElement('span');
+        span.className = 'title';
+        let txt = t.text;
+        if (t.dueDate) txt += ` (Due: ${t.dueDate})`;
+        span.textContent = txt;
+        headerDiv.appendChild(span);
+
+        const xBtn = document.createElement('button');
+        xBtn.textContent = 'x';
+        xBtn.className = 'inline-delete-btn';
+        xBtn.setAttribute('aria-label', 'Delete Task');
+        xBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteTask(t.id);
+        };
+        headerDiv.appendChild(xBtn);
+
+        li.appendChild(headerDiv);
+
+        li.ondblclick = () => enterEditModeTask(t.id);
+        li.onclick = () => enterEditModeTask(t.id);
+
+        tkUL.appendChild(li);
+      });
+
+      habits.forEach(h => {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.setAttribute('data-id', h.id);
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'item-header';
+
+        const span = document.createElement('span');
+        span.className = 'title';
+        span.textContent = h.text;
+        headerDiv.appendChild(span);
+
+        const xBtn = document.createElement('button');
+        xBtn.textContent = 'x';
+        xBtn.className = 'inline-delete-btn';
+        xBtn.setAttribute('aria-label', 'Delete Habit');
+        xBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteHabit(h.id);
+        };
+        headerDiv.appendChild(xBtn);
+
+        li.appendChild(headerDiv);
+
+        const streakDiv = document.createElement('div');
+        streakDiv.className = 'streak-info';
+        streakDiv.textContent = `Streak: ${h.streak} day(s)`;
+        li.appendChild(streakDiv);
+
+        if (h.lastCompleted) {
+          const lastCompDiv = document.createElement('div');
+          lastCompDiv.className = 'streak-info';
+          lastCompDiv.textContent = `Last Completed: ${h.lastCompleted}`;
+          li.appendChild(lastCompDiv);
+        }
+
+        li.ondblclick = () => enterEditModeHabit(h.id);
+        li.onclick = () => enterEditModeHabit(h.id);
+
+        hbUL.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
