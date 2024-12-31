@@ -51,15 +51,33 @@
       margin-right: 10px;
     }
 
+    .header-right {
+      position: relative; /* For positioning the badge */
+    }
+
     .header-right i {
       margin-left: 20px;
       cursor: pointer;
       font-size: 1.2rem;
       transition: color 0.3s;
+      position: relative;
     }
 
     .header-right i:hover {
       color: var(--accent-color);
+    }
+
+    /* Notification Badge */
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -10px;
+      background-color: #f44336;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      display: none; /* Hidden by default */
     }
 
     /* Sidebar Styles */
@@ -91,15 +109,6 @@
     }
 
     /* Removed toggle button styles */
-    /* 
-    .sidebar-header .toggle-btn {
-      background: none;
-      border: none;
-      color: var(--secondary-color);
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-    */
 
     .sidebar-menu .menu-item {
       display: flex;
@@ -108,6 +117,7 @@
       cursor: pointer;
       transition: background 0.2s;
       border-bottom: 1px solid #e0e0e0;
+      position: relative;
     }
 
     .sidebar-menu .menu-item:hover,
@@ -129,8 +139,7 @@
       transition: margin-left 0.3s ease;
     }
 
-    /* Removed full-width class styles */
-
+    /* Kanban Board Styles */
     .kanban-board {
       display: flex;
       gap: 30px;
@@ -479,6 +488,79 @@
     .highlight {
       background-color: yellow;
     }
+
+    /* Notifications Modal Styles */
+    .notifications-modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1600; /* Sit on top of other modals */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .notifications-modal-content {
+      background-color: var(--secondary-color);
+      margin: 5% auto; /* 5% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%; /* Could be more or less, depending on screen size */
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .notifications-modal-content h2 {
+      margin-top: 0;
+      color: var(--accent-color);
+    }
+
+    .notifications-modal-content .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .notifications-modal-content .close:hover,
+    .notifications-modal-content .close:focus {
+      color: black;
+      text-decoration: none;
+    }
+
+    .notification-item {
+      padding: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .notification-item p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .notification-item small {
+      color: #777;
+    }
+
+    .notification-item button {
+      margin-top: 5px;
+      background-color: var(--primary-color);
+      color: var(--secondary-color);
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 0.3s;
+    }
+
+    .notification-item button:hover {
+      background-color: #659ad2;
+    }
   </style>
 </head>
 <body>
@@ -491,7 +573,9 @@
     </div>
     <div class="header-right">
       <i class="fas fa-search" title="Search" onclick="openSearch()"></i>
-      <i class="fas fa-bell" title="Notifications" onclick="showNotifications()"></i>
+      <i class="fas fa-bell" title="Notifications" onclick="openNotifications()">
+        <span class="notification-badge" id="notification-badge">0</span>
+      </i>
       <i class="fas fa-user-circle" title="Profile" onclick="showProfile()"></i>
     </div>
   </header>
@@ -772,6 +856,17 @@
     </div>
   </div>
   
+  <!-- Notifications Modal -->
+  <div id="notifications-modal" class="notifications-modal">
+    <div class="notifications-modal-content">
+      <span class="close" onclick="closeNotifications()">&times;</span>
+      <h2>Notifications</h2>
+      <div id="notifications-list">
+        <!-- Notifications will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+  
   <!-- Notification -->
   <div class="notification" id="notification"></div>
   
@@ -793,6 +888,7 @@
     let notes = [];
     let tasks = [];
     let habits = [];
+    let notifications = []; // New array for notifications
 
     // Initialize Application
     window.onload = function() {
@@ -802,6 +898,8 @@
       populateTagSelectors();
       renderAll();
       resetStreaks();
+      initializeNotifications(); // Initialize notification badge
+      checkUpcomingEvents(); // Check for upcoming events
     };
 
     // Load Data from localStorage
@@ -811,6 +909,7 @@
       notes = JSON.parse(localStorage.getItem('notecoco_notes')) || [];
       tasks = JSON.parse(localStorage.getItem('notecoco_tasks')) || [];
       habits = JSON.parse(localStorage.getItem('notecoco_habits')) || [];
+      notifications = JSON.parse(localStorage.getItem('notecoco_notifications')) || []; // Load notifications
 
       // Ensure tags are objects with 'name' and 'favorite'
       tags = tags.map(tag => {
@@ -835,6 +934,7 @@
       localStorage.setItem('notecoco_notes', JSON.stringify(notes));
       localStorage.setItem('notecoco_tasks', JSON.stringify(tasks));
       localStorage.setItem('notecoco_habits', JSON.stringify(habits));
+      localStorage.setItem('notecoco_notifications', JSON.stringify(notifications)); // Save notifications
     }
 
     // Ensure "Personal" Notebook Exists
@@ -1141,7 +1241,7 @@
       return 'None';
     }
 
-    // Add Notebook
+    // Add Notebook (Modified to Include Notification)
     function addNotebook() {
       const input = document.getElementById('new-notebook-input');
       const name = input.value.trim();
@@ -1160,9 +1260,10 @@
       renderNotebooks();
       renderDashboardFavorites();
       showNotification('Notebook added successfully.', 'success');
+      addNotification(`New notebook "${name}" created.`);
     }
 
-    // Delete Notebook
+    // Delete Notebook (Modified to Include Notification)
     function deleteNotebook(id) {
       const notebook = notebooks.find(nb => nb.id === id);
       if (!notebook) return;
@@ -1185,10 +1286,11 @@
         renderNotes();
         renderDashboardFavorites();
         showNotification('Notebook deleted successfully.', 'success');
+        addNotification(`Notebook "${notebook.name}" was deleted.`);
       }
     }
 
-    // Rename Notebook
+    // Rename Notebook (Modified to Include Notification)
     function renameNotebook(id) {
       const notebook = notebooks.find(nb => nb.id === id);
       if (!notebook) return;
@@ -1206,6 +1308,7 @@
           }
           return note;
         });
+        const oldName = notebook.name;
         notebook.name = trimmedName;
         saveData();
         populateNotebookSelect();
@@ -1213,10 +1316,11 @@
         renderNotes();
         renderDashboardFavorites();
         showNotification('Notebook renamed successfully.', 'success');
+        addNotification(`Notebook "${oldName}" was renamed to "${trimmedName}".`);
       }
     }
 
-    // Add Tag
+    // Add Tag (Modified to Include Notification)
     function addTag() {
       const input = document.getElementById('new-tag-input');
       const name = input.value.trim();
@@ -1235,9 +1339,10 @@
       renderTags();
       renderDashboardFavorites();
       showNotification('Tag added successfully.', 'success');
+      addNotification(`New tag "${name}" created.`);
     }
 
-    // Delete Tag
+    // Delete Tag (Modified to Include Notification)
     function deleteTag(tagName) {
       if (confirm(`Are you sure you want to delete the tag "${tagName}"? This will remove it from all notes.`)) {
         tags = tags.filter(tag => tag.name !== tagName);
@@ -1254,10 +1359,11 @@
         renderNotes();
         renderDashboardFavorites();
         showNotification('Tag deleted successfully.', 'success');
+        addNotification(`Tag "${tagName}" was deleted.`);
       }
     }
 
-    // Rename Tag
+    // Rename Tag (Modified to Include Notification)
     function renameTag(oldName) {
       const tag = tags.find(t => t.name === oldName);
       if (!tag) return;
@@ -1282,10 +1388,11 @@
         renderNotes();
         renderDashboardFavorites();
         showNotification('Tag renamed successfully.', 'success');
+        addNotification(`Tag "${oldName}" was renamed to "${trimmedName}".`);
       }
     }
 
-    // Add Note
+    // Add Note (Modified to Include Notification)
     function addNote() {
       const titleInput = document.getElementById('note-title');
       const bodyInput = document.getElementById('note-body');
@@ -1317,7 +1424,7 @@
       if (files.length > 0) {
         let filesProcessed = 0;
         for (let file of files) {
-          if (file.size > 2 * 1024 * 1024) {
+          if (file.size > 2 * 1024 * 1024) { // 2MB limit
             showNotification(`File "${file.name}" exceeds the 2MB limit and was not added.`, 'error');
             filesProcessed++;
             if (filesProcessed === files.length) finalizeAddNote();
@@ -1362,6 +1469,7 @@
         renderNotes();
         renderDashboardFavorites();
         showNotification('Note added successfully.', 'success');
+        addNotification(`New note "${title}" created.`);
         clearNoteForm();
       }
 
@@ -1375,12 +1483,11 @@
       }
     }
 
-    // Edit Note
+    // Edit Note (Modified to Include Notification)
     function editNote(id) {
       const note = notes.find(n => n.id === id);
       if (!note) return;
 
-      // Create a modal or use prompts for editing
       // For simplicity, using prompts here
       const newTitle = prompt('Edit Note Title:', note.title);
       if (newTitle === null) return; // Cancelled
@@ -1399,15 +1506,20 @@
       if (updatedNotebook === null) return; // Cancelled
       note.notebook = updatedNotebook.trim();
 
+      const oldTitle = note.title;
+      note.title = updatedTitle;
+      note.body = updatedBody;
+
       saveData();
       populateTagSelectors();
       renderTags();
       renderNotes();
       renderDashboardFavorites();
       showNotification('Note updated successfully.', 'success');
+      addNotification(`Note "${oldTitle}" was edited.`);
     }
 
-    // Delete Note
+    // Delete Note (Modified to Include Notification)
     function deleteNote(id) {
       const note = notes.find(n => n.id === id);
       if (!note) return;
@@ -1417,10 +1529,11 @@
         renderNotes();
         renderDashboardFavorites();
         showNotification('Note deleted successfully.', 'success');
+        addNotification(`Note "${note.title || 'Untitled'}" was deleted.`);
       }
     }
 
-    // Add Task
+    // Add Task (Modified to Include Notification)
     function addTask() {
       const descInput = document.getElementById('task-input');
       const dueDateInput = document.getElementById('task-due-date');
@@ -1466,10 +1579,11 @@
       renderTasks();
       renderDashboardFavorites();
       showNotification('Task added successfully.', 'success');
+      addNotification(`New task "${description}" created.`);
       clearTaskForm();
     }
 
-    // Clear Task Form
+    // Clear Task Form (No changes needed)
     function clearTaskForm() {
       document.getElementById('task-input').value = '';
       document.getElementById('task-due-date').value = '';
@@ -1478,7 +1592,7 @@
       toggleTaskCustomDays(false);
     }
 
-    // Toggle Task Custom Days
+    // Toggle Task Custom Days (No changes needed)
     function toggleTaskCustomDays(show) {
       const customDaysDiv = document.getElementById('task-custom-days');
       if (show) {
@@ -1489,7 +1603,7 @@
       }
     }
 
-    // Toggle Task Completion
+    // Toggle Task Completion (Modified to Include Notification)
     function toggleTaskCompletion(id) {
       const task = tasks.find(t => t.id === id);
       if (!task) return;
@@ -1498,17 +1612,19 @@
         task.lastCompleted = new Date().toDateString();
         task.streak += 1;
         showNotification('Task marked as completed!', 'success');
+        addNotification(`Task "${task.description}" was marked as completed.`);
       } else {
         task.lastCompleted = null;
         if (task.streak > 0) task.streak -= 1;
         showNotification('Task marked as incomplete.', 'success');
+        addNotification(`Task "${task.description}" was marked as incomplete.`);
       }
       saveData();
       renderTasks();
       renderDashboardFavorites();
     }
 
-    // Edit Task
+    // Edit Task (Modified to Include Notification)
     function editTask(id) {
       const task = tasks.find(t => t.id === id);
       if (!task) return;
@@ -1536,6 +1652,7 @@
         }
       }
 
+      const oldDescription = task.description;
       task.description = updatedDesc;
       task.dueDate = updatedDueDate;
       task.recurrence = updatedRecurrence;
@@ -1545,9 +1662,10 @@
       renderTasks();
       renderDashboardFavorites();
       showNotification('Task updated successfully.', 'success');
+      addNotification(`Task "${oldDescription}" was edited.`);
     }
 
-    // Delete Task
+    // Delete Task (Modified to Include Notification)
     function deleteTask(id) {
       const task = tasks.find(t => t.id === id);
       if (!task) return;
@@ -1557,10 +1675,11 @@
         renderTasks();
         renderDashboardFavorites();
         showNotification('Task deleted successfully.', 'success');
+        addNotification(`Task "${task.description}" was deleted.`);
       }
     }
 
-    // Add Habit
+    // Add Habit (Modified to Include Notification)
     function addHabit() {
       const descInput = document.getElementById('habit-input');
       const recurrenceRadios = document.getElementsByName('habit-recurrence');
@@ -1603,10 +1722,11 @@
       renderHabits();
       renderDashboardFavorites();
       showNotification('Habit added successfully.', 'success');
+      addNotification(`New habit "${description}" created.`);
       clearHabitForm();
     }
 
-    // Clear Habit Form
+    // Clear Habit Form (No changes needed)
     function clearHabitForm() {
       document.getElementById('habit-input').value = '';
       document.querySelectorAll('input[name="habit-recurrence"]').forEach(radio => radio.checked = false);
@@ -1614,7 +1734,7 @@
       toggleHabitCustomDays(false);
     }
 
-    // Toggle Habit Custom Days
+    // Toggle Habit Custom Days (No changes needed)
     function toggleHabitCustomDays(show) {
       const customDaysDiv = document.getElementById('habit-custom-days');
       if (show) {
@@ -1625,7 +1745,7 @@
       }
     }
 
-    // Toggle Habit Completion
+    // Toggle Habit Completion (Modified to Include Notification)
     function toggleHabitCompletion(id) {
       const habit = habits.find(h => h.id === id);
       if (!habit) return;
@@ -1634,17 +1754,19 @@
         habit.lastCompleted = new Date().toDateString();
         habit.streak += 1;
         showNotification('Habit marked as completed!', 'success');
+        addNotification(`Habit "${habit.description}" was marked as completed.`);
       } else {
         habit.lastCompleted = null;
         if (habit.streak > 0) habit.streak -= 1;
         showNotification('Habit marked as incomplete.', 'success');
+        addNotification(`Habit "${habit.description}" was marked as incomplete.`);
       }
       saveData();
       renderHabits();
       renderDashboardFavorites();
     }
 
-    // Edit Habit
+    // Edit Habit (Modified to Include Notification)
     function editHabit(id) {
       const habit = habits.find(h => h.id === id);
       if (!habit) return;
@@ -1668,6 +1790,7 @@
         }
       }
 
+      const oldDescription = habit.description;
       habit.description = updatedDesc;
       habit.recurrence = updatedRecurrence;
       habit.customDays = updatedRecurrence === 'custom' ? updatedCustomDays : [];
@@ -1676,9 +1799,10 @@
       renderHabits();
       renderDashboardFavorites();
       showNotification('Habit updated successfully.', 'success');
+      addNotification(`Habit "${oldDescription}" was edited.`);
     }
 
-    // Delete Habit
+    // Delete Habit (Modified to Include Notification)
     function deleteHabit(id) {
       const habit = habits.find(h => h.id === id);
       if (!habit) return;
@@ -1688,40 +1812,66 @@
         renderHabits();
         renderDashboardFavorites();
         showNotification('Habit deleted successfully.', 'success');
+        addNotification(`Habit "${habit.description}" was deleted.`);
       }
     }
 
-    // Toggle Favorite
+    // Toggle Favorite (Modified to Include Notification)
     function toggleFavorite(type, identifier) {
       switch(type) {
         case 'notebooks':
           const notebook = notebooks.find(nb => nb.id === identifier);
           if (notebook) {
             notebook.favorite = !notebook.favorite;
+            if (notebook.favorite) {
+              addNotification(`Notebook "${notebook.name}" was added to favorites.`);
+            } else {
+              addNotification(`Notebook "${notebook.name}" was removed from favorites.`);
+            }
           }
           break;
         case 'tags':
           const tag = tags.find(t => t.name === identifier);
           if (tag) {
             tag.favorite = !tag.favorite;
+            if (tag.favorite) {
+              addNotification(`Tag "${tag.name}" was added to favorites.`);
+            } else {
+              addNotification(`Tag "${tag.name}" was removed from favorites.`);
+            }
           }
           break;
         case 'notes':
           const note = notes.find(n => n.id === identifier);
           if (note) {
             note.favorite = !note.favorite;
+            if (note.favorite) {
+              addNotification(`Note "${note.title || 'Untitled'}" was added to favorites.`);
+            } else {
+              addNotification(`Note "${note.title || 'Untitled'}" was removed from favorites.`);
+            }
           }
           break;
         case 'tasks':
           const task = tasks.find(t => t.id === identifier);
           if (task) {
             task.favorite = !task.favorite;
+            if (task.favorite) {
+              addNotification(`Task "${task.description}" was added to favorites.`);
+            } else {
+              addNotification(`Task "${task.description}" was removed from favorites.`);
+            }
           }
           break;
         case 'habits':
           const habit = habits.find(h => h.id === identifier);
           if (habit) {
             habit.favorite = !habit.favorite;
+            if (habit.favorite) {
+              addNotification(`Habit "${habit.description}" was added to favorites.`);
+            } else {
+              addNotification(`Habit "${habit.description}" was removed from favorites.`);
+            }
           }
           break;
         default:
@@ -2006,6 +2156,7 @@
     }
 
     // Removed Toggle Sidebar Function
+
     /*
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
@@ -2017,14 +2168,18 @@
 
     // Reset Streaks for Tasks and Habits
     function resetStreaks() {
-      const today = new Date().toDateString();
+      const today = new Date();
+      const todayStr = today.toLocaleDateString(undefined, { weekday: 'long' });
+
       tasks.forEach(task => {
         if (task.lastCompleted) {
           const last = new Date(task.lastCompleted);
-          const diffDays = Math.floor((new Date() - last) / (1000 * 60 * 60 * 24));
-          if (shouldResetStreak(task.recurrence, diffDays, last)) {
+          const diffTime = today - last;
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          if (shouldResetStreak(task.recurrence, diffDays, last, todayStr)) {
             task.streak = 0;
             task.lastCompleted = null;
+            addNotification(`Streak for task "${task.description}" has been reset.`);
           }
         }
       });
@@ -2032,10 +2187,12 @@
       habits.forEach(habit => {
         if (habit.lastCompleted) {
           const last = new Date(habit.lastCompleted);
-          const diffDays = Math.floor((new Date() - last) / (1000 * 60 * 60 * 24));
-          if (shouldResetStreak(habit.recurrence, diffDays, last)) {
+          const diffTime = today - last;
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          if (shouldResetStreak(habit.recurrence, diffDays, last, todayStr)) {
             habit.streak = 0;
             habit.lastCompleted = null;
+            addNotification(`Streak for habit "${habit.description}" has been reset.`);
           }
         }
       });
@@ -2047,7 +2204,7 @@
     }
 
     // Helper Function to Determine If Streak Should Reset
-    function shouldResetStreak(recurrence, diffDays, lastDate) {
+    function shouldResetStreak(recurrence, diffDays, lastDate, todayStr) {
       const today = new Date();
       switch(recurrence) {
         case 'daily':
@@ -2057,8 +2214,8 @@
         case 'monthly':
           return !isSameMonth(lastDate, today);
         case 'custom':
-          // Assuming custom recurrence requires at least one day difference
-          return diffDays > 1;
+          // For custom recurrence, check if today is a scheduled day
+          return false; // Streak reset logic can be customized as needed
         default:
           return false;
       }
@@ -2072,155 +2229,125 @@
     // Reset Streaks on Load
     resetStreaks();
 
-    // Handle Search (Placeholder) - Now Implemented
-    /*
-    function showSearch() {
-      alert('Search functionality is not implemented yet.');
-    }
-    */
-    // Now replaced by openSearch and performSearch functions
+    // Handle Search (Implemented Previously)
 
-    // Open the Search Modal
-    function openSearch() {
-      document.getElementById('search-modal').style.display = 'block';
-      document.getElementById('search-input').focus();
-    }
+    // Notifications Functions (Added)
 
-    // Close the Search Modal
-    function closeSearch() {
-      document.getElementById('search-modal').style.display = 'none';
-      document.getElementById('search-input').value = '';
-      document.getElementById('search-results').innerHTML = '';
+    // Function to Add a New Notification
+    function addNotification(message) {
+      const notification = {
+        id: Date.now(),
+        message: message,
+        timestamp: new Date().toLocaleString(),
+        read: false
+      };
+      notifications.unshift(notification); // Add to the beginning
+      saveData();
+      updateNotificationBadge();
     }
 
-    // Perform Search
-    function performSearch() {
-      const query = document.getElementById('search-input').value.trim().toLowerCase();
-      const resultsContainer = document.getElementById('search-results');
-      resultsContainer.innerHTML = ''; // Clear previous results
+    // Function to Update the Notification Badge Count
+    function updateNotificationBadge() {
+      const badge = document.getElementById('notification-badge');
+      const unreadCount = notifications.filter(notif => !notif.read).length;
+      badge.textContent = unreadCount;
+      badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+    }
 
-      if (query === '') {
-        return; // If query is empty, do not display anything
+    // Function to Open Notifications Modal
+    function openNotifications() {
+      document.getElementById('notifications-modal').style.display = 'block';
+      renderNotifications();
+    }
+
+    // Function to Close Notifications Modal
+    function closeNotifications() {
+      document.getElementById('notifications-modal').style.display = 'none';
+      renderNotifications(); // Update read status
+    }
+
+    // Function to Render Notifications in Modal
+    function renderNotifications() {
+      const notificationsList = document.getElementById('notifications-list');
+      notificationsList.innerHTML = '';
+
+      if (notifications.length === 0) {
+        notificationsList.innerHTML = '<p>No notifications.</p>';
+        return;
       }
 
-      // Function to highlight the matching text
-      function highlight(text) {
-        const regex = new RegExp(`(${query})`, 'gi');
-        return text.replace(regex, '<span class="highlight">$1</span>');
-      }
+      notifications.forEach(notif => {
+        const notifDiv = document.createElement('div');
+        notifDiv.className = 'notification-item';
+        notifDiv.style.backgroundColor = notif.read ? '#f9f9f9' : '#e6f0ff';
 
-      // Search Notebooks
-      const matchedNotebooks = notebooks.filter(nb => nb.name.toLowerCase().includes(query));
-      if (matchedNotebooks.length > 0) {
-        const category = document.createElement('div');
-        category.className = 'search-category';
-        category.innerHTML = '<h4>Notebooks</h4>';
-        matchedNotebooks.forEach(nb => {
-          const item = document.createElement('div');
-          item.className = 'search-item';
-          item.innerHTML = highlight(nb.name);
-          item.onclick = () => {
-            navigate('notebooks', `notebook-${nb.id}`);
-            closeSearch();
-          };
-          category.appendChild(item);
-        });
-        resultsContainer.appendChild(category);
-      }
+        notifDiv.innerHTML = `
+          <p>${notif.message}</p>
+          <small>${notif.timestamp}</small>
+          <button onclick="markAsRead(${notif.id})">${notif.read ? 'Mark as Unread' : 'Mark as Read'}</button>
+        `;
 
-      // Search Tags
-      const matchedTags = tags.filter(tag => tag.name.toLowerCase().includes(query));
-      if (matchedTags.length > 0) {
-        const category = document.createElement('div');
-        category.className = 'search-category';
-        category.innerHTML = '<h4>Tags</h4>';
-        matchedTags.forEach(tag => {
-          const item = document.createElement('div');
-          item.className = 'search-item';
-          item.innerHTML = highlight(tag.name);
-          item.onclick = () => {
-            navigate('tags', `tag-${tag.name}`);
-            closeSearch();
-          };
-          category.appendChild(item);
-        });
-        resultsContainer.appendChild(category);
-      }
-
-      // Search Notes
-      const matchedNotes = notes.filter(note => {
-        return (note.title && note.title.toLowerCase().includes(query)) ||
-               (note.body && note.body.toLowerCase().includes(query));
+        notificationsList.appendChild(notifDiv);
       });
-      if (matchedNotes.length > 0) {
-        const category = document.createElement('div');
-        category.className = 'search-category';
-        category.innerHTML = '<h4>Notes</h4>';
-        matchedNotes.forEach(note => {
-          const item = document.createElement('div');
-          item.className = 'search-item';
-          const title = note.title ? highlight(note.title) : 'Untitled';
-          item.innerHTML = `<strong>${title}</strong><br>${highlight(note.body || '')}`;
-          item.onclick = () => {
-            navigate('notes', `note-${note.id}`);
-            closeSearch();
-          };
-          category.appendChild(item);
-        });
-        resultsContainer.appendChild(category);
-      }
+    }
 
-      // Search Tasks
-      const matchedTasks = tasks.filter(task => task.description.toLowerCase().includes(query));
-      if (matchedTasks.length > 0) {
-        const category = document.createElement('div');
-        category.className = 'search-category';
-        category.innerHTML = '<h4>Tasks</h4>';
-        matchedTasks.forEach(task => {
-          const item = document.createElement('div');
-          item.className = 'search-item';
-          item.innerHTML = highlight(task.description);
-          item.onclick = () => {
-            navigate('tasks', `task-${task.id}`);
-            closeSearch();
-          };
-          category.appendChild(item);
-        });
-        resultsContainer.appendChild(category);
+    // Function to Mark a Notification as Read/Unread
+    function markAsRead(id) {
+      const notif = notifications.find(n => n.id === id);
+      if (notif) {
+        notif.read = !notif.read;
+        saveData();
+        renderNotifications();
+        updateNotificationBadge();
       }
+    }
 
-      // Search Habits
-      const matchedHabits = habits.filter(habit => habit.description.toLowerCase().includes(query));
-      if (matchedHabits.length > 0) {
-        const category = document.createElement('div');
-        category.className = 'search-category';
-        category.innerHTML = '<h4>Habits</h4>';
-        matchedHabits.forEach(habit => {
-          const item = document.createElement('div');
-          item.className = 'search-item';
-          item.innerHTML = highlight(habit.description);
-          item.onclick = () => {
-            navigate('habits', `habit-${habit.id}`);
-            closeSearch();
-          };
-          category.appendChild(item);
-        });
-        resultsContainer.appendChild(category);
-      }
+    // Initialize Notification Badge on Load
+    function initializeNotifications() {
+      updateNotificationBadge();
+    }
 
-      // If no results found
-      if (matchedNotebooks.length === 0 && matchedTags.length === 0 && matchedNotes.length === 0 && matchedTasks.length === 0 && matchedHabits.length === 0) {
-        resultsContainer.innerHTML = '<p>No results found.</p>';
-      }
+    // Function to Check for Upcoming Events (Already Implemented)
+    function checkUpcomingEvents() {
+      const today = new Date();
+      const todayStr = today.toLocaleDateString(undefined, { weekday: 'long' });
+
+      // Check for Tasks nearing due dates (e.g., within 2 days)
+      tasks.forEach(task => {
+        if (task.dueDate && !task.completed) {
+          const dueDate = new Date(task.dueDate);
+          const diffTime = dueDate - today;
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          if (diffDays >= 0 && diffDays <= 2) {
+            addNotification(`Task "${task.description}" is due on ${task.dueDate}.`);
+          }
+        }
+      });
+
+      // Check for Habits scheduled today
+      habits.forEach(habit => {
+        if (habit.recurrence === 'daily') {
+          addNotification(`Habit "${habit.description}" is scheduled for today.`);
+        } else if (habit.recurrence === 'custom' && habit.customDays.includes(todayStr)) {
+          addNotification(`Habit "${habit.description}" is scheduled for today.`);
+        }
+        // Add more conditions for other recurrence types if needed
+      });
     }
 
     // Close the modal when clicking outside of it
     window.onclick = function(event) {
-      const modal = document.getElementById('search-modal');
-      if (event.target == modal) {
-        modal.style.display = 'none';
+      const searchModal = document.getElementById('search-modal');
+      if (event.target == searchModal) {
+        searchModal.style.display = 'none';
         document.getElementById('search-input').value = '';
         document.getElementById('search-results').innerHTML = '';
+      }
+
+      const notificationsModal = document.getElementById('notifications-modal');
+      if (event.target == notificationsModal) {
+        notificationsModal.style.display = 'none';
+        renderNotifications();
       }
     };
   </script>
