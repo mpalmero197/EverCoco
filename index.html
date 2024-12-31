@@ -402,6 +402,83 @@
         padding: 12px 15px;
       }
     }
+
+    /* Search Modal Styles */
+    .search-modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1500; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .search-modal-content {
+      background-color: var(--secondary-color);
+      margin: 10% auto; /* 10% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%; /* Could be more or less, depending on screen size */
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 12px 0 20px 0;
+      box-sizing: border-box;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    #search-results {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .search-category {
+      margin-bottom: 20px;
+    }
+
+    .search-category h4 {
+      margin-bottom: 10px;
+      color: var(--accent-color);
+    }
+
+    .search-item {
+      padding: 10px;
+      border-bottom: 1px solid #e0e0e0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .search-item:hover {
+      background-color: #f1f1f1;
+    }
+
+    .highlight {
+      background-color: yellow;
+    }
   </style>
 </head>
 <body>
@@ -413,7 +490,7 @@
       <span>NoteCoco</span>
     </div>
     <div class="header-right">
-      <i class="fas fa-search" title="Search" onclick="showSearch()"></i>
+      <i class="fas fa-search" title="Search" onclick="openSearch()"></i>
       <i class="fas fa-bell" title="Notifications" onclick="showNotifications()"></i>
       <i class="fas fa-user-circle" title="Profile" onclick="showProfile()"></i>
     </div>
@@ -683,12 +760,24 @@
     </div>
   </main>
   
+  <!-- Search Modal -->
+  <div id="search-modal" class="search-modal">
+    <div class="search-modal-content">
+      <span class="close" onclick="closeSearch()">&times;</span>
+      <h2>Search NoteCoco</h2>
+      <input type="text" id="search-input" placeholder="Type to search..." oninput="performSearch()" />
+      <div id="search-results">
+        <!-- Search results will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+  
   <!-- Notification -->
   <div class="notification" id="notification"></div>
   
   <!-- Footer -->
   <footer>
-    &copy; 2024-2025 NoteCoco. All rights reserved.
+    &copy; 2024 NoteCoco. All rights reserved.
   </footer>
   
   <!-- JavaScript -->
@@ -805,6 +894,7 @@
       notebooksList.innerHTML = '';
       notebooks.forEach(nb => {
         const card = createCard(nb.name, 'notebooks', nb.id, 'book', nb.favorite, () => toggleFavorite('notebooks', nb.id));
+        card.id = `notebook-${nb.id}`; // Assign unique ID to the card
         
         // Actions for non-Personal notebooks
         if (nb.name.toLowerCase() !== 'personal') {
@@ -832,7 +922,8 @@
       tagsList.innerHTML = '';
       tags.forEach(tag => {
         const card = createCard(tag.name, 'tags', tag.name, 'tags', tag.favorite, () => toggleFavorite('tags', tag.name));
-        
+        card.id = `tag-${tag.name}`; // Assign unique ID to the card
+
         const actions = createCardActions([
           { icon: 'edit', title: 'Rename', action: () => renameTag(tag.name) },
           { icon: 'trash', title: 'Delete', action: () => deleteTag(tag.name) }
@@ -852,6 +943,7 @@
       notesList.innerHTML = '';
       notes.forEach(note => {
         const card = createCard(note.title || 'Untitled', 'notes', note.id, 'sticky-note', note.favorite, () => toggleFavorite('notes', note.id));
+        card.id = `note-${note.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
           { icon: 'edit', title: 'Edit', action: () => editNote(note.id) },
@@ -914,6 +1006,7 @@
       tasksList.innerHTML = '';
       tasks.forEach(task => {
         const card = createCard(task.description, 'tasks', task.id, 'tasks', task.favorite, () => toggleFavorite('tasks', task.id));
+        card.id = `task-${task.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
           { icon: task.completed ? 'undo' : 'check', title: task.completed ? 'Mark as Incomplete' : 'Mark as Complete', action: () => toggleTaskCompletion(task.id) },
@@ -950,6 +1043,7 @@
       habitsList.innerHTML = '';
       habits.forEach(habit => {
         const card = createCard(habit.description, 'habits', habit.id, 'heartbeat', habit.favorite, () => toggleFavorite('habits', habit.id));
+        card.id = `habit-${habit.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
           { icon: habit.completed ? 'undo' : 'check', title: habit.completed ? 'Mark as Incomplete' : 'Mark as Complete', action: () => toggleHabitCompletion(habit.id) },
@@ -1659,6 +1753,7 @@
 
       favoriteNotebooks.forEach(nb => {
         const card = createCard(nb.name, 'notebooks', nb.id, 'book', nb.favorite, () => toggleFavorite('notebooks', nb.id));
+        card.id = `notebook-${nb.id}`; // Assign unique ID to the card
         
         // Actions for non-Personal notebooks
         if (nb.name.toLowerCase() !== 'personal') {
@@ -1693,7 +1788,8 @@
 
       favoriteTags.forEach(tag => {
         const card = createCard(tag.name, 'tags', tag.name, 'tags', tag.favorite, () => toggleFavorite('tags', tag.name));
-        
+        card.id = `tag-${tag.name}`; // Assign unique ID to the card
+
         const actions = createCardActions([
           { icon: 'edit', title: 'Rename', action: () => renameTag(tag.name) },
           { icon: 'trash', title: 'Delete', action: () => deleteTag(tag.name) }
@@ -1720,6 +1816,7 @@
 
       favoriteNotes.forEach(note => {
         const card = createCard(note.title || 'Untitled', 'notes', note.id, 'sticky-note', note.favorite, () => toggleFavorite('notes', note.id));
+        card.id = `note-${note.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
           { icon: 'edit', title: 'Edit', action: () => editNote(note.id) },
@@ -1789,6 +1886,7 @@
 
       favoriteTasks.forEach(task => {
         const card = createCard(task.description, 'tasks', task.id, 'tasks', task.favorite, () => toggleFavorite('tasks', task.id));
+        card.id = `task-${task.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
           { icon: task.completed ? 'undo' : 'check', title: task.completed ? 'Mark as Incomplete' : 'Mark as Complete', action: () => toggleTaskCompletion(task.id) },
@@ -1832,6 +1930,7 @@
 
       favoriteHabits.forEach(habit => {
         const card = createCard(habit.description, 'habits', habit.id, 'heartbeat', habit.favorite, () => toggleFavorite('habits', habit.id));
+        card.id = `habit-${habit.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
           { icon: habit.completed ? 'undo' : 'check', title: habit.completed ? 'Mark as Incomplete' : 'Mark as Complete', action: () => toggleHabitCompletion(habit.id) },
@@ -1872,8 +1971,8 @@
       }, 3000);
     }
 
-    // Navigate between sections
-    function navigate(section) {
+    // Navigate between sections and optionally scroll to an item
+    function navigate(section, itemId = null) {
       const sections = document.querySelectorAll('.kanban-column');
       sections.forEach(sec => {
         if (sec.id === section + '-section') {
@@ -1891,6 +1990,19 @@
           item.classList.remove('active');
         }
       });
+
+      if (itemId) {
+        setTimeout(() => {
+          const element = document.getElementById(itemId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.style.boxShadow = '0 0 10px 2px rgba(100, 100, 255, 0.5)';
+            setTimeout(() => {
+              element.style.boxShadow = 'none';
+            }, 2000);
+          }
+        }, 500); // Delay to ensure the section is displayed
+      }
     }
 
     // Removed Toggle Sidebar Function
@@ -1960,20 +2072,157 @@
     // Reset Streaks on Load
     resetStreaks();
 
-    // Handle Search (Placeholder)
+    // Handle Search (Placeholder) - Now Implemented
+    /*
     function showSearch() {
       alert('Search functionality is not implemented yet.');
     }
+    */
+    // Now replaced by openSearch and performSearch functions
 
-    // Handle Notifications (Placeholder)
-    function showNotifications() {
-      alert('No new notifications.');
+    // Open the Search Modal
+    function openSearch() {
+      document.getElementById('search-modal').style.display = 'block';
+      document.getElementById('search-input').focus();
     }
 
-    // Handle Profile (Placeholder)
-    function showProfile() {
-      alert('Profile settings are not available.');
+    // Close the Search Modal
+    function closeSearch() {
+      document.getElementById('search-modal').style.display = 'none';
+      document.getElementById('search-input').value = '';
+      document.getElementById('search-results').innerHTML = '';
     }
+
+    // Perform Search
+    function performSearch() {
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      const resultsContainer = document.getElementById('search-results');
+      resultsContainer.innerHTML = ''; // Clear previous results
+
+      if (query === '') {
+        return; // If query is empty, do not display anything
+      }
+
+      // Function to highlight the matching text
+      function highlight(text) {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+      }
+
+      // Search Notebooks
+      const matchedNotebooks = notebooks.filter(nb => nb.name.toLowerCase().includes(query));
+      if (matchedNotebooks.length > 0) {
+        const category = document.createElement('div');
+        category.className = 'search-category';
+        category.innerHTML = '<h4>Notebooks</h4>';
+        matchedNotebooks.forEach(nb => {
+          const item = document.createElement('div');
+          item.className = 'search-item';
+          item.innerHTML = highlight(nb.name);
+          item.onclick = () => {
+            navigate('notebooks', `notebook-${nb.id}`);
+            closeSearch();
+          };
+          category.appendChild(item);
+        });
+        resultsContainer.appendChild(category);
+      }
+
+      // Search Tags
+      const matchedTags = tags.filter(tag => tag.name.toLowerCase().includes(query));
+      if (matchedTags.length > 0) {
+        const category = document.createElement('div');
+        category.className = 'search-category';
+        category.innerHTML = '<h4>Tags</h4>';
+        matchedTags.forEach(tag => {
+          const item = document.createElement('div');
+          item.className = 'search-item';
+          item.innerHTML = highlight(tag.name);
+          item.onclick = () => {
+            navigate('tags', `tag-${tag.name}`);
+            closeSearch();
+          };
+          category.appendChild(item);
+        });
+        resultsContainer.appendChild(category);
+      }
+
+      // Search Notes
+      const matchedNotes = notes.filter(note => {
+        return (note.title && note.title.toLowerCase().includes(query)) ||
+               (note.body && note.body.toLowerCase().includes(query));
+      });
+      if (matchedNotes.length > 0) {
+        const category = document.createElement('div');
+        category.className = 'search-category';
+        category.innerHTML = '<h4>Notes</h4>';
+        matchedNotes.forEach(note => {
+          const item = document.createElement('div');
+          item.className = 'search-item';
+          const title = note.title ? highlight(note.title) : 'Untitled';
+          item.innerHTML = `<strong>${title}</strong><br>${highlight(note.body || '')}`;
+          item.onclick = () => {
+            navigate('notes', `note-${note.id}`);
+            closeSearch();
+          };
+          category.appendChild(item);
+        });
+        resultsContainer.appendChild(category);
+      }
+
+      // Search Tasks
+      const matchedTasks = tasks.filter(task => task.description.toLowerCase().includes(query));
+      if (matchedTasks.length > 0) {
+        const category = document.createElement('div');
+        category.className = 'search-category';
+        category.innerHTML = '<h4>Tasks</h4>';
+        matchedTasks.forEach(task => {
+          const item = document.createElement('div');
+          item.className = 'search-item';
+          item.innerHTML = highlight(task.description);
+          item.onclick = () => {
+            navigate('tasks', `task-${task.id}`);
+            closeSearch();
+          };
+          category.appendChild(item);
+        });
+        resultsContainer.appendChild(category);
+      }
+
+      // Search Habits
+      const matchedHabits = habits.filter(habit => habit.description.toLowerCase().includes(query));
+      if (matchedHabits.length > 0) {
+        const category = document.createElement('div');
+        category.className = 'search-category';
+        category.innerHTML = '<h4>Habits</h4>';
+        matchedHabits.forEach(habit => {
+          const item = document.createElement('div');
+          item.className = 'search-item';
+          item.innerHTML = highlight(habit.description);
+          item.onclick = () => {
+            navigate('habits', `habit-${habit.id}`);
+            closeSearch();
+          };
+          category.appendChild(item);
+        });
+        resultsContainer.appendChild(category);
+      }
+
+      // If no results found
+      if (matchedNotebooks.length === 0 && matchedTags.length === 0 && matchedNotes.length === 0 && matchedTasks.length === 0 && matchedHabits.length === 0) {
+        resultsContainer.innerHTML = '<p>No results found.</p>';
+      }
+    }
+
+    // Close the modal when clicking outside of it
+    window.onclick = function(event) {
+      const modal = document.getElementById('search-modal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+        document.getElementById('search-input').value = '';
+        document.getElementById('search-results').innerHTML = '';
+      }
+    };
   </script>
   
 </body>
