@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>NoteCoco - Habit Tracker</title>
+  <title>NoteCoco - Habit & Task Tracker</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -274,7 +274,7 @@
       text-decoration: underline;
     }
 
-    /* Completed Habit Styling */
+    /* Completed Item Styling (Habit or Task) */
     .list-item.completed {
       background-color: #d4edda; 
       border-left-color: #28a745; 
@@ -524,7 +524,7 @@
         <label><strong>Attach Files/Images:</strong></label>
         <input type="file" id="note-attachments" multiple accept="image/*,application/pdf,.doc,.docx,.txt" />
         <small style="font-size: 0.7rem;">Max 2MB. Allowed: Images, PDF, DOC, DOCX, TXT.</small>
-	<br></br>
+        <br></br>
         <label><strong>Notebook:</strong></label>
         <select id="note-notebook"></select>
 
@@ -535,9 +535,42 @@
       <!-- Tasks -->
       <section class="kanban-column">
         <h2>Tasks</h2>
-        <p>Manage tasks with due dates.</p>
+        <p>Manage tasks with due dates and recurrence.</p>
+
         <input type="text" id="task-input" placeholder="New Task..." />
         <input type="date" id="task-date-input" />
+
+        <!-- Task Recurrence Options -->
+        <div class="recurrence-options">
+          <label>
+            <input type="radio" name="taskRecurrence" value="daily" checked>
+            Daily
+          </label>
+          <label>
+            <input type="radio" name="taskRecurrence" value="weekly">
+            Weekly
+          </label>
+          <label>
+            <input type="radio" name="taskRecurrence" value="monthly">
+            Monthly
+          </label>
+          <label>
+            <input type="radio" name="taskRecurrence" value="custom">
+            Custom Days
+          </label>
+        </div>
+
+        <!-- Custom Days Checkboxes for Tasks (Hidden by Default) -->
+        <div id="task-custom-days" class="custom-days" style="display: none;">
+          <label><input type="checkbox" value="Monday"> M</label>
+          <label><input type="checkbox" value="Tuesday"> T</label>
+          <label><input type="checkbox" value="Wednesday"> W</label>
+          <label><input type="checkbox" value="Thursday"> T</label>
+          <label><input type="checkbox" value="Friday"> F</label>
+          <label><input type="checkbox" value="Saturday"> S</label>
+          <label><input type="checkbox" value="Sunday"> S</label>
+        </div>
+
         <button class="btn" onclick="addTask()">Add Task</button>
         <ul id="tasks-list"></ul>
       </section>
@@ -590,7 +623,6 @@
     <p>&copy; 2024 NoteCoco. All rights reserved.</p>
   </footer>
 
-  <!-- Below is the existing script logic, unchanged -->
   <script>
     let notebooks = [];
     let notes = [];
@@ -612,7 +644,8 @@
       if (savedTags) allTags = JSON.parse(savedTags);
 
       ensurePersonalNotebook();
-      resetStreaksIfNeeded();
+      resetHabitsStreaksIfNeeded();
+      resetTasksStreaksIfNeeded();  // Enhanced to respect recurrence
 
       displayTags();
       displayNotebooks();
@@ -623,7 +656,7 @@
 
       renderTagCheckboxes('create-tags-multi');
 
-      // Toggle Custom Days Checkboxes based on selected recurrence
+      // Toggle Custom Days Checkboxes for Habits
       document.querySelectorAll('input[name="recurrence"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
           const customDaysDiv = document.getElementById('custom-days');
@@ -635,8 +668,22 @@
           }
         });
       });
+
+      // Toggle Custom Days Checkboxes for Tasks
+      document.querySelectorAll('input[name="taskRecurrence"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          const taskCustomDaysDiv = document.getElementById('task-custom-days');
+          if (e.target.value === 'custom') {
+            taskCustomDaysDiv.style.display = 'flex';
+          } else {
+            taskCustomDaysDiv.style.display = 'none';
+            taskCustomDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+          }
+        });
+      });
     });
 
+    /* Utility Functions */
     function ensurePersonalNotebook() {
       const personal = notebooks.some(nb => nb.name === 'Personal');
       if (!personal) {
@@ -651,6 +698,14 @@
       localStorage.setItem('cocoTasks', JSON.stringify(tasks));
       localStorage.setItem('cocoHabits', JSON.stringify(habits));
       localStorage.setItem('cocoAllTags', JSON.stringify(allTags));
+    }
+
+    function isSameMonth(d1, d2) {
+      return d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
+    }
+
+    function getCurrentDay() {
+      return new Date().toLocaleString('en-US', { weekday: 'long' });
     }
 
     /* TAG MANAGER */
@@ -1342,14 +1397,42 @@
       const dInput = document.getElementById('task-date-input');
       const txt = tInput.value.trim();
       const due = dInput.value;
+
+      const selectedRecurrence = document.querySelector('input[name="taskRecurrence"]:checked').value;
+      let customDays = [];
+      if (selectedRecurrence === 'custom') {
+        const selectedDays = Array.from(document.querySelectorAll('#task-custom-days input[type="checkbox"]:checked'));
+        if (selectedDays.length === 0) {
+          alert('Please select at least one day for custom recurrence.');
+          return;
+        }
+        customDays = selectedDays.map(cb => cb.value);
+      }
+
       if (txt) {
-        tasks.push({ id: Date.now(), text: txt, dueDate: due });
+        tasks.push({
+          id: Date.now(), 
+          text: txt, 
+          dueDate: due,
+          streak: 0,
+          lastCompleted: null,
+          recurrence: selectedRecurrence,
+          customDays: customDays
+        });
         tInput.value = '';
         dInput.value = '';
+        clearTaskRecurrenceOptions(); // reset the radio button to daily
         saveToLocalStorage();
         displayTasks();
         displaySidebar();
       }
+    }
+
+    function clearTaskRecurrenceOptions() {
+      document.querySelector('input[name="taskRecurrence"][value="daily"]').checked = true;
+      const taskCustomDaysDiv = document.getElementById('task-custom-days');
+      taskCustomDaysDiv.style.display = 'none';
+      taskCustomDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
     }
 
     function displayTasks() {
@@ -1359,6 +1442,9 @@
       tasks.forEach(task => {
         const li = document.createElement('li');
         li.className = 'list-item';
+        if (task.lastCompleted === new Date().toDateString()) {
+          li.classList.add('completed');
+        }
         li.setAttribute('data-id', task.id);
 
         const headerDiv = document.createElement('div');
@@ -1371,6 +1457,15 @@
         span.textContent = disp;
         headerDiv.appendChild(span);
 
+        const completeBtn = document.createElement('button');
+        completeBtn.textContent = 'Mark as Completed';
+        completeBtn.className = 'complete-btn';
+        completeBtn.onclick = (e) => {
+          e.stopPropagation();
+          markTaskAsCompleted(task.id);
+        };
+        headerDiv.appendChild(completeBtn);
+
         const xBtn = document.createElement('button');
         xBtn.textContent = 'x';
         xBtn.className = 'inline-delete-btn';
@@ -1382,6 +1477,19 @@
         headerDiv.appendChild(xBtn);
 
         li.appendChild(headerDiv);
+
+        // Show streak info
+        const streakDiv = document.createElement('div');
+        streakDiv.className = 'streak-info';
+        streakDiv.textContent = `Streak: ${task.streak} day(s)`;
+        li.appendChild(streakDiv);
+
+        if (task.lastCompleted) {
+          const lastCompDiv = document.createElement('div');
+          lastCompDiv.className = 'streak-info';
+          lastCompDiv.textContent = `Last Completed: ${task.lastCompleted}`;
+          li.appendChild(lastCompDiv);
+        }
 
         li.ondblclick = () => enterEditModeTask(task.id);
         li.onclick = () => enterEditModeTask(task.id);
@@ -1434,6 +1542,64 @@
       dueInput.className = 'details';
       li.appendChild(dueInput);
 
+      // Recurrence radio group
+      const recurrenceDiv = document.createElement('div');
+      recurrenceDiv.className = 'recurrence-options';
+
+      const recurrenceOptions = ['daily', 'weekly', 'monthly', 'custom'];
+      const labels = ['Daily', 'Weekly', 'Monthly', 'Custom Days'];
+
+      recurrenceOptions.forEach((option, index) => {
+        const label = document.createElement('label');
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = `task-recurrence-${id}`;
+        radio.value = option;
+        radio.checked = (task.recurrence === option);
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(labels[index]));
+        recurrenceDiv.appendChild(label);
+      });
+
+      li.appendChild(recurrenceDiv);
+
+      // Custom Days checkboxes
+      const customDaysDiv = document.createElement('div');
+      customDaysDiv.className = 'custom-days';
+      if (task.recurrence === 'custom') {
+        customDaysDiv.style.display = 'flex';
+      } else {
+        customDaysDiv.style.display = 'none';
+      }
+
+      const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      daysOfWeek.forEach(day => {
+        const dayLabel = document.createElement('label');
+        const dayCheckbox = document.createElement('input');
+        dayCheckbox.type = 'checkbox';
+        dayCheckbox.value = day;
+        if (task.customDays.includes(day)) {
+          dayCheckbox.checked = true;
+        }
+        dayLabel.appendChild(dayCheckbox);
+        dayLabel.appendChild(document.createTextNode(day.charAt(0)));
+        customDaysDiv.appendChild(dayLabel);
+      });
+
+      li.appendChild(customDaysDiv);
+
+      // Toggle logic
+      recurrenceDiv.querySelectorAll(`input[name="task-recurrence-${id}"]`).forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          if (e.target.value === 'custom') {
+            customDaysDiv.style.display = 'flex';
+          } else {
+            customDaysDiv.style.display = 'none';
+            customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+          }
+        });
+      });
+
       const confirmB = document.createElement('button');
       confirmB.textContent = '✔';
       confirmB.className = 'btn';
@@ -1441,6 +1607,21 @@
         e.stopPropagation();
         task.text = inp.value.trim() || task.text;
         task.dueDate = dueInput.value;
+
+        // get selected recurrence
+        const selectedRecurrence = li.querySelector(`input[name="task-recurrence-${id}"]:checked`).value;
+        task.recurrence = selectedRecurrence;
+        if (selectedRecurrence === 'custom') {
+          const selectedDays = Array.from(customDaysDiv.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+          if (selectedDays.length === 0) {
+            alert('Please select at least one day for custom recurrence.');
+            return;
+          }
+          task.customDays = selectedDays;
+        } else {
+          task.customDays = [];
+        }
+
         saveToLocalStorage();
         displayTasks();
         displaySidebar();
@@ -1456,6 +1637,124 @@
         displaySidebar();
       };
       li.appendChild(cancelB);
+    }
+
+    function markTaskAsCompleted(taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const today = new Date();
+      const todayStr = today.toDateString();
+      const currentDay = today.toLocaleString('en-US', { weekday: 'long' });
+
+      // If "custom" recurrence but today is not one of the custom days
+      if (task.recurrence === 'custom' && !task.customDays.includes(currentDay)) {
+        alert(`Today (${currentDay}) is not one of the selected custom days for this task.`);
+        return;
+      }
+
+      if (task.lastCompleted === todayStr) {
+        alert('You have already completed this task today.');
+        return;
+      }
+
+      let shouldIncrement = false;
+      if (task.lastCompleted) {
+        const lastDate = new Date(task.lastCompleted);
+        const diffTime = today - lastDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (task.recurrence === 'daily') {
+          shouldIncrement = (diffDays === 1);
+        } else if (task.recurrence === 'weekly') {
+          shouldIncrement = (diffDays === 7);
+        } else if (task.recurrence === 'monthly') {
+          shouldIncrement = (!isSameMonth(lastDate, today) && diffDays <= 31);
+        } else if (task.recurrence === 'custom') {
+          // We already confirmed currentDay is valid for this custom recurrence.
+          // Let's see if we just did it the last scheduled day:
+          const lastDay = lastDate.toLocaleString('en-US', { weekday: 'long' });
+          const lastScheduledIndex = task.customDays.indexOf(lastDay);
+          if (lastScheduledIndex !== -1) {
+            const nextScheduledIndex = (lastScheduledIndex + 1) % task.customDays.length;
+            const expectedNextDay = task.customDays[nextScheduledIndex];
+            shouldIncrement = (currentDay === expectedNextDay);
+          } else {
+            // If the last completed day is not in the customDays, reset streak
+            shouldIncrement = false;
+          }
+        }
+      } else {
+        // First time completing
+        shouldIncrement = true;
+      }
+
+      if (shouldIncrement) {
+        task.streak += 1;
+      } else {
+        task.streak = 1;
+      }
+
+      task.lastCompleted = todayStr;
+      saveToLocalStorage();
+      displayTasks();
+      displaySidebar();
+
+      alert(`Good job! You've completed "${task.text}". Current streak: ${task.streak} day(s).`);
+    }
+
+    // Enhanced to handle daily, weekly, monthly, or custom logic
+    function resetTasksStreaksIfNeeded() {
+      const today = new Date();
+      const currentDay = getCurrentDay();
+
+      tasks.forEach(task => {
+        if (task.lastCompleted) {
+          const lastDate = new Date(task.lastCompleted);
+          const diffTime = today - lastDate;
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+          let shouldReset = false;
+
+          if (task.recurrence === 'daily') {
+            if (diffDays > 1) {
+              shouldReset = true;
+            }
+          } else if (task.recurrence === 'weekly') {
+            if (diffDays > 7) {
+              shouldReset = true;
+            }
+          } else if (task.recurrence === 'monthly') {
+            if (!isSameMonth(lastDate, today)) {
+              shouldReset = true;
+            }
+          } else if (task.recurrence === 'custom') {
+            const lastDay = lastDate.toLocaleString('en-US', { weekday: 'long' });
+            const lastScheduledIndex = task.customDays.indexOf(lastDay);
+            if (lastScheduledIndex === -1) {
+              // The last completed day is no longer valid for custom days
+              shouldReset = true;
+            } else {
+              // Next scheduled day
+              const nextScheduledIndex = (lastScheduledIndex + 1) % task.customDays.length;
+              const expectedNextDay = task.customDays[nextScheduledIndex];
+              if (currentDay !== expectedNextDay && diffDays > 0) {
+                // If the current day is not the next scheduled day 
+                // and we've passed at least one day, reset
+                shouldReset = true;
+              }
+            }
+          }
+
+          if (shouldReset && task.streak > 0) {
+            task.streak = 0;
+          }
+        }
+      });
+
+      saveToLocalStorage();
+      displayTasks();
+      displaySidebar();
     }
 
     /* HABITS */
@@ -1503,8 +1802,6 @@
     function displayHabits() {
       const list = document.getElementById('habits-list');
       list.innerHTML = '';
-
-      const currentDay = getCurrentDay();
 
       habits.forEach(habit => {
         const li = document.createElement('li');
@@ -1736,6 +2033,7 @@
           }
         }
       } else {
+        // First time completing
         shouldIncrement = true;
       }
 
@@ -1746,7 +2044,6 @@
       }
 
       habit.lastCompleted = todayStr;
-
       saveToLocalStorage();
       displayHabits();
       displaySidebar();
@@ -1754,15 +2051,7 @@
       alert(`Good job! You've completed "${habit.text}". Current streak: ${habit.streak} day(s).`);
     }
 
-    function isSameMonth(d1, d2) {
-      return d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
-    }
-
-    function getCurrentDay() {
-      return new Date().toLocaleString('en-US', { weekday: 'long' });
-    }
-
-    function resetStreaksIfNeeded() {
+    function resetHabitsStreaksIfNeeded() {
       const today = new Date();
       const currentDay = getCurrentDay();
 
@@ -1823,6 +2112,7 @@
       tkUL.innerHTML = '';
       hbUL.innerHTML = '';
 
+      // Notebooks
       notebooks.forEach(nb => {
         const li = document.createElement('li');
         li.className = 'list-item';
@@ -1863,6 +2153,7 @@
         nbUL.appendChild(li);
       });
 
+      // Notes
       notes.forEach(n => {
         const li = document.createElement('li');
         li.className = 'list-item';
@@ -1894,6 +2185,7 @@
         ntUL.appendChild(li);
       });
 
+      // Tasks
       tasks.forEach(t => {
         const li = document.createElement('li');
         li.className = 'list-item';
@@ -1921,12 +2213,26 @@
 
         li.appendChild(headerDiv);
 
+        // Streak info
+        const streakDiv = document.createElement('div');
+        streakDiv.className = 'streak-info';
+        streakDiv.textContent = `Streak: ${t.streak} day(s)`;
+        li.appendChild(streakDiv);
+
+        if (t.lastCompleted) {
+          const lastCompDiv = document.createElement('div');
+          lastCompDiv.className = 'streak-info';
+          lastCompDiv.textContent = `Last Completed: ${t.lastCompleted}`;
+          li.appendChild(lastCompDiv);
+        }
+
         li.ondblclick = () => enterEditModeTask(t.id);
         li.onclick = () => enterEditModeTask(t.id);
 
         tkUL.appendChild(li);
       });
 
+      // Habits
       habits.forEach(h => {
         const li = document.createElement('li');
         li.className = 'list-item';
