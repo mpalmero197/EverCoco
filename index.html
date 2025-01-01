@@ -2229,7 +2229,137 @@
     // Reset Streaks on Load
     resetStreaks();
 
-    // Handle Search (Implemented Previously)
+    // Handle Search
+
+    // Function to Open the Search Modal
+    function openSearch() {
+      document.getElementById('search-modal').style.display = 'block';
+      document.getElementById('search-input').focus(); // Focus on the search input
+    }
+
+    // Function to Close the Search Modal
+    function closeSearch() {
+      document.getElementById('search-modal').style.display = 'none';
+      document.getElementById('search-input').value = ''; // Clear search input
+      document.getElementById('search-results').innerHTML = ''; // Clear previous results
+    }
+
+    // Function to Perform Search
+    function performSearch() {
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      const resultsContainer = document.getElementById('search-results');
+      resultsContainer.innerHTML = ''; // Clear previous results
+
+      if (query === '') {
+        resultsContainer.innerHTML = '<p>Please enter a search term.</p>';
+        return;
+      }
+
+      // Helper function to highlight search terms
+      function highlight(text) {
+        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+      }
+
+      // Helper function to escape RegExp special characters
+      function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+
+      // Search Notebooks
+      const matchedNotebooks = notebooks.filter(nb => nb.name.toLowerCase().includes(query));
+      if (matchedNotebooks.length > 0) {
+        const section = document.createElement('div');
+        section.className = 'search-category';
+        section.innerHTML = `<h4>Notebooks</h4>`;
+        matchedNotebooks.forEach(nb => {
+          const item = document.createElement('div');
+          item.className = 'search-item';
+          item.innerHTML = highlight(nb.name);
+          item.onclick = () => navigate('notebooks', `notebook-${nb.id}`);
+          section.appendChild(item);
+        });
+        resultsContainer.appendChild(section);
+      }
+
+      // Search Tags
+      const matchedTags = tags.filter(tag => tag.name.toLowerCase().includes(query));
+      if (matchedTags.length > 0) {
+        const section = document.createElement('div');
+        section.className = 'search-category';
+        section.innerHTML = `<h4>Tags</h4>`;
+        matchedTags.forEach(tag => {
+          const item = document.createElement('div');
+          item.className = 'search-item';
+          item.innerHTML = highlight(tag.name);
+          item.onclick = () => navigate('tags', `tag-${tag.name}`);
+          section.appendChild(item);
+        });
+        resultsContainer.appendChild(section);
+      }
+
+      // Search Notes
+      const matchedNotes = notes.filter(note => 
+        (note.title && note.title.toLowerCase().includes(query)) ||
+        (note.body && note.body.toLowerCase().includes(query))
+      );
+      if (matchedNotes.length > 0) {
+        const section = document.createElement('div');
+        section.className = 'search-category';
+        section.innerHTML = `<h4>Notes</h4>`;
+        matchedNotes.forEach(note => {
+          const item = document.createElement('div');
+          item.className = 'search-item';
+          item.innerHTML = highlight(note.title || 'Untitled');
+          item.onclick = () => navigate('notes', `note-${note.id}`);
+          section.appendChild(item);
+        });
+        resultsContainer.appendChild(section);
+      }
+
+      // Search Tasks
+      const matchedTasks = tasks.filter(task => task.description.toLowerCase().includes(query));
+      if (matchedTasks.length > 0) {
+        const section = document.createElement('div');
+        section.className = 'search-category';
+        section.innerHTML = `<h4>Tasks</h4>`;
+        matchedTasks.forEach(task => {
+          const item = document.createElement('div');
+          item.className = 'search-item';
+          item.innerHTML = highlight(task.description);
+          item.onclick = () => navigate('tasks', `task-${task.id}`);
+          section.appendChild(item);
+        });
+        resultsContainer.appendChild(section);
+      }
+
+      // Search Habits
+      const matchedHabits = habits.filter(habit => habit.description.toLowerCase().includes(query));
+      if (matchedHabits.length > 0) {
+        const section = document.createElement('div');
+        section.className = 'search-category';
+        section.innerHTML = `<h4>Habits</h4>`;
+        matchedHabits.forEach(habit => {
+          const item = document.createElement('div');
+          item.className = 'search-item';
+          item.innerHTML = highlight(habit.description);
+          item.onclick = () => navigate('habits', `habit-${habit.id}`);
+          section.appendChild(item);
+        });
+        resultsContainer.appendChild(section);
+      }
+
+      // If no results found
+      if (
+        matchedNotebooks.length === 0 &&
+        matchedTags.length === 0 &&
+        matchedNotes.length === 0 &&
+        matchedTasks.length === 0 &&
+        matchedHabits.length === 0
+      ) {
+        resultsContainer.innerHTML = '<p>No results found.</p>';
+      }
+    }
 
     // Notifications Functions (Added)
 
