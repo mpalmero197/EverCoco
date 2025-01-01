@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>NoteCoco - Dark Mode</title>
+  <title>NoteCoco - Your Personal Organizer</title>
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -299,6 +299,9 @@
 
     textarea {
       resize: vertical;
+      min-height: 200px; /* Minimum height as per requirement */
+      height: auto;
+      overflow: auto;
     }
 
     label {
@@ -306,18 +309,51 @@
       color: var(--text-color);
     }
 
+    .multi-select {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px; /* Space between tags */
+      margin-top: 6px;
+      margin-bottom: 12px;
+    }
+
+    /* Individual Tag Labels */
     .multi-select label {
+      background-color: #2a2a2a;
+      border: 1px solid #555;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
       display: flex;
       align-items: center;
-      margin-top: 6px;
-      font-weight: normal;
-      color: #ccc;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .multi-select label:hover {
+      background-color: #3a3a3a;
+      border-color: #777;
     }
 
     .multi-select label input {
-      margin-right: 8px;
+      margin-right: 6px;
+      cursor: pointer;
     }
 
+    /* New Tags Input */
+    #note-new-tags,
+    #edit-note-new-tags {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 10px;
+      border: 1px solid #555;
+      border-radius: 4px;
+      background-color: #2a2a2a;
+      color: var(--text-color);
+      font-size: 0.95rem;
+    }
+
+    /* Recurrence Options */
     .recurrence-options label {
       display: inline-block;
       margin-right: 15px;
@@ -3157,7 +3193,7 @@
         editHabitModal.style.display = 'none';
       }
     };
-
+    
   </script>
 </body>
 </html>
