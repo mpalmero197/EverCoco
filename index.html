@@ -1258,6 +1258,23 @@
       return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
     }
 
+    // UUID Generator Function (RFC4122 version 4 compliant)
+    function generateUUID() { // Public Domain/MIT
+      var d = new Date().getTime();//Timestamp
+      var d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16;//random number between 0 and 16
+          if(d > 0){
+              r = (d + r)%16 | 0;
+              d = Math.floor(d/16);
+          } else {
+              r = (d2 + r)%16 | 0;
+              d2 = Math.floor(d2/16);
+          }
+          return (c==='x' ? r : (r&0x3|0x8)).toString(16);
+      });
+    }
+
     // Data Structures
     let notebooks = [];
     let tags = [];
@@ -1342,10 +1359,10 @@
       // Ensure tags are objects with 'id', 'name', and 'favorite'
       tags = tags.map(tag => {
         if (typeof tag === 'string') {
-          return { id: Date.now() + Math.random(), name: tag, favorite: false }; // Assign unique 'id'
+          return { id: generateUUID(), name: tag, favorite: false }; // Assign unique 'id'
         }
         if (!tag.id) {
-          tag.id = Date.now() + Math.random(); // Assign unique 'id' if missing
+          tag.id = generateUUID(); // Assign unique 'id' if missing
         }
         if (tag.favorite === undefined) tag.favorite = false;
         return tag;
@@ -1353,7 +1370,6 @@
 
       // Initialize 'favorite' if undefined for other entities
       notebooks.forEach(nb => { if (nb.favorite === undefined) nb.favorite = false; });
-      tags.forEach(tag => { if (tag.favorite === undefined) tag.favorite = false; });
       notes.forEach(note => { if (note.favorite === undefined) note.favorite = false; });
       tasks.forEach(task => { if (task.favorite === undefined) task.favorite = false; });
       habits.forEach(habit => { if (habit.favorite === undefined) habit.favorite = false; });
@@ -1382,7 +1398,7 @@
     function ensurePersonalNotebook() {
       const personalExists = notebooks.some(nb => nb.name.toLowerCase() === 'personal');
       if (!personalExists) {
-        notebooks.push({ id: Date.now(), name: 'Personal', favorite: false });
+        notebooks.push({ id: generateUUID(), name: 'Personal', favorite: false });
         saveData();
       }
     }
@@ -1782,7 +1798,7 @@
         showNotification('Notebook with this name already exists.', 'error');
         return;
       }
-      notebooks.push({ id: Date.now(), name, favorite: false });
+      notebooks.push({ id: generateUUID(), name, favorite: false });
       input.value = '';
       saveData();
       populateNotebookSelect();
@@ -1877,7 +1893,7 @@
     // Handle Edit Notebook Form Submission
     document.getElementById('edit-notebook-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      const id = parseInt(this.getAttribute('data-id'));
+      const id = this.getAttribute('data-id');
       const newName = document.getElementById('edit-notebook-name').value.trim();
       if (!newName) {
         showNotification('Notebook name cannot be empty.', 'error');
@@ -1920,7 +1936,7 @@
     // Handle Edit Tag Form Submission
     document.getElementById('edit-tag-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      const id = parseFloat(this.getAttribute('data-id'));
+      const id = this.getAttribute('data-id');
       const newName = document.getElementById('edit-tag-name').value.trim();
       if (!newName) {
         showNotification('Tag name cannot be empty.', 'error');
@@ -1937,7 +1953,7 @@
       // Update tag name in notes
       notes = notes.map(note => {
         if (note.tags.includes(tag.name)) {
-          return { ...note, tags: note.tags.map(t => t === oldName ? newName : t) };
+          return { ...note, tags: note.tags.map(t => t === tag.name ? newName : t) };
         }
         return note;
       });
@@ -1994,7 +2010,7 @@
     // Handle Edit Note Form Submission
     document.getElementById('edit-note-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      const id = parseInt(this.getAttribute('data-id'));
+      const id = this.getAttribute('data-id');
       const title = document.getElementById('edit-note-title').value.trim();
       const body = document.getElementById('edit-note-body').value.trim();
       const tagsContainer = document.getElementById('edit-note-tags');
@@ -2010,7 +2026,7 @@
       // Add new tags to tags list
       newTags.forEach(tag => {
         if (!tags.some(t => t.name.toLowerCase() === tag.toLowerCase())) {
-          tags.push({ id: Date.now() + Math.random(), name: tag, favorite: false });
+          tags.push({ id: generateUUID(), name: tag, favorite: false });
         }
       });
 
@@ -2112,7 +2128,7 @@
     // Handle Edit Task Form Submission
     document.getElementById('edit-task-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      const id = parseInt(this.getAttribute('data-id'));
+      const id = this.getAttribute('data-id');
       const description = document.getElementById('edit-task-description').value.trim();
       const dueDate = document.getElementById('edit-task-due-date').value;
       const recurrenceRadios = document.getElementsByName('edit-task-recurrence');
@@ -2191,7 +2207,7 @@
     // Handle Edit Habit Form Submission
     document.getElementById('edit-habit-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      const id = parseInt(this.getAttribute('data-id'));
+      const id = this.getAttribute('data-id');
       const description = document.getElementById('edit-habit-description').value.trim();
       const recurrenceRadios = document.getElementsByName('edit-habit-recurrence');
       let recurrence = 'none';
@@ -2242,7 +2258,7 @@
         showNotification('Tag already exists.', 'error');
         return;
       }
-      tags.push({ id: Date.now() + Math.random(), name, favorite: false }); // Assign unique 'id'
+      tags.push({ id: generateUUID(), name, favorite: false }); // Assign unique 'id'
       input.value = '';
       saveData();
       populateTagSelectors();
@@ -2294,7 +2310,7 @@
       // Add new tags to tags list
       newTags.forEach(tag => {
         if (!tags.some(t => t.name.toLowerCase() === tag.toLowerCase())) {
-          tags.push({ id: Date.now() + Math.random(), name: tag, favorite: false });
+          tags.push({ id: generateUUID(), name: tag, favorite: false });
         }
       });
 
@@ -2337,7 +2353,7 @@
 
       function finalizeAddNote() {
         const note = {
-          id: Date.now(),
+          id: generateUUID(),
           title,
           body,
           tags: allNoteTags,
@@ -2412,7 +2428,7 @@
       }
 
       const task = {
-        id: Date.now(),
+        id: generateUUID(),
         description,
         dueDate,
         recurrence,
@@ -2515,7 +2531,7 @@
       }
 
       const habit = {
-        id: Date.now(),
+        id: generateUUID(),
         description,
         recurrence,
         customDays,
@@ -3167,7 +3183,7 @@
     // Function to Add a New Notification
     function addNotification(message) {
       const notification = {
-        id: Date.now(),
+        id: generateUUID(),
         message: message,
         timestamp: new Date().toLocaleString(),
         read: false
@@ -3215,7 +3231,7 @@
         notifDiv.innerHTML = `
           <p>${notif.message}</p>
           <small>${notif.timestamp}</small>
-          <button onclick="markAsRead(${notif.id})">${notif.read ? 'Mark as Unread' : 'Mark as Read'}</button>
+          <button onclick="markAsRead('${notif.id}')">${notif.read ? 'Mark as Unread' : 'Mark as Read'}</button>
         `;
 
         notificationsList.appendChild(notifDiv);
