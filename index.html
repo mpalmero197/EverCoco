@@ -1384,16 +1384,21 @@
 
     // Save Data to localStorage
     function saveData() {
-      localStorage.setItem('notecoco_notebooks', JSON.stringify(notebooks));
-      localStorage.setItem('notecoco_tags', JSON.stringify(tags));
-      localStorage.setItem('notecoco_notes', JSON.stringify(notes));
-      localStorage.setItem('notecoco_tasks', JSON.stringify(tasks));
-      localStorage.setItem('notecoco_habits', JSON.stringify(habits));
-      localStorage.setItem('notecoco_notifications', JSON.stringify(notifications)); // Save notifications
-      localStorage.setItem('notecoco_trashedNotes', JSON.stringify(trashedNotes)); // Save trashed notes
-      localStorage.setItem('notecoco_scratchpad', scratchpadContent); // Save scratchpad
+      try {
+        localStorage.setItem('notecoco_notebooks', JSON.stringify(notebooks));
+        localStorage.setItem('notecoco_tags', JSON.stringify(tags));
+        localStorage.setItem('notecoco_notes', JSON.stringify(notes));
+        localStorage.setItem('notecoco_tasks', JSON.stringify(tasks));
+        localStorage.setItem('notecoco_habits', JSON.stringify(habits));
+        localStorage.setItem('notecoco_notifications', JSON.stringify(notifications)); // Save notifications
+        localStorage.setItem('notecoco_trashedNotes', JSON.stringify(trashedNotes)); // Save trashed notes
+        localStorage.setItem('notecoco_scratchpad', scratchpadContent); // Save scratchpad
 
-      console.log('Data Saved:', { notebooks, tags, notes, tasks, habits, notifications, trashedNotes, scratchpadContent });
+        console.log('Data Saved:', { notebooks, tags, notes, tasks, habits, notifications, trashedNotes, scratchpadContent });
+      } catch (e) {
+        console.error('Error saving data to localStorage:', e);
+        showNotification('Error saving data. Please ensure your browser supports localStorage and has sufficient space.', 'error');
+      }
     }
 
     // Ensure "Personal" Notebook Exists
@@ -2921,7 +2926,7 @@
       });
     }
 
-    // Render Sidebar (Summary)
+    // Function to Render Sidebar (Summary)
     function renderSidebar() {
       // Placeholder for additional sidebar summaries if needed
     }
@@ -3390,30 +3395,6 @@
       }
     }
 
-    // Function to Add a New Notification
-    // (Already implemented above as addNotification)
-
-    // Function to Update the Notification Badge Count
-    // (Already implemented above as updateNotificationBadge)
-
-    // Function to Open Notifications Modal
-    // (Already implemented above as openNotifications)
-
-    // Function to Close Notifications Modal
-    // (Already implemented above as closeNotifications)
-
-    // Function to Render Notifications in Modal
-    // (Already implemented above as renderNotifications)
-
-    // Function to Mark a Notification as Read/Unread
-    // (Already implemented above as markAsRead)
-
-    // Initialize Notification Badge on Load
-    // (Already implemented above as initializeNotifications)
-
-    // Function to Check for Upcoming Events
-    // (Already implemented above as checkUpcomingEvents)
-
     // Close the modal when clicking outside of it
     window.onclick = function(event) {
       const searchModal = document.getElementById('search-modal');
@@ -3455,25 +3436,7 @@
       }
     };
 
-    // Render Functions Continued...
-
-    // Function to Render Sidebar (Summary)
-    function renderSidebar() {
-      // Placeholder for additional sidebar summaries if needed
-    }
-
-    // Show Notification
-    function showNotification(message, type) {
-      const notif = document.getElementById('notification');
-      notif.textContent = message;
-      notif.className = 'notification ' + (type === 'error' ? 'error' : 'success');
-      notif.classList.add('show');
-      setTimeout(() => {
-        notif.classList.remove('show');
-      }, 3000);
-    }
-
-    // Function to Navigate to Profile (Placeholder)
+    // Function to Show Profile (Placeholder)
     function showProfile() {
       showNotification('Profile feature is under development.', 'error');
     }
