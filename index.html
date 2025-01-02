@@ -280,6 +280,41 @@
       text-decoration: underline;
     }
 
+    /* Scratchpad Section Styles */
+    .scratchpad-section {
+      margin-bottom: 30px;
+    }
+
+    .scratchpad-section h4 {
+      display: flex;
+      align-items: center;
+      font-size: 1.1rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .scratchpad-section h4 i {
+      margin-right: 8px;
+    }
+
+    #scratchpad {
+      width: 100%;
+      height: 200px; /* Fixed height */
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: none;
+      font-size: 0.95rem;
+      background-color: #ffffff;
+      color: var(--text-color);
+      box-sizing: border-box;
+    }
+
+    .scratchpad-section button {
+      margin-top: 10px;
+      align-self: flex-end;
+    }
+
     /* Form Elements */
     input[type="text"],
     textarea,
@@ -879,6 +914,13 @@
         <h3><i class="fas fa-tachometer-alt"></i> Dashboard</h3>
         <p>Welcome to NoteCoco! Manage your notes, tasks, and habits efficiently.</p>
         
+        <!-- Scratchpad Section -->
+        <div class="scratchpad-section">
+          <h4><i class="fas fa-pencil-alt"></i> Scratchpad</h4>
+          <textarea id="scratchpad" placeholder="Quick notes..."></textarea>
+          <button class="btn" onclick="saveScratchpad()">Save</button>
+        </div>
+        
         <!-- Favorites Section on Dashboard -->
         <div class="favorites-section">
           <h4><i class="fas fa-star"></i> Favorites</h4>
@@ -1248,6 +1290,7 @@
     let habits = [];
     let notifications = []; // New array for notifications
     let trashedNotes = []; // New array for trashed notes
+    let scratchpadContent = ''; // New variable for scratchpad
 
     // Initialize Application
     window.onload = function() {
@@ -1255,6 +1298,7 @@
       ensurePersonalNotebook();
       populateNotebookSelect();
       populateTagSelectors();
+      loadScratchpad();
       renderAll();
       resetStreaks();
       initializeNotifications(); // Initialize notification badge
@@ -1312,6 +1356,13 @@
         trashedNotes = [];
       }
 
+      try {
+        scratchpadContent = localStorage.getItem('notecoco_scratchpad') || '';
+      } catch (e) {
+        console.error('Error loading scratchpad:', e);
+        scratchpadContent = '';
+      }
+
       // Ensure tags are objects with 'id', 'name', and 'favorite'
       tags = tags.map(tag => {
         if (typeof tag === 'string') {
@@ -1341,8 +1392,9 @@
       localStorage.setItem('notecoco_habits', JSON.stringify(habits));
       localStorage.setItem('notecoco_notifications', JSON.stringify(notifications)); // Save notifications
       localStorage.setItem('notecoco_trashedNotes', JSON.stringify(trashedNotes)); // Save trashed notes
+      localStorage.setItem('notecoco_scratchpad', scratchpadContent); // Save scratchpad
       
-      console.log('Data Saved:', { notebooks, tags, notes, tasks, habits, notifications, trashedNotes });
+      console.log('Data Saved:', { notebooks, tags, notes, tasks, habits, notifications, trashedNotes, scratchpadContent });
     }
 
     // Ensure "Personal" Notebook Exists
@@ -1383,6 +1435,21 @@
           container.appendChild(label);
         });
       });
+    }
+
+    // Load Scratchpad Content
+    function loadScratchpad() {
+      const scratchpad = document.getElementById('scratchpad');
+      scratchpad.value = scratchpadContent;
+    }
+
+    // Save Scratchpad Content
+    function saveScratchpad() {
+      const scratchpad = document.getElementById('scratchpad');
+      scratchpadContent = scratchpad.value;
+      saveData();
+      showNotification('Scratchpad saved successfully.', 'success');
+      addNotification('Scratchpad was updated.');
     }
 
     // Render All Sections
