@@ -1263,13 +1263,54 @@
 
     // Load Data from localStorage
     function loadData() {
-      notebooks = JSON.parse(localStorage.getItem('notecoco_notebooks')) || [];
-      tags = JSON.parse(localStorage.getItem('notecoco_tags')) || [];
-      notes = JSON.parse(localStorage.getItem('notecoco_notes')) || [];
-      tasks = JSON.parse(localStorage.getItem('notecoco_tasks')) || [];
-      habits = JSON.parse(localStorage.getItem('notecoco_habits')) || [];
-      notifications = JSON.parse(localStorage.getItem('notecoco_notifications')) || []; // Load notifications
-      trashedNotes = JSON.parse(localStorage.getItem('notecoco_trashedNotes')) || []; // Load trashed notes
+      try {
+        notebooks = JSON.parse(localStorage.getItem('notecoco_notebooks')) || [];
+      } catch (e) {
+        console.error('Error parsing notebooks:', e);
+        notebooks = [];
+      }
+
+      try {
+        tags = JSON.parse(localStorage.getItem('notecoco_tags')) || [];
+      } catch (e) {
+        console.error('Error parsing tags:', e);
+        tags = [];
+      }
+
+      try {
+        notes = JSON.parse(localStorage.getItem('notecoco_notes')) || [];
+      } catch (e) {
+        console.error('Error parsing notes:', e);
+        notes = [];
+      }
+
+      try {
+        tasks = JSON.parse(localStorage.getItem('notecoco_tasks')) || [];
+      } catch (e) {
+        console.error('Error parsing tasks:', e);
+        tasks = [];
+      }
+
+      try {
+        habits = JSON.parse(localStorage.getItem('notecoco_habits')) || [];
+      } catch (e) {
+        console.error('Error parsing habits:', e);
+        habits = [];
+      }
+
+      try {
+        notifications = JSON.parse(localStorage.getItem('notecoco_notifications')) || [];
+      } catch (e) {
+        console.error('Error parsing notifications:', e);
+        notifications = [];
+      }
+
+      try {
+        trashedNotes = JSON.parse(localStorage.getItem('notecoco_trashedNotes')) || [];
+      } catch (e) {
+        console.error('Error parsing trashed notes:', e);
+        trashedNotes = [];
+      }
 
       // Ensure tags are objects with 'id', 'name', and 'favorite'
       tags = tags.map(tag => {
@@ -1300,6 +1341,8 @@
       localStorage.setItem('notecoco_habits', JSON.stringify(habits));
       localStorage.setItem('notecoco_notifications', JSON.stringify(notifications)); // Save notifications
       localStorage.setItem('notecoco_trashedNotes', JSON.stringify(trashedNotes)); // Save trashed notes
+      
+      console.log('Data Saved:', { notebooks, tags, notes, tasks, habits, notifications, trashedNotes });
     }
 
     // Ensure "Personal" Notebook Exists
@@ -3280,9 +3323,6 @@
         addNotification(`Note "${note.title || 'Untitled'}" was permanently deleted.`);
       }
     }
-
-    // Function to Restore a Note from Trash
-    // (Already implemented above as restoreNote)
 
     // Function to Add a New Notification
     // (Already implemented above as addNotification)
