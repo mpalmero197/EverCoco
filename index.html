@@ -860,6 +860,11 @@
         <i class="fas fa-heartbeat"></i>
         <span>Habits</span>
       </div>
+      <!-- New Trash Menu Item -->
+      <div class="menu-item" onclick="navigate('trash')">
+        <i class="fas fa-trash"></i>
+        <span>Trash</span>
+      </div>
       <!-- Removed Favorites Menu Item -->
     </div>
   </aside>
@@ -1028,6 +1033,15 @@
         <button class="btn" onclick="addHabit()">Add Habit</button>
         <div class="cards-list" id="habits-list">
           <!-- Habits will be rendered as cards here -->
+        </div>
+      </section>
+      
+      <!-- Trash -->
+      <section class="kanban-column" id="trash-section" style="display: none;">
+        <h3><i class="fas fa-trash"></i> Trash</h3>
+        <p>Manage your deleted notes here.</p>
+        <div class="cards-list" id="trash-list">
+          <!-- Trashed notes will be rendered as cards here -->
         </div>
       </section>
       
@@ -1233,6 +1247,7 @@
     let tasks = [];
     let habits = [];
     let notifications = []; // New array for notifications
+    let trashedNotes = []; // New array for trashed notes
 
     // Initialize Application
     window.onload = function() {
@@ -1254,6 +1269,7 @@
       tasks = JSON.parse(localStorage.getItem('notecoco_tasks')) || [];
       habits = JSON.parse(localStorage.getItem('notecoco_habits')) || [];
       notifications = JSON.parse(localStorage.getItem('notecoco_notifications')) || []; // Load notifications
+      trashedNotes = JSON.parse(localStorage.getItem('notecoco_trashedNotes')) || []; // Load trashed notes
 
       // Ensure tags are objects with 'id', 'name', and 'favorite'
       tags = tags.map(tag => {
@@ -1283,6 +1299,7 @@
       localStorage.setItem('notecoco_tasks', JSON.stringify(tasks));
       localStorage.setItem('notecoco_habits', JSON.stringify(habits));
       localStorage.setItem('notecoco_notifications', JSON.stringify(notifications)); // Save notifications
+      localStorage.setItem('notecoco_trashedNotes', JSON.stringify(trashedNotes)); // Save trashed notes
     }
 
     // Ensure "Personal" Notebook Exists
@@ -1334,6 +1351,7 @@
       renderHabits();
       renderDashboardFavorites();
       renderSidebar();
+      renderTrash(); // Render Trash section
     }
 
     // Render Functions for Each Section
@@ -1975,11 +1993,8 @@
       // Set recurrence
       const recurrenceRadios = document.getElementsByName('edit-task-recurrence');
       recurrenceRadios.forEach(radio => {
-        if (radio.value === task.recurrence) {
-          radio.checked = true;
-        } else {
-          radio.checked = false;
-        }
+        if (radio.value === task.recurrence) radio.checked = true;
+        else radio.checked = false;
       });
       toggleEditTaskCustomDays(task.recurrence === 'custom');
 
@@ -2057,11 +2072,8 @@
       // Set recurrence
       const recurrenceRadios = document.getElementsByName('edit-habit-recurrence');
       recurrenceRadios.forEach(radio => {
-        if (radio.value === habit.recurrence) {
-          radio.checked = true;
-        } else {
-          radio.checked = false;
-        }
+        if (radio.value === habit.recurrence) radio.checked = true;
+        else radio.checked = false;
       });
       toggleEditHabitCustomDays(habit.recurrence === 'custom');
 
@@ -2264,17 +2276,19 @@
       }
     }
 
-    // Delete Note (Modified to Include Notification)
+    // Delete Note (Modified to Include Trash Functionality and Notification)
     function deleteNote(id) {
       const note = notes.find(n => n.id === id);
       if (!note) return;
-      if (confirm('Are you sure you want to delete this note?')) {
+      if (confirm('Are you sure you want to delete this note? It will be moved to Trash.')) {
         notes = notes.filter(n => n.id !== id);
+        trashedNotes.unshift(note); // Add to trash at beginning
         saveData();
         renderNotes();
         renderDashboardFavorites();
-        showNotification('Note deleted successfully.', 'success');
-        addNotification(`Note "${note.title || 'Untitled'}" was deleted.`);
+        renderTrash(); // Ensure Trash is updated immediately
+        showNotification('Note moved to Trash.', 'success');
+        addNotification(`Note "${note.title || 'Untitled'}" was moved to Trash.`);
       }
     }
 
@@ -2834,6 +2848,11 @@
         }
       });
 
+      // **Call renderTrash() when navigating to 'trash' to ensure it's up-to-date**
+      if (section === 'trash') {
+        renderTrash();
+      }
+
       if (itemId) {
         setTimeout(() => {
           const element = document.getElementById(itemId);
@@ -3156,6 +3175,138 @@
         // Add more conditions for other recurrence types if needed
       });
     }
+
+    // Render Trash Section
+    function renderTrash() {
+      const trashList = document.getElementById('trash-list');
+      trashList.innerHTML = '';
+
+      if (trashedNotes.length === 0) {
+        // **Added: Display a message when Trash is empty**
+        const emptyMessage = document.createElement('p');
+        emptyMessage.textContent = 'Trash is empty.';
+        emptyMessage.style.color = '#555';
+        emptyMessage.style.fontSize = '0.9rem';
+        trashList.appendChild(emptyMessage);
+        return;
+      }
+
+      trashedNotes.forEach(note => {
+        const card = createCard(note.title || 'Untitled', 'notes', note.id, 'sticky-note', note.favorite, () => toggleFavorite('notes', note.id));
+        card.id = `trash-note-${note.id}`; // Assign unique ID to the card
+
+        const actions = createCardActions([
+          { icon: 'undo', title: 'Restore', action: () => restoreNote(note.id) },
+          { icon: 'trash', title: 'Delete Permanently', action: () => permanentlyDeleteNote(note.id) }
+        ]);
+        card.querySelector('.card-header-right').appendChild(actions);
+
+        // Details
+        if (note.body) {
+          const snippet = note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body;
+          const body = document.createElement('div');
+          body.className = 'details';
+          body.textContent = snippet;
+          card.appendChild(body);
+        }
+
+        if (note.tags.length > 0) {
+          const tagDiv = document.createElement('div');
+          tagDiv.className = 'details';
+          tagDiv.textContent = 'Tags: ' + note.tags.join(', ');
+          card.appendChild(tagDiv);
+        }
+
+        if (note.notebook) {
+          const nbDiv = document.createElement('div');
+          nbDiv.className = 'details';
+          nbDiv.textContent = 'Notebook: ' + note.notebook;
+          card.appendChild(nbDiv);
+        }
+
+        if (note.attachments.length > 0) {
+          const attachDiv = document.createElement('div');
+          attachDiv.className = 'attachments';
+          note.attachments.forEach(att => {
+            if (att.type.startsWith('image/')) {
+              const img = document.createElement('img');
+              img.src = att.data;
+              img.alt = att.name;
+              attachDiv.appendChild(img);
+            } else {
+              const link = document.createElement('a');
+              link.href = att.data;
+              link.download = att.name;
+              link.textContent = att.name;
+              attachDiv.appendChild(link);
+            }
+          });
+          card.appendChild(attachDiv);
+        }
+
+        card.ondblclick = () => {
+          restoreNote(note.id);
+        };
+
+        trashList.appendChild(card);
+      });
+    }
+
+    // Function to Restore a Note from Trash
+    function restoreNote(id) {
+      const noteIndex = trashedNotes.findIndex(n => n.id === id);
+      if (noteIndex === -1) return;
+      const note = trashedNotes.splice(noteIndex, 1)[0];
+      notes.push(note);
+      saveData();
+      renderTrash();
+      renderNotes();
+      renderDashboardFavorites();
+      showNotification('Note restored successfully.', 'success');
+      addNotification(`Note "${note.title || 'Untitled'}" was restored from Trash.`);
+    }
+
+    // Function to Permanently Delete a Note from Trash
+    function permanentlyDeleteNote(id) {
+      const noteIndex = trashedNotes.findIndex(n => n.id === id);
+      if (noteIndex === -1) return;
+      const note = trashedNotes[noteIndex];
+      if (confirm(`Are you sure you want to permanently delete the note "${note.title || 'Untitled'}"? This action cannot be undone.`)) {
+        trashedNotes.splice(noteIndex, 1);
+        saveData();
+        renderTrash();
+        renderDashboardFavorites();
+        showNotification('Note permanently deleted.', 'success');
+        addNotification(`Note "${note.title || 'Untitled'}" was permanently deleted.`);
+      }
+    }
+
+    // Function to Restore a Note from Trash
+    // (Already implemented above as restoreNote)
+
+    // Function to Add a New Notification
+    // (Already implemented above as addNotification)
+
+    // Function to Update the Notification Badge Count
+    // (Already implemented above as updateNotificationBadge)
+
+    // Function to Open Notifications Modal
+    // (Already implemented above as openNotifications)
+
+    // Function to Close Notifications Modal
+    // (Already implemented above as closeNotifications)
+
+    // Function to Render Notifications in Modal
+    // (Already implemented above as renderNotifications)
+
+    // Function to Mark a Notification as Read/Unread
+    // (Already implemented above as markAsRead)
+
+    // Initialize Notification Badge on Load
+    // (Already implemented above as initializeNotifications)
+
+    // Function to Check for Upcoming Events
+    // (Already implemented above as checkUpcomingEvents)
 
     // Close the modal when clicking outside of it
     window.onclick = function(event) {
