@@ -8,11 +8,11 @@
   <style>
     /* Root Variables for Colors and Fonts */
     :root {
-      --primary-color: #0058a3; /* Dark Blue */
-      --secondary-color: #74acf2; /* Light Blue */
-      --accent-color: #ffffff; /* White */
-      --text-color: #e0e0e0; /* Light Text */
-      --background-color: #121212; /* Dark Background */
+      --primary-color: #74acf2; /* Light Blue */
+      --secondary-color: #0058a3; /* Dark Blue */
+      --accent-color: #0058a3; /* Dark Blue */
+      --text-color: #000000; /* Black Text */
+      --background-color: #ffffff; /* White Background */
       --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
@@ -36,7 +36,7 @@
       width: 100%;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .logo {
@@ -87,8 +87,8 @@
       left: 0;
       width: 220px;
       height: calc(100% - 60px);
-      background-color: #1e1e1e;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+      background-color: #f9f9f9; /* Light Sidebar Background */
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
       overflow-y: auto;
       padding-bottom: 20px;
     }
@@ -100,7 +100,7 @@
       padding: 15px 20px;
       background-color: var(--primary-color);
       color: var(--accent-color);
-      border-bottom: 1px solid #333;
+      border-bottom: 1px solid #ddd;
     }
 
     .sidebar-header h2 {
@@ -114,7 +114,7 @@
       padding: 12px 20px;
       cursor: pointer;
       transition: background 0.2s;
-      border-bottom: 1px solid #333;
+      border-bottom: 1px solid #ddd;
       position: relative;
       color: var(--text-color);
     }
@@ -148,10 +148,10 @@
     }
 
     .kanban-column {
-      background-color: #1e1e1e;
+      background-color: #f9f9f9; /* Light Column Background */
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       flex: 1;
       min-width: 300px;
       max-width: 100%;
@@ -166,7 +166,7 @@
       display: flex;
       align-items: center;
       font-size: 1.3rem;
-      color: var(--secondary-color);
+      color: var(--primary-color);
       margin-bottom: 15px;
     }
 
@@ -181,10 +181,10 @@
     }
 
     .card {
-      background-color: #2a2a2a;
+      background-color: #ffffff; /* White Card Background */
       padding: 15px;
       border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       position: relative;
       cursor: pointer;
       transition: background 0.2s, transform 0.2s;
@@ -193,7 +193,7 @@
     }
 
     .card:hover {
-      background-color: #3a3a3a;
+      background-color: #f0f0f0;
       transform: translateY(-2px);
     }
 
@@ -213,7 +213,7 @@
 
     .card-header-left i {
       font-size: 1rem;
-      color: var(--secondary-color);
+      color: var(--primary-color);
     }
 
     .card-header .title {
@@ -245,19 +245,19 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: #bbb;
+      color: #555;
       font-size: 0.9rem;
       transition: color 0.3s;
     }
 
     .card-actions button:hover {
-      color: var(--secondary-color);
+      color: var(--primary-color);
     }
 
     .details {
       margin-top: 10px;
       font-size: 0.9rem;
-      color: #ccc;
+      color: #555;
     }
 
     .attachments img {
@@ -265,13 +265,13 @@
       max-height: 100px;
       margin-right: 8px;
       border-radius: 4px;
-      border: 1px solid #555;
+      border: 1px solid #ddd;
     }
 
     .attachments a {
       display: inline-block;
       margin-top: 8px;
-      color: var(--secondary-color);
+      color: var(--primary-color);
       text-decoration: none;
       font-size: 0.9rem;
     }
@@ -289,11 +289,11 @@
       padding: 10px 12px;
       margin-top: 6px;
       margin-bottom: 12px;
-      border: 1px solid #555;
+      border: 1px solid #ccc;
       border-radius: 4px;
       box-sizing: border-box;
       font-size: 0.95rem;
-      background-color: #2a2a2a;
+      background-color: #ffffff;
       color: var(--text-color);
     }
 
@@ -319,8 +319,8 @@
 
     /* Individual Tag Labels */
     .multi-select label {
-      background-color: #2a2a2a;
-      border: 1px solid #555;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
       border-radius: 4px;
       padding: 5px 10px;
       cursor: pointer;
@@ -331,8 +331,8 @@
     }
 
     .multi-select label:hover {
-      background-color: #3a3a3a;
-      border-color: #777;
+      background-color: #e0e0e0;
+      border-color: #bbb;
     }
 
     .multi-select label input {
@@ -346,9 +346,9 @@
       width: 100%;
       padding: 8px 10px;
       margin-top: 10px;
-      border: 1px solid #555;
+      border: 1px solid #ccc;
       border-radius: 4px;
-      background-color: #2a2a2a;
+      background-color: #ffffff;
       color: var(--text-color);
       font-size: 0.95rem;
     }
@@ -358,7 +358,7 @@
       display: inline-block;
       margin-right: 15px;
       font-weight: normal;
-      color: #ccc;
+      color: #555;
     }
 
     .custom-days {
@@ -373,7 +373,7 @@
       align-items: center;
       gap: 4px;
       font-weight: normal;
-      color: #ccc;
+      color: #555;
     }
 
     /* Buttons */
@@ -390,7 +390,7 @@
     }
 
     .btn:hover {
-      background-color: #a0c4ff;
+      background-color: #004a80;
     }
 
     /* Notification Styles */
@@ -405,7 +405,7 @@
       opacity: 0;
       transition: opacity 0.5s;
       z-index: 1001;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
     .notification.show {
@@ -429,8 +429,8 @@
       position: fixed;
       bottom: 0;
       width: 100%;
-      background-color: #1e1e1e;
-      box-shadow: 0 -1px 5px rgba(0,0,0,0.5);
+      background-color: #f9f9f9;
+      box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
     }
 
     /* Responsive Design */
@@ -469,18 +469,18 @@
     }
 
     .search-modal-content {
-      background-color: #1e1e1e;
+      background-color: #ffffff;
       margin: 10% auto; /* 10% from the top and centered */
       padding: 20px;
-      border: 1px solid #555;
+      border: 1px solid #ccc;
       width: 80%; /* Could be more or less, depending on screen size */
       max-width: 600px;
       border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
 
     .close {
-      color: #bbb;
+      color: #555;
       float: right;
       font-size: 28px;
       font-weight: bold;
@@ -489,7 +489,7 @@
 
     .close:hover,
     .close:focus {
-      color: var(--secondary-color);
+      color: var(--primary-color);
       text-decoration: none;
     }
 
@@ -498,10 +498,10 @@
       padding: 12px 20px;
       margin: 12px 0 20px 0;
       box-sizing: border-box;
-      border: 2px solid #555;
+      border: 2px solid #ccc;
       border-radius: 4px;
       font-size: 1rem;
-      background-color: #2a2a2a;
+      background-color: #ffffff;
       color: var(--text-color);
     }
 
@@ -517,18 +517,18 @@
 
     .search-category h4 {
       margin-bottom: 10px;
-      color: var(--secondary-color);
+      color: var(--primary-color);
     }
 
     .search-item {
       padding: 10px;
-      border-bottom: 1px solid #555;
+      border-bottom: 1px solid #ddd;
       cursor: pointer;
       transition: background 0.2s;
     }
 
     .search-item:hover {
-      background-color: #333;
+      background-color: #f0f0f0;
     }
 
     .highlight {
@@ -550,23 +550,23 @@
     }
 
     .notifications-modal-content {
-      background-color: #1e1e1e;
+      background-color: #ffffff;
       margin: 5% auto; /* 5% from the top and centered */
       padding: 20px;
-      border: 1px solid #555;
+      border: 1px solid #ccc;
       width: 90%; /* Could be more or less, depending on screen size */
       max-width: 600px;
       border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
 
     .notifications-modal-content h2 {
       margin-top: 0;
-      color: var(--secondary-color);
+      color: var(--primary-color);
     }
 
     .notifications-modal-content .close {
-      color: #bbb;
+      color: #555;
       float: right;
       font-size: 28px;
       font-weight: bold;
@@ -575,14 +575,17 @@
 
     .notifications-modal-content .close:hover,
     .notifications-modal-content .close:focus {
-      color: var(--secondary-color);
+      color: var(--primary-color);
       text-decoration: none;
     }
 
     .notification-item {
       padding: 10px;
-      border-bottom: 1px solid #555;
+      border-bottom: 1px solid #ddd;
       color: var(--text-color);
+      background-color: #f9f9f9;
+      border-radius: 4px;
+      margin-bottom: 10px;
     }
 
     .notification-item p {
@@ -591,7 +594,7 @@
     }
 
     .notification-item small {
-      color: #bbb;
+      color: #777;
     }
 
     .notification-item button {
@@ -607,7 +610,7 @@
     }
 
     .notification-item button:hover {
-      background-color: #a0c4ff;
+      background-color: #004a80;
     }
 
     /* Edit Modals Styles */
@@ -624,23 +627,23 @@
     }
 
     .edit-modal-content {
-      background-color: #1e1e1e;
+      background-color: #ffffff;
       margin: 5% auto; /* 5% from the top and centered */
       padding: 20px;
-      border: 1px solid #555;
+      border: 1px solid #ccc;
       width: 90%; /* Could be more or less, depending on screen size */
       max-width: 600px;
       border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
 
     .edit-modal-content h2 {
       margin-top: 0;
-      color: var(--secondary-color);
+      color: var(--primary-color);
     }
 
     .edit-modal-content .close {
-      color: #bbb;
+      color: #555;
       float: right;
       font-size: 28px;
       font-weight: bold;
@@ -649,7 +652,7 @@
 
     .edit-modal-content .close:hover,
     .edit-modal-content .close:focus {
-      color: var(--secondary-color);
+      color: var(--primary-color);
       text-decoration: none;
     }
 
@@ -661,6 +664,7 @@
     .edit-modal-content label {
       margin-top: 10px;
       font-weight: 500;
+      color: var(--text-color);
     }
 
     .edit-modal-content .form-group {
@@ -673,9 +677,9 @@
       width: 100%;
       padding: 8px 10px;
       margin-top: 5px;
-      border: 1px solid #555;
+      border: 1px solid #ccc;
       border-radius: 4px;
-      background-color: #2a2a2a;
+      background-color: #ffffff;
       color: var(--text-color);
     }
 
@@ -683,7 +687,7 @@
       display: inline-block;
       margin-right: 15px;
       font-weight: normal;
-      color: #ccc;
+      color: #555;
     }
 
     .edit-modal-content .custom-days {
@@ -698,7 +702,7 @@
       align-items: center;
       gap: 4px;
       font-weight: normal;
-      color: #ccc;
+      color: #555;
     }
 
     .edit-modal-content .btn-group {
@@ -717,7 +721,7 @@
       grid-template-columns: repeat(auto-fill, 120px);
       grid-gap: 20px; /* 20px gap between cards */
       padding-left: 20px;
-      border-left: 2px solid #333;
+      border-left: 2px solid #ddd;
       margin-top: 10px;
       
       /* Prevent Horizontal Scrolling */
@@ -728,10 +732,10 @@
     .nested-note-card {
       width: 120px; /* Fixed width */
       height: 160px; /* Fixed height */
-      background-color: #2a2a2a;
+      background-color: #ffffff;
       border-radius: 4px;
       padding: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       cursor: pointer;
       transition: background 0.2s, transform 0.2s;
       
@@ -750,7 +754,7 @@
 
     /* Hover Effect for Note Cards */
     .nested-note-card:hover {
-      background-color: #3a3a3a;
+      background-color: #f0f0f0;
       transform: translateY(-2px);
     }
 
@@ -767,7 +771,7 @@
     /* Note Snippet */
     .nested-note-snippet {
       font-size: 0.75rem;
-      color: #ccc;
+      color: #555;
       margin-top: 4px;
       white-space: nowrap;
       overflow: hidden;
@@ -1624,7 +1628,7 @@
       const associatedNotes = notes.filter(note => note.notebook === notebook.name);
 
       if (associatedNotes.length === 0) {
-        container.innerHTML = '<p style="color: #ccc; font-size: 0.8rem;">No notes in this notebook.</p>';
+        container.innerHTML = '<p style="color: #555; font-size: 0.8rem;">No notes in this notebook.</p>';
         return;
       }
 
@@ -1824,7 +1828,7 @@
       tag.name = newName;
       // Update tag name in notes
       notes = notes.map(note => {
-        if (note.tags.includes(oldName)) {
+        if (note.tags.includes(tag.name)) {
           return { ...note, tags: note.tags.map(t => t === oldName ? newName : t) };
         }
         return note;
@@ -3097,7 +3101,7 @@
       notifications.forEach(notif => {
         const notifDiv = document.createElement('div');
         notifDiv.className = 'notification-item';
-        notifDiv.style.backgroundColor = notif.read ? '#2a2a2a' : '#0058a3';
+        notifDiv.style.backgroundColor = notif.read ? '#f9f9f9' : '#e0f7fa';
 
         notifDiv.innerHTML = `
           <p>${notif.message}</p>
