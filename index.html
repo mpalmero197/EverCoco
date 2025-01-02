@@ -5,6 +5,7 @@
   <title>NoteCoco - Your Personal Organizer</title>
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Embedded CSS -->
   <style>
     /* Root Variables for Colors and Fonts */
     :root {
@@ -758,7 +759,7 @@
       padding-left: 20px;
       border-left: 2px solid #ddd;
       margin-top: 10px;
-      
+
       /* Prevent Horizontal Scrolling */
       overflow-x: hidden;
     }
@@ -773,16 +774,16 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       cursor: pointer;
       transition: background 0.2s, transform 0.2s;
-      
+
       /* Prevent Flexbox properties from interfering */
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
-      
+
       /* Optional: Add padding for better content spacing */
       padding: 5px;
-      
+
       /* Text Overflow Handling */
       overflow: hidden;
     }
@@ -843,8 +844,6 @@
         grid-gap: 10px; /* Even smaller gaps */
       }
     }
-
-    /* Existing Styles... */
   </style>
 </head>
 <body>
@@ -1275,7 +1274,7 @@
     &copy; 2024-2025 NoteCoco. <a href="https://buymeacoffee.com/mpalmero" target="_blank"><i class="fas fa-coffee"></i> Buy me a coffee?</a> All rights reserved.
   </footer>
   
-  <!-- JavaScript -->
+  <!-- Embedded JavaScript -->
   <script>
     // Helper Function to Retrieve CSS Variables
     function getCSSVariable(variableName) {
@@ -1393,7 +1392,7 @@
       localStorage.setItem('notecoco_notifications', JSON.stringify(notifications)); // Save notifications
       localStorage.setItem('notecoco_trashedNotes', JSON.stringify(trashedNotes)); // Save trashed notes
       localStorage.setItem('notecoco_scratchpad', scratchpadContent); // Save scratchpad
-      
+
       console.log('Data Saved:', { notebooks, tags, notes, tasks, habits, notifications, trashedNotes, scratchpadContent });
     }
 
@@ -1469,7 +1468,7 @@
       const notebooksList = document.getElementById('notebooks-list');
       notebooksList.innerHTML = '';
       notebooks.forEach(nb => {
-        const card = createCard(nb.name, 'notebooks', nb.id, 'book', nb.favorite, () => toggleFavorite('notebooks', nb.id));
+        const card = createCard(nb.name || 'Untitled', 'notebooks', nb.id, 'book', nb.favorite, () => toggleFavorite('notebooks', nb.id));
         card.id = `notebook-${nb.id}`; // Assign unique ID to the card
 
         // Add an expand/collapse icon
@@ -1521,7 +1520,7 @@
       const tagsList = document.getElementById('tags-list');
       tagsList.innerHTML = '';
       tags.forEach(tag => {
-        const card = createCard(tag.name, 'tags', tag.id, 'tags', tag.favorite, () => toggleFavorite('tags', tag.id));
+        const card = createCard(tag.name || 'Untitled', 'tags', tag.id, 'tags', tag.favorite, () => toggleFavorite('tags', tag.id));
         card.id = `tag-${tag.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
@@ -1607,7 +1606,7 @@
       const tasksList = document.getElementById('tasks-list');
       tasksList.innerHTML = '';
       tasks.forEach(task => {
-        const card = createCard(task.description, 'tasks', task.id, 'tasks', task.favorite, () => toggleFavorite('tasks', task.id));
+        const card = createCard(task.description || 'Untitled', 'tasks', task.id, 'tasks', task.favorite, () => toggleFavorite('tasks', task.id));
         card.id = `task-${task.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
@@ -1644,7 +1643,7 @@
       const habitsList = document.getElementById('habits-list');
       habitsList.innerHTML = '';
       habits.forEach(habit => {
-        const card = createCard(habit.description, 'habits', habit.id, 'heartbeat', habit.favorite, () => toggleFavorite('habits', habit.id));
+        const card = createCard(habit.description || 'Untitled', 'habits', habit.id, 'heartbeat', habit.favorite, () => toggleFavorite('habits', habit.id));
         card.id = `habit-${habit.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
@@ -2694,7 +2693,7 @@
       }
 
       favoriteNotebooks.forEach(nb => {
-        const card = createCard(nb.name, 'notebooks', nb.id, 'book', nb.favorite, () => toggleFavorite('notebooks', nb.id));
+        const card = createCard(nb.name || 'Untitled', 'notebooks', nb.id, 'book', nb.favorite, () => toggleFavorite('notebooks', nb.id));
         card.id = `notebook-${nb.id}`; // Assign unique ID to the card
 
         // Add an expand/collapse icon
@@ -2753,7 +2752,7 @@
       }
 
       favoriteTags.forEach(tag => {
-        const card = createCard(tag.name, 'tags', tag.id, 'tags', tag.favorite, () => toggleFavorite('tags', tag.id));
+        const card = createCard(tag.name || 'Untitled', 'tags', tag.id, 'tags', tag.favorite, () => toggleFavorite('tags', tag.id));
         card.id = `tag-${tag.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
@@ -2852,7 +2851,7 @@
       }
 
       favoriteTasks.forEach(task => {
-        const card = createCard(task.description, 'tasks', task.id, 'tasks', task.favorite, () => toggleFavorite('tasks', task.id));
+        const card = createCard(task.description || 'Untitled', 'tasks', task.id, 'tasks', task.favorite, () => toggleFavorite('tasks', task.id));
         card.id = `task-${task.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
@@ -2896,7 +2895,7 @@
       }
 
       favoriteHabits.forEach(habit => {
-        const card = createCard(habit.description, 'habits', habit.id, 'heartbeat', habit.favorite, () => toggleFavorite('habits', habit.id));
+        const card = createCard(habit.description || 'Untitled', 'habits', habit.id, 'heartbeat', habit.favorite, () => toggleFavorite('habits', habit.id));
         card.id = `habit-${habit.id}`; // Assign unique ID to the card
 
         const actions = createCardActions([
@@ -3455,7 +3454,29 @@
         editHabitModal.style.display = 'none';
       }
     };
-    
+
+    // Render Functions Continued...
+
+    // Function to Render Sidebar (Summary)
+    function renderSidebar() {
+      // Placeholder for additional sidebar summaries if needed
+    }
+
+    // Show Notification
+    function showNotification(message, type) {
+      const notif = document.getElementById('notification');
+      notif.textContent = message;
+      notif.className = 'notification ' + (type === 'error' ? 'error' : 'success');
+      notif.classList.add('show');
+      setTimeout(() => {
+        notif.classList.remove('show');
+      }, 3000);
+    }
+
+    // Function to Navigate to Profile (Placeholder)
+    function showProfile() {
+      showNotification('Profile feature is under development.', 'error');
+    }
   </script>
 </body>
 </html>
