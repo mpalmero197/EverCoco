@@ -2,30 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>EverCoco - Your Personal Organizer</title>
+  <title>EverCoco - Personal Organizer</title>
   <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Embedded CSS -->
   <style>
-    /* Root Variables for Colors and Fonts */
     :root {
-      --primary-color: #74acf2; /* Light Blue */
-      --secondary-color: #0058a3; /* Dark Blue */
-      --accent-color: #0058a3; /* Dark Blue */
-      --text-color: #000000; /* Black Text */
-      --background-color: #ffffff; /* White Background */
+      --primary-color: #74acf2;
+      --secondary-color: #0058a3;
+      --accent-color: #0058a3;
+      --text-color: #000;
+      --background-color: #fff;
       --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
-    /* Global Styles */
     body {
       margin: 0;
       font-family: var(--font-primary);
       background-color: var(--background-color);
       color: var(--text-color);
     }
-
-    /* Header Styles */
     header {
       display: flex;
       justify-content: space-between;
@@ -39,7 +33,6 @@
       z-index: 1000;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
     .logo {
       display: flex;
       align-items: center;
@@ -47,18 +40,14 @@
       font-size: 1.2rem;
       font-weight: bold;
     }
-
     .logo i {
       margin-right: 10px;
     }
-
-    /* Navigation Styles */
     nav.header-nav {
       display: flex;
       gap: 20px;
       align-items: center;
     }
-
     .nav-item {
       display: flex;
       align-items: center;
@@ -67,68 +56,54 @@
       color: var(--background-color);
       transition: color 0.3s;
     }
-
     .nav-item i {
       margin-right: 8px;
       font-size: 1.1rem;
     }
-
     .nav-item:hover {
       color: var(--accent-color);
     }
-
     .nav-item.active {
       border-bottom: 2px solid var(--accent-color);
     }
-
-    /* Header Right Icons */
     .header-right {
       position: relative;
       display: flex;
       align-items: center;
       gap: 20px;
     }
-
     .header-right i {
       cursor: pointer;
       font-size: 1.2rem;
       transition: color 0.3s;
       position: relative;
     }
-
     .header-right i:hover {
       color: var(--secondary-color);
     }
-
-    /* Notification Badge */
     .notification-badge {
       position: absolute;
       top: -5px;
       right: -10px;
       background-color: #f44336;
-      color: white;
+      color: #fff;
       padding: 2px 6px;
       border-radius: 50%;
       font-size: 0.75rem;
-      display: none; /* Hidden by default */
+      display: none;
     }
-
-    /* Main Content Styles */
     main {
-      padding: 80px 40px 40px 40px; /* Top padding accounts for fixed header */
+      padding: 80px 40px 40px 40px;
       transition: padding 0.3s ease;
     }
-
-    /* Kanban Board Styles */
     .kanban-board {
       display: flex;
       gap: 30px;
       flex-wrap: wrap;
       justify-content: flex-start;
     }
-
     .kanban-column {
-      background-color: #f9f9f9; /* Light Column Background */
+      background-color: #f9f9f9;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
@@ -140,7 +115,6 @@
       max-height: 80vh;
       overflow-y: auto;
     }
-
     .kanban-column h3 {
       margin-top: 0;
       display: flex;
@@ -149,19 +123,16 @@
       color: var(--primary-color);
       margin-bottom: 15px;
     }
-
     .kanban-column h3 i {
       margin-right: 10px;
     }
-
     .cards-list {
       display: flex;
       flex-direction: column;
       gap: 15px;
     }
-
     .card {
-      background-color: #ffffff; /* White Card Background */
+      background-color: #fff;
       padding: 15px;
       border-radius: 6px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -171,43 +142,35 @@
       display: flex;
       flex-direction: column;
     }
-
     .card:hover {
       background-color: #f0f0f0;
       transform: translateY(-2px);
     }
-
-    /* Adjusted Card Header to Prevent Overlapping */
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       width: 100%;
     }
-
     .card-header-left {
       display: flex;
       align-items: center;
       gap: 10px;
     }
-
     .card-header-left i {
       font-size: 1rem;
       color: var(--primary-color);
     }
-
     .card-header .title {
       font-size: 1rem;
       font-weight: 600;
       color: var(--text-color);
     }
-
     .card-header-right {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-
     .card-header .favorite-btn {
       background: none;
       border: none;
@@ -216,11 +179,9 @@
       font-size: 1rem;
       transition: color 0.3s;
     }
-
     .card-header .favorite-btn:hover {
       color: #e68900;
     }
-
     .card-actions button {
       background: none;
       border: none;
@@ -229,17 +190,14 @@
       font-size: 0.9rem;
       transition: color 0.3s;
     }
-
     .card-actions button:hover {
       color: var(--primary-color);
     }
-
     .details {
       margin-top: 10px;
       font-size: 0.9rem;
       color: #555;
     }
-
     .attachments img {
       max-width: 100px;
       max-height: 100px;
@@ -247,7 +205,6 @@
       border-radius: 4px;
       border: 1px solid #ddd;
     }
-
     .attachments a {
       display: inline-block;
       margin-top: 8px;
@@ -255,16 +212,12 @@
       text-decoration: none;
       font-size: 0.9rem;
     }
-
     .attachments a:hover {
       text-decoration: underline;
     }
-
-    /* Scratchpad Section Styles */
     .scratchpad-section {
       margin-bottom: 30px;
     }
-
     .scratchpad-section h4 {
       display: flex;
       align-items: center;
@@ -272,30 +225,25 @@
       color: var(--primary-color);
       margin-bottom: 10px;
     }
-
     .scratchpad-section h4 i {
       margin-right: 8px;
     }
-
     #scratchpad {
       width: 100%;
-      height: 200px; /* Fixed height */
+      height: 200px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
       resize: none;
       font-size: 0.95rem;
-      background-color: #ffffff;
+      background-color: #fff;
       color: var(--text-color);
       box-sizing: border-box;
     }
-
     .scratchpad-section button {
       margin-top: 10px;
       align-self: flex-end;
     }
-
-    /* Form Elements */
     input[type="text"],
     textarea,
     select,
@@ -308,31 +256,26 @@
       border-radius: 4px;
       box-sizing: border-box;
       font-size: 0.95rem;
-      background-color: #ffffff;
+      background-color: #fff;
       color: var(--text-color);
     }
-
     textarea {
       resize: vertical;
-      min-height: 200px; /* Minimum height as per requirement */
+      min-height: 200px;
       height: auto;
       overflow: auto;
     }
-
     label {
       font-weight: 500;
       color: var(--text-color);
     }
-
     .multi-select {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px; /* Space between tags */
+      gap: 10px;
       margin-top: 6px;
       margin-bottom: 12px;
     }
-
-    /* Individual Tag Labels */
     .multi-select label {
       background-color: #f0f0f0;
       border: 1px solid #ccc;
@@ -344,18 +287,14 @@
       align-items: center;
       transition: background-color 0.2s, border-color 0.2s;
     }
-
     .multi-select label:hover {
       background-color: #e0e0e0;
       border-color: #bbb;
     }
-
     .multi-select label input {
       margin-right: 6px;
       cursor: pointer;
     }
-
-    /* New Tags Input */
     #note-new-tags,
     #edit-note-new-tags {
       width: 100%;
@@ -363,26 +302,22 @@
       margin-top: 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      background-color: #ffffff;
+      background-color: #fff;
       color: var(--text-color);
       font-size: 0.95rem;
     }
-
-    /* Recurrence Options */
     .recurrence-options label {
       display: inline-block;
       margin-right: 15px;
       font-weight: normal;
       color: #555;
     }
-
     .custom-days {
       display: flex;
       gap: 10px;
       margin-top: 6px;
       margin-bottom: 12px;
     }
-
     .custom-days label {
       display: flex;
       align-items: center;
@@ -390,8 +325,6 @@
       font-weight: normal;
       color: #555;
     }
-
-    /* Buttons */
     .btn {
       background-color: var(--secondary-color);
       color: var(--background-color);
@@ -403,12 +336,9 @@
       transition: background 0.3s;
       align-self: flex-start;
     }
-
     .btn:hover {
       background-color: #004a80;
     }
-
-    /* Notification Styles */
     .notification {
       position: fixed;
       top: 80px;
@@ -422,20 +352,15 @@
       z-index: 1001;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-
     .notification.show {
       opacity: 1;
     }
-
     .notification.success {
       background-color: #4CAF50;
     }
-
     .notification.error {
       background-color: #f44336;
     }
-
-    /* Footer Styles */
     footer {
       text-align: center;
       padding: 15px;
@@ -447,14 +372,11 @@
       background-color: #f9f9f9;
       box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
     }
-
-    /* Responsive Design */
     @media (max-width: 1200px) {
       .kanban-board {
         justify-content: center;
       }
     }
-
     @media (max-width: 768px) {
       main {
         padding: 80px 20px 60px 20px;
@@ -474,31 +396,27 @@
         gap: 10px;
       }
     }
-
-    /* Search Modal Styles */
     .search-modal {
-      display: none; /* Hidden by default */
-      position: fixed; /* Stay in place */
-      z-index: 1500; /* Sit on top */
+      display: none;
+      position: fixed;
+      z-index: 1500;
       left: 0;
       top: 0;
-      width: 100%; /* Full width */
-      height: 100%; /* Full height */
-      overflow: auto; /* Enable scroll if needed */
-      background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
     }
-
     .search-modal-content {
-      background-color: #ffffff;
-      margin: 10% auto; /* 10% from the top and centered */
+      background-color: #fff;
+      margin: 10% auto;
       padding: 20px;
       border: 1px solid #ccc;
-      width: 80%; /* Could be more or less, depending on screen size */
+      width: 80%;
       max-width: 600px;
       border-radius: 8px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
-
     .close {
       color: #555;
       float: right;
@@ -506,13 +424,11 @@
       font-weight: bold;
       cursor: pointer;
     }
-
     .close:hover,
     .close:focus {
       color: var(--primary-color);
       text-decoration: none;
     }
-
     #search-input {
       width: 100%;
       padding: 12px 20px;
@@ -521,84 +437,59 @@
       border: 2px solid #ccc;
       border-radius: 4px;
       font-size: 1rem;
-      background-color: #ffffff;
+      background-color: #fff;
       color: var(--text-color);
     }
-
     #search-results {
       max-height: 400px;
       overflow-y: auto;
       color: var(--text-color);
     }
-
     .search-category {
       margin-bottom: 20px;
     }
-
     .search-category h4 {
       margin-bottom: 10px;
       color: var(--primary-color);
     }
-
     .search-item {
       padding: 10px;
       border-bottom: 1px solid #ddd;
       cursor: pointer;
       transition: background 0.2s;
     }
-
     .search-item:hover {
       background-color: #f0f0f0;
     }
-
     .highlight {
-      background-color: #ffd700; /* Gold */
+      background-color: #ffd700;
       color: #000;
     }
-
-    /* Notifications Modal Styles */
     .notifications-modal {
-      display: none; /* Hidden by default */
-      position: fixed; /* Stay in place */
-      z-index: 1600; /* Sit on top of other modals */
+      display: none;
+      position: fixed;
+      z-index: 1600;
       left: 0;
       top: 0;
-      width: 100%; /* Full width */
-      height: 100%; /* Full height */
-      overflow: auto; /* Enable scroll if needed */
-      background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
     }
-
     .notifications-modal-content {
-      background-color: #ffffff;
-      margin: 5% auto; /* 5% from the top and centered */
+      background-color: #fff;
+      margin: 5% auto;
       padding: 20px;
       border: 1px solid #ccc;
-      width: 90%; /* Could be more or less, depending on screen size */
+      width: 90%;
       max-width: 600px;
       border-radius: 8px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
-
     .notifications-modal-content h2 {
       margin-top: 0;
       color: var(--primary-color);
     }
-
-    .notifications-modal-content .close {
-      color: #555;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .notifications-modal-content .close:hover,
-    .notifications-modal-content .close:focus {
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-
     .notification-item {
       padding: 10px;
       border-bottom: 1px solid #ddd;
@@ -607,16 +498,13 @@
       border-radius: 4px;
       margin-bottom: 10px;
     }
-
     .notification-item p {
       margin: 0;
       font-size: 0.95rem;
     }
-
     .notification-item small {
       color: #777;
     }
-
     .notification-item button {
       margin-top: 5px;
       background-color: var(--secondary-color);
@@ -628,95 +516,53 @@
       font-size: 0.8rem;
       transition: background 0.3s;
     }
-
     .notification-item button:hover {
       background-color: #004a80;
     }
-
-    /* Edit Modals Styles */
     .edit-modal {
-      display: none; /* Hidden by default */
-      position: fixed; /* Stay in place */
-      z-index: 1700; /* Sit on top of other modals */
+      display: none;
+      position: fixed;
+      z-index: 1700;
       left: 0;
       top: 0;
-      width: 100%; /* Full width */
-      height: 100%; /* Full height */
-      overflow: auto; /* Enable scroll if needed */
-      background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
     }
-
     .edit-modal-content {
-      background-color: #ffffff;
-      margin: 5% auto; /* 5% from the top and centered */
+      background-color: #fff;
+      margin: 5% auto;
       padding: 20px;
       border: 1px solid #ccc;
-      width: 90%; /* Could be more or less, depending on screen size */
+      width: 90%;
       max-width: 600px;
       border-radius: 8px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
-
     .edit-modal-content h2 {
       margin-top: 0;
       color: var(--primary-color);
     }
-
-    .edit-modal-content .close {
-      color: #555;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .edit-modal-content .close:hover,
-    .edit-modal-content .close:focus {
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-
     .edit-modal-content form {
       display: flex;
       flex-direction: column;
     }
-
-    .edit-modal-content label {
-      margin-top: 10px;
-      font-weight: 500;
-      color: var(--text-color);
-    }
-
     .edit-modal-content .form-group {
       margin-top: 10px;
     }
-
-    .edit-modal-content .form-group input,
-    .edit-modal-content .form-group textarea,
-    .edit-modal-content .form-group select {
-      width: 100%;
-      padding: 8px 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background-color: #ffffff;
-      color: var(--text-color);
-    }
-
     .edit-modal-content .recurrence-options label {
       display: inline-block;
       margin-right: 15px;
       font-weight: normal;
       color: #555;
     }
-
     .edit-modal-content .custom-days {
       display: flex;
       gap: 10px;
       margin-top: 6px;
       margin-bottom: 12px;
     }
-
     .edit-modal-content .custom-days label {
       display: flex;
       align-items: center;
@@ -724,61 +570,43 @@
       font-weight: normal;
       color: #555;
     }
-
     .edit-modal-content .btn-group {
       display: flex;
       gap: 10px;
       margin-top: 20px;
     }
-
     .edit-modal-content .btn-group .btn {
       flex: 1;
     }
-
-    /* Nested Notes Container */
     .nested-notes {
       display: grid;
       grid-template-columns: repeat(auto-fill, 120px);
-      grid-gap: 20px; /* 20px gap between cards */
+      grid-gap: 20px;
       padding-left: 20px;
       border-left: 2px solid #ddd;
       margin-top: 10px;
-
-      /* Prevent Horizontal Scrolling */
       overflow-x: hidden;
     }
-
-    /* Note Card Styles */
     .nested-note-card {
-      width: 120px; /* Fixed width */
-      height: 160px; /* Fixed height */
-      background-color: #ffffff;
+      width: 120px;
+      height: 160px;
+      background-color: #fff;
       border-radius: 4px;
       padding: 8px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       cursor: pointer;
       transition: background 0.2s, transform 0.2s;
-
-      /* Prevent Flexbox properties from interfering */
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
-
-      /* Optional: Add padding for better content spacing */
       padding: 5px;
-
-      /* Text Overflow Handling */
       overflow: hidden;
     }
-
-    /* Hover Effect for Note Cards */
     .nested-note-card:hover {
       background-color: #f0f0f0;
       transform: translateY(-2px);
     }
-
-    /* Note Title */
     .nested-note-title {
       font-size: 0.85rem;
       font-weight: bold;
@@ -787,8 +615,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
-    /* Note Snippet */
     .nested-note-snippet {
       font-size: 0.75rem;
       color: #555;
@@ -797,49 +623,21 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
-    /* Expand/Collapse Icon */
     .expand-icon {
       margin-left: auto;
       transition: transform 0.3s;
     }
-
     .expand-icon.expanded {
       transform: rotate(90deg);
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 1300px) {
-      .nested-notes {
-        grid-template-columns: repeat(auto-fill, 120px);
-      }
-    }
-
-    @media (max-width: 800px) {
-      .nested-notes {
-        grid-template-columns: repeat(auto-fill, 120px);
-        grid-gap: 15px; /* Slightly smaller gaps on smaller screens */
-      }
-    }
-
-    @media (max-width: 500px) {
-      .nested-notes {
-        grid-template-columns: repeat(auto-fill, 120px);
-        grid-gap: 10px; /* Even smaller gaps */
-      }
     }
   </style>
 </head>
 <body>
-  
-  <!-- Header -->
   <header>
     <div class="logo">
       <i class="fas fa-feather-alt"></i>
       <span>EverCoco</span>
     </div>
-    
-    <!-- Navigation Menu -->
     <nav class="header-nav">
       <div class="nav-item active" onclick="navigate('dashboard')">
         <i class="fas fa-tachometer-alt"></i>
@@ -870,7 +668,6 @@
         <span>Trash</span>
       </div>
     </nav>
-    
     <div class="header-right">
       <i class="fas fa-search" title="Search" onclick="openSearch()"></i>
       <i class="fas fa-bell" title="Notifications" onclick="openNotifications()">
@@ -879,125 +676,77 @@
       <i class="fas fa-user-circle" title="Profile" onclick="showProfile()"></i>
     </div>
   </header>
-  
-  <!-- Main Content -->
   <main>
-    <!-- Kanban Board -->
     <div class="kanban-board">
-      
-      <!-- Dashboard -->
       <section class="kanban-column" id="dashboard-section">
         <h3><i class="fas fa-tachometer-alt"></i> Dashboard</h3>
         <p>Welcome to EverCoco! Manage your notes, tasks, and habits efficiently.</p>
-        
-        <!-- Scratchpad Section -->
         <div class="scratchpad-section">
           <h4><i class="fas fa-pencil-alt"></i> Scratchpad</h4>
           <textarea id="scratchpad" placeholder="Quick notes..."></textarea>
           <button class="btn" onclick="saveScratchpad()">Save</button>
         </div>
-        
-        <!-- Favorites Section on Dashboard -->
         <div class="favorites-section">
           <h4><i class="fas fa-star"></i> Favorites</h4>
-          
-          <!-- Favorite Notebooks -->
           <div class="favorites-subsection" id="favorite-notebooks">
             <h5><i class="fas fa-book"></i> Notebooks</h5>
-            <div class="favorites-list" id="favorites-dashboard-notebooks-list">
-              <!-- Favorite Notebooks will be rendered here -->
-            </div>
+            <div class="favorites-list" id="favorites-dashboard-notebooks-list"></div>
           </div>
-          
-          <!-- Favorite Tags -->
           <div class="favorites-subsection" id="favorite-tags">
             <h5><i class="fas fa-tags"></i> Tags</h5>
-            <div class="favorites-list" id="favorites-dashboard-tags-list">
-              <!-- Favorite Tags will be rendered here -->
-            </div>
+            <div class="favorites-list" id="favorites-dashboard-tags-list"></div>
           </div>
-          
-          <!-- Favorite Notes -->
           <div class="favorites-subsection" id="favorite-notes">
             <h5><i class="fas fa-sticky-note"></i> Notes</h5>
-            <div class="favorites-list" id="favorites-dashboard-notes-list">
-              <!-- Favorite Notes will be rendered here -->
-            </div>
+            <div class="favorites-list" id="favorites-dashboard-notes-list"></div>
           </div>
-          
-          <!-- Favorite Tasks -->
           <div class="favorites-subsection" id="favorite-tasks">
             <h5><i class="fas fa-tasks"></i> Tasks</h5>
-            <div class="favorites-list" id="favorites-dashboard-tasks-list">
-              <!-- Favorite Tasks will be rendered here -->
-            </div>
+            <div class="favorites-list" id="favorites-dashboard-tasks-list"></div>
           </div>
-          
-          <!-- Favorite Habits -->
           <div class="favorites-subsection" id="favorite-habits">
             <h5><i class="fas fa-heartbeat"></i> Habits</h5>
-            <div class="favorites-list" id="favorites-dashboard-habits-list">
-              <!-- Favorite Habits will be rendered here -->
-            </div>
+            <div class="favorites-list" id="favorites-dashboard-habits-list"></div>
           </div>
         </div>
       </section>
-      
-      <!-- Notebooks -->
       <section class="kanban-column" id="notebooks-section" style="display: none;">
         <h3><i class="fas fa-book"></i> Notebooks</h3>
         <p>Create and organize your notebooks.</p>
         <input type="text" id="new-notebook-input" placeholder="Enter notebook name..." />
         <button class="btn" onclick="addNotebook()">Add Notebook</button>
-        <div class="cards-list" id="notebooks-list">
-          <!-- Notebooks will be rendered as cards here -->
-        </div>
+        <div class="cards-list" id="notebooks-list"></div>
       </section>
-      
-      <!-- Tags -->
       <section class="kanban-column" id="tags-section" style="display: none;">
         <h3><i class="fas fa-tags"></i> Tags</h3>
         <p>Create and manage tags for better organization.</p>
         <input type="text" id="new-tag-input" placeholder="Enter tag name..." />
         <button class="btn" onclick="addTag()">Add Tag</button>
-        <div class="cards-list" id="tags-list">
-          <!-- Tags will be rendered as cards here -->
-        </div>
+        <div class="cards-list" id="tags-list"></div>
       </section>
-      
-      <!-- Notes -->
       <section class="kanban-column" id="notes-section" style="display: none;">
         <h3><i class="fas fa-sticky-note"></i> Notes</h3>
         <p>Create and manage your notes.</p>
         <input type="text" id="note-title" placeholder="Note Title..." />
         <textarea id="note-body" rows="3" placeholder="Note Body..."></textarea>
-        
         <label><strong>Tags:</strong></label>
         <div id="note-tags" class="multi-select"></div>
         <input type="text" id="note-new-tags" placeholder="Add new tags (comma separated)" />
-        
         <label><strong>Notebook:</strong></label>
         <select id="note-notebook-select">
           <option value="">No Notebook</option>
         </select>
-        
         <label><strong>Attachments:</strong></label>
         <input type="file" id="note-attachments" multiple accept="image/*,application/pdf,.doc,.docx,.txt" />
         <small>Max size: 2MB. Supported: Images, PDF, DOC, DOCX, TXT.</small>
-        
         <button class="btn" onclick="addNote()">Add Note</button>
-        <div class="cards-list" id="notes-list">
-          <!-- Notes will be rendered as cards here -->
-        </div>
+        <div class="cards-list" id="notes-list"></div>
       </section>
-      
-      <!-- Tasks -->
       <section class="kanban-column" id="tasks-section" style="display: none;">
         <h3><i class="fas fa-tasks"></i> Tasks</h3>
         <p>Create and manage your tasks with due dates and recurrence.</p>
         <input type="text" id="task-input" placeholder="Enter task description..." />
         <input type="date" id="task-due-date" />
-        
         <label><strong>Recurrence:</strong></label>
         <div class="recurrence-options">
           <label><input type="radio" name="task-recurrence" value="none" checked onclick="toggleTaskCustomDays(false)"> None</label>
@@ -1006,7 +755,6 @@
           <label><input type="radio" name="task-recurrence" value="monthly" onclick="toggleTaskCustomDays(false)"> Monthly</label>
           <label><input type="radio" name="task-recurrence" value="custom" onclick="toggleTaskCustomDays(true)"> Custom Days</label>
         </div>
-        
         <div id="task-custom-days" class="custom-days" style="display: none;">
           <label><input type="checkbox" value="Monday"> M</label>
           <label><input type="checkbox" value="Tuesday"> T</label>
@@ -1016,19 +764,13 @@
           <label><input type="checkbox" value="Saturday"> S</label>
           <label><input type="checkbox" value="Sunday"> S</label>
         </div>
-        
         <button class="btn" onclick="addTask()">Add Task</button>
-        <div class="cards-list" id="tasks-list">
-          <!-- Tasks will be rendered as cards here -->
-        </div>
+        <div class="cards-list" id="tasks-list"></div>
       </section>
-      
-      <!-- Habits -->
       <section class="kanban-column" id="habits-section" style="display: none;">
         <h3><i class="fas fa-heartbeat"></i> Habits</h3>
         <p>Create and track your habits.</p>
         <input type="text" id="habit-input" placeholder="Enter habit description..." />
-        
         <label><strong>Recurrence:</strong></label>
         <div class="recurrence-options">
           <label><input type="radio" name="habit-recurrence" value="none" checked onclick="toggleHabitCustomDays(false)"> None</label>
@@ -1037,7 +779,6 @@
           <label><input type="radio" name="habit-recurrence" value="monthly" onclick="toggleHabitCustomDays(false)"> Monthly</label>
           <label><input type="radio" name="habit-recurrence" value="custom" onclick="toggleHabitCustomDays(true)"> Custom Days</label>
         </div>
-        
         <div id="habit-custom-days" class="custom-days" style="display: none;">
           <label><input type="checkbox" value="Monday"> M</label>
           <label><input type="checkbox" value="Tuesday"> T</label>
@@ -1047,51 +788,31 @@
           <label><input type="checkbox" value="Saturday"> S</label>
           <label><input type="checkbox" value="Sunday"> S</label>
         </div>
-        
         <button class="btn" onclick="addHabit()">Add Habit</button>
-        <div class="cards-list" id="habits-list">
-          <!-- Habits will be rendered as cards here -->
-        </div>
+        <div class="cards-list" id="habits-list"></div>
       </section>
-      
-      <!-- Trash -->
       <section class="kanban-column" id="trash-section" style="display: none;">
         <h3><i class="fas fa-trash"></i> Trash</h3>
         <p>Manage your deleted notes here.</p>
-        <div class="cards-list" id="trash-list">
-          <!-- Trashed notes will be rendered as cards here -->
-        </div>
+        <div class="cards-list" id="trash-list"></div>
       </section>
-      
-      <!-- Removed Separate Favorites Section -->
-      
     </div>
   </main>
-  
-  <!-- Search Modal -->
   <div id="search-modal" class="search-modal">
     <div class="search-modal-content">
       <span class="close" onclick="closeSearch()">&times;</span>
       <h2>Search EverCoco</h2>
       <input type="text" id="search-input" placeholder="Type to search..." oninput="performSearch()" />
-      <div id="search-results">
-        <!-- Search results will be dynamically inserted here -->
-      </div>
+      <div id="search-results"></div>
     </div>
   </div>
-  
-  <!-- Notifications Modal -->
   <div id="notifications-modal" class="notifications-modal">
     <div class="notifications-modal-content">
       <span class="close" onclick="closeNotifications()">&times;</span>
       <h2>Notifications</h2>
-      <div id="notifications-list">
-        <!-- Notifications will be dynamically inserted here -->
-      </div>
+      <div id="notifications-list"></div>
     </div>
   </div>
-  
-  <!-- Edit Notebook Modal -->
   <div id="edit-notebook-modal" class="edit-modal">
     <div class="edit-modal-content">
       <span class="close" onclick="closeEditModal('notebook')">&times;</span>
@@ -1108,8 +829,6 @@
       </form>
     </div>
   </div>
-  
-  <!-- Edit Tag Modal -->
   <div id="edit-tag-modal" class="edit-modal">
     <div class="edit-modal-content">
       <span class="close" onclick="closeEditModal('tag')">&times;</span>
@@ -1126,8 +845,6 @@
       </form>
     </div>
   </div>
-  
-  <!-- Edit Note Modal -->
   <div id="edit-note-modal" class="edit-modal">
     <div class="edit-modal-content">
       <span class="close" onclick="closeEditModal('note')">&times;</span>
@@ -1164,8 +881,6 @@
       </form>
     </div>
   </div>
-  
-  <!-- Edit Task Modal -->
   <div id="edit-task-modal" class="edit-modal">
     <div class="edit-modal-content">
       <span class="close" onclick="closeEditModal('task')">&times;</span>
@@ -1205,8 +920,6 @@
       </form>
     </div>
   </div>
-  
-  <!-- Edit Habit Modal -->
   <div id="edit-habit-modal" class="edit-modal">
     <div class="edit-modal-content">
       <span class="close" onclick="closeEditModal('habit')">&times;</span>
@@ -1242,50 +955,34 @@
       </form>
     </div>
   </div>
-  
-  <!-- Notification -->
   <div class="notification" id="notification"></div>
-  
-  <!-- Footer -->
   <footer>
     &copy; 2024-2025 EverCoco. <a href="https://buymeacoffee.com/mpalmero" target="_blank"><i class="fas fa-coffee"></i> Buy me a coffee?</a> All rights reserved.
   </footer>
-  
-  <!-- Embedded JavaScript -->
   <script>
-    // Helper Function to Retrieve CSS Variables
-    function getCSSVariable(variableName) {
-      return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-    }
-
-    // UUID Generator Function (RFC4122 version 4 compliant)
-    function generateUUID() { // Public Domain/MIT
-      var d = new Date().getTime();//Timestamp
-      var d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    function generateUUID() {
+      let d = new Date().getTime();
+      let d2 = (performance && performance.now && (performance.now()*1000)) || 0;
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          var r = Math.random() * 16;//random number between 0 and 16
-          if(d > 0){
-              r = (d + r)%16 | 0;
-              d = Math.floor(d/16);
-          } else {
-              r = (d2 + r)%16 | 0;
-              d2 = Math.floor(d2/16);
-          }
-          return (c==='x' ? r : (r&0x3|0x8)).toString(16);
+        let r = Math.random() * 16;
+        if(d > 0){
+            r = (d + r)%16 | 0;
+            d = Math.floor(d/16);
+        } else {
+            r = (d2 + r)%16 | 0;
+            d2 = Math.floor(d2/16);
+        }
+        return (c==='x' ? r : (r&0x3|0x8)).toString(16);
       });
     }
-
-    // Data Structures
     let notebooks = [];
     let tags = [];
     let notes = [];
     let tasks = [];
     let habits = [];
-    let notifications = []; // New array for notifications
-    let trashedNotes = []; // New array for trashed notes
-    let scratchpadContent = ''; // New variable for scratchpad
-
-    // Initialize Application
+    let notifications = [];
+    let trashedNotes = [];
+    let scratchpadContent = '';
     window.onload = function() {
       loadData();
       ensurePersonalNotebook();
@@ -1294,107 +991,83 @@
       loadScratchpad();
       renderAll();
       resetStreaks();
-      initializeNotifications(); // Initialize notification badge
-      checkUpcomingEvents(); // Check for upcoming events
+      initializeNotifications();
+      checkUpcomingEvents();
     };
-
-    // Load Data from localStorage
     function loadData() {
       try {
-        notebooks = JSON.parse(localStorage.getItem('notecoco_notebooks')) || [];
-      } catch (e) {
-        console.error('Error parsing notebooks:', e);
+        notebooks = JSON.parse(localStorage.getItem('EverCoco_notebooks')) || [];
+      } catch(e) {
         notebooks = [];
       }
-
       try {
-        tags = JSON.parse(localStorage.getItem('notecoco_tags')) || [];
-      } catch (e) {
-        console.error('Error parsing tags:', e);
+        tags = JSON.parse(localStorage.getItem('EverCoco_tags')) || [];
+      } catch(e) {
         tags = [];
       }
-
       try {
-        notes = JSON.parse(localStorage.getItem('notecoco_notes')) || [];
-      } catch (e) {
-        console.error('Error parsing notes:', e);
+        notes = JSON.parse(localStorage.getItem('EverCoco_notes')) || [];
+      } catch(e) {
         notes = [];
       }
-
       try {
-        tasks = JSON.parse(localStorage.getItem('notecoco_tasks')) || [];
-      } catch (e) {
-        console.error('Error parsing tasks:', e);
+        tasks = JSON.parse(localStorage.getItem('EverCoco_tasks')) || [];
+      } catch(e) {
         tasks = [];
       }
-
       try {
-        habits = JSON.parse(localStorage.getItem('notecoco_habits')) || [];
-      } catch (e) {
-        console.error('Error parsing habits:', e);
+        habits = JSON.parse(localStorage.getItem('EverCoco_habits')) || [];
+      } catch(e) {
         habits = [];
       }
-
       try {
-        notifications = JSON.parse(localStorage.getItem('notecoco_notifications')) || [];
-      } catch (e) {
-        console.error('Error parsing notifications:', e);
+        notifications = JSON.parse(localStorage.getItem('EverCoco_notifications')) || [];
+      } catch(e) {
         notifications = [];
       }
-
       try {
-        trashedNotes = JSON.parse(localStorage.getItem('notecoco_trashedNotes')) || [];
-      } catch (e) {
-        console.error('Error parsing trashed notes:', e);
+        trashedNotes = JSON.parse(localStorage.getItem('EverCoco_trashedNotes')) || [];
+      } catch(e) {
         trashedNotes = [];
       }
-
       try {
-        scratchpadContent = localStorage.getItem('notecoco_scratchpad') || '';
-      } catch (e) {
-        console.error('Error loading scratchpad:', e);
+        scratchpadContent = localStorage.getItem('EverCoco_scratchpad') || '';
+      } catch(e) {
         scratchpadContent = '';
       }
-
-      // Ensure tags are objects with 'id', 'name', and 'favorite'
       tags = tags.map(tag => {
         if (typeof tag === 'string') {
-          return { id: generateUUID(), name: tag, favorite: false }; // Assign unique 'id'
+          return { id: generateUUID(), name: tag, favorite: false };
         }
         if (!tag.id) {
-          tag.id = generateUUID(); // Assign unique 'id' if missing
+          tag.id = generateUUID();
         }
         if (tag.favorite === undefined) tag.favorite = false;
         return tag;
       });
-
-      // Initialize 'favorite' if undefined for other entities
-      notebooks.forEach(nb => { if (nb.favorite === undefined) nb.favorite = false; });
-      notes.forEach(note => { if (note.favorite === undefined) note.favorite = false; });
-      tasks.forEach(task => { if (task.favorite === undefined) task.favorite = false; });
-      habits.forEach(habit => { if (habit.favorite === undefined) habit.favorite = false; });
+      notebooks.forEach(nb => {
+        if (nb.favorite === undefined) nb.favorite = false;
+      });
+      notes.forEach(note => {
+        if (note.favorite === undefined) note.favorite = false;
+      });
+      tasks.forEach(task => {
+        if (task.favorite === undefined) task.favorite = false;
+      });
+      habits.forEach(habit => {
+        if (habit.favorite === undefined) habit.favorite = false;
+      });
     }
-
-    // Save Data to localStorage
     function saveData() {
-      try {
-        localStorage.setItem('notecoco_notebooks', JSON.stringify(notebooks));
-        localStorage.setItem('notecoco_tags', JSON.stringify(tags));
-        localStorage.setItem('notecoco_notes', JSON.stringify(notes));
-        localStorage.setItem('notecoco_tasks', JSON.stringify(tasks));
-        localStorage.setItem('notecoco_habits', JSON.stringify(habits));
-        localStorage.setItem('notecoco_notifications', JSON.stringify(notifications)); // Save notifications
-        localStorage.setItem('notecoco_trashedNotes', JSON.stringify(trashedNotes)); // Save trashed notes
-        localStorage.setItem('notecoco_scratchpad', scratchpadContent); // Save scratchpad
-
-        console.log('Data Saved:', { notebooks, tags, notes, tasks, habits, notifications, trashedNotes, scratchpadContent });
-      } catch (e) {
-        console.error('Error saving data to localStorage:', e);
-        showNotification('Error saving data. Please ensure your browser supports localStorage and has sufficient space.', 'error');
-      }
+      localStorage.setItem('EverCoco_notebooks', JSON.stringify(notebooks));
+      localStorage.setItem('EverCoco_tags', JSON.stringify(tags));
+      localStorage.setItem('EverCoco_notes', JSON.stringify(notes));
+      localStorage.setItem('EverCoco_tasks', JSON.stringify(tasks));
+      localStorage.setItem('EverCoco_habits', JSON.stringify(habits));
+      localStorage.setItem('EverCoco_notifications', JSON.stringify(notifications));
+      localStorage.setItem('EverCoco_trashedNotes', JSON.stringify(trashedNotes));
+      localStorage.setItem('EverCoco_scratchpad', scratchpadContent);
     }
-
-    // Ensure "Personal" Notebook Exists
     function ensurePersonalNotebook() {
       const personalExists = notebooks.some(nb => nb.name.toLowerCase() === 'personal');
       if (!personalExists) {
@@ -1402,8 +1075,6 @@
         saveData();
       }
     }
-
-    // Populate Notebook Selectors
     function populateNotebookSelect() {
       const notebookSelects = document.querySelectorAll('#note-notebook-select, #edit-note-notebook');
       notebookSelects.forEach(select => {
@@ -1416,8 +1087,6 @@
         });
       });
     }
-
-    // Populate Tag Selectors
     function populateTagSelectors() {
       const tagContainers = document.querySelectorAll('.multi-select, #edit-note-tags');
       tagContainers.forEach(container => {
@@ -1433,23 +1102,17 @@
         });
       });
     }
-
-    // Load Scratchpad Content
     function loadScratchpad() {
       const scratchpad = document.getElementById('scratchpad');
       scratchpad.value = scratchpadContent;
     }
-
-    // Save Scratchpad Content
     function saveScratchpad() {
       const scratchpad = document.getElementById('scratchpad');
       scratchpadContent = scratchpad.value;
       saveData();
       showNotification('Scratchpad saved successfully.', 'success');
-      addNotification('Scratchpad was updated.');
+      addNotification('Scratchpad updated.');
     }
-
-    // Render All Sections
     function renderAll() {
       renderNotebooks();
       renderTags();
@@ -1457,42 +1120,29 @@
       renderTasks();
       renderHabits();
       renderDashboardFavorites();
-      renderTrash(); // Render Trash section
+      renderTrash();
     }
-
-    // Render Functions for Each Section
     function renderNotebooks() {
       const notebooksList = document.getElementById('notebooks-list');
       notebooksList.innerHTML = '';
       notebooks.forEach(nb => {
         const card = createCard(nb.name || 'Untitled', 'notebooks', nb.id, 'book', nb.favorite, () => toggleFavorite('notebooks', nb.id));
-        card.id = `notebook-${nb.id}`; // Assign unique ID to the card
-
-        // Add an expand/collapse icon
+        card.id = `notebook-${nb.id}`;
         const expandIcon = document.createElement('i');
         expandIcon.className = 'fas fa-chevron-right expand-icon';
         card.querySelector('.card-header-left').appendChild(expandIcon);
-
-        // Create a container for nested notes
         const nestedNotesContainer = document.createElement('div');
         nestedNotesContainer.className = 'nested-notes';
         card.appendChild(nestedNotesContainer);
-
-        // Toggle functionality
         card.onclick = (e) => {
-          // Prevent triggering on favorite button or action buttons
           if (e.target.closest('.favorite-btn') || e.target.closest('.card-actions')) return;
-
           const isVisible = nestedNotesContainer.style.display === 'grid';
           nestedNotesContainer.style.display = isVisible ? 'none' : 'grid';
           expandIcon.classList.toggle('expanded', !isVisible);
-
           if (!isVisible) {
             renderNotesInsideNotebook(nb.id, nestedNotesContainer);
           }
         };
-
-        // Actions for non-Personal notebooks
         if (nb.name.toLowerCase() !== 'personal') {
           const actions = createCardActions([
             { icon: 'edit', title: 'Edit', action: () => openEditModal('notebook', nb.id) },
@@ -1500,7 +1150,6 @@
           ]);
           card.querySelector('.card-header-right').appendChild(actions);
         }
-
         card.ondblclick = () => {
           if (nb.name.toLowerCase() !== 'personal') {
             openEditModal('notebook', nb.id);
@@ -1508,47 +1157,38 @@
             showNotification('The "Personal" notebook cannot be renamed.', 'error');
           }
         };
-
         notebooksList.appendChild(card);
       });
     }
-
     function renderTags() {
       const tagsList = document.getElementById('tags-list');
       tagsList.innerHTML = '';
       tags.forEach(tag => {
         const card = createCard(tag.name || 'Untitled', 'tags', tag.id, 'tags', tag.favorite, () => toggleFavorite('tags', tag.id));
-        card.id = `tag-${tag.id}`; // Assign unique ID to the card
-
+        card.id = `tag-${tag.id}`;
         const actions = createCardActions([
           { icon: 'edit', title: 'Edit', action: () => openEditModal('tag', tag.id) },
           { icon: 'trash', title: 'Delete', action: () => deleteTag(tag.id) }
         ]);
         card.querySelector('.card-header-right').appendChild(actions);
-
         card.ondblclick = () => {
           openEditModal('tag', tag.id);
         };
-
         tagsList.appendChild(card);
       });
     }
-
     function renderNotes(filteredNotes = null) {
       const notesList = document.getElementById('notes-list');
       notesList.innerHTML = '';
       const notesToRender = filteredNotes || notes;
       notesToRender.forEach(note => {
         const card = createCard(note.title || 'Untitled', 'notes', note.id, 'sticky-note', note.favorite, () => toggleFavorite('notes', note.id));
-        card.id = `note-${note.id}`; // Assign unique ID to the card
-
+        card.id = `note-${note.id}`;
         const actions = createCardActions([
           { icon: 'edit', title: 'Edit', action: () => openEditModal('note', note.id) },
           { icon: 'trash', title: 'Delete', action: () => deleteNote(note.id) }
         ]);
         card.querySelector('.card-header-right').appendChild(actions);
-
-        // Details
         if (note.body) {
           const snippet = note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body;
           const body = document.createElement('div');
@@ -1556,21 +1196,18 @@
           body.textContent = snippet;
           card.appendChild(body);
         }
-
         if (note.tags.length > 0) {
           const tagDiv = document.createElement('div');
           tagDiv.className = 'details';
           tagDiv.textContent = 'Tags: ' + note.tags.join(', ');
           card.appendChild(tagDiv);
         }
-
         if (note.notebook) {
           const nbDiv = document.createElement('div');
           nbDiv.className = 'details';
           nbDiv.textContent = 'Notebook: ' + note.notebook;
           card.appendChild(nbDiv);
         }
-
         if (note.attachments.length > 0) {
           const attachDiv = document.createElement('div');
           attachDiv.className = 'attachments';
@@ -1590,109 +1227,85 @@
           });
           card.appendChild(attachDiv);
         }
-
         card.ondblclick = () => {
           openEditModal('note', note.id);
         };
-
         notesList.appendChild(card);
       });
     }
-
     function renderTasks() {
       const tasksList = document.getElementById('tasks-list');
       tasksList.innerHTML = '';
       tasks.forEach(task => {
         const card = createCard(task.description || 'Untitled', 'tasks', task.id, 'tasks', task.favorite, () => toggleFavorite('tasks', task.id));
-        card.id = `task-${task.id}`; // Assign unique ID to the card
-
+        card.id = `task-${task.id}`;
         const actions = createCardActions([
           { icon: task.completed ? 'undo' : 'check', title: task.completed ? 'Mark as Incomplete' : 'Mark as Complete', action: () => toggleTaskCompletion(task.id) },
           { icon: 'edit', title: 'Edit', action: () => openEditModal('task', task.id) },
           { icon: 'trash', title: 'Delete', action: () => deleteTask(task.id) }
         ]);
         card.querySelector('.card-header-right').appendChild(actions);
-
-        // Details
         if (task.dueDate) {
           const dueDate = document.createElement('div');
           dueDate.className = 'details';
           dueDate.textContent = 'Due: ' + task.dueDate;
           card.appendChild(dueDate);
         }
-
         if (task.recurrence !== 'none') {
           const recurrence = document.createElement('div');
           recurrence.className = 'details';
           recurrence.textContent = 'Recurs: ' + formatRecurrence(task);
           card.appendChild(recurrence);
         }
-
         card.ondblclick = () => {
           openEditModal('task', task.id);
         };
-
         tasksList.appendChild(card);
       });
     }
-
     function renderHabits() {
       const habitsList = document.getElementById('habits-list');
       habitsList.innerHTML = '';
       habits.forEach(habit => {
         const card = createCard(habit.description || 'Untitled', 'habits', habit.id, 'heartbeat', habit.favorite, () => toggleFavorite('habits', habit.id));
-        card.id = `habit-${habit.id}`; // Assign unique ID to the card
-
+        card.id = `habit-${habit.id}`;
         const actions = createCardActions([
           { icon: habit.completed ? 'undo' : 'check', title: habit.completed ? 'Mark as Incomplete' : 'Mark as Complete', action: () => toggleHabitCompletion(habit.id) },
           { icon: 'edit', title: 'Edit', action: () => openEditModal('habit', habit.id) },
           { icon: 'trash', title: 'Delete', action: () => deleteHabit(habit.id) }
         ]);
         card.querySelector('.card-header-right').appendChild(actions);
-
-        // Details
         if (habit.recurrence !== 'none') {
           const recurDiv = document.createElement('div');
           recurDiv.className = 'details';
           recurDiv.textContent = 'Recurs: ' + formatRecurrence(habit);
           card.appendChild(recurDiv);
         }
-
         card.ondblclick = () => {
           openEditModal('habit', habit.id);
         };
-
         habitsList.appendChild(card);
       });
     }
-
-    // Helper Function to Create Cards
     function createCard(title, type, identifier, icon, favorite, favoriteAction) {
       const card = document.createElement('div');
       card.className = 'card';
-      
       const header = document.createElement('div');
       header.className = 'card-header';
-      
       const headerLeft = document.createElement('div');
       headerLeft.className = 'card-header-left';
-      
       if (icon) {
         const iconElem = document.createElement('i');
         iconElem.className = `fas fa-${icon}`;
         headerLeft.appendChild(iconElem);
       }
-      
       const titleSpan = document.createElement('span');
       titleSpan.className = 'title';
       titleSpan.textContent = title;
       headerLeft.appendChild(titleSpan);
-      
       header.appendChild(headerLeft);
-      
       const headerRight = document.createElement('div');
       headerRight.className = 'card-header-right';
-      
       const favoriteBtn = document.createElement('button');
       favoriteBtn.className = 'favorite-btn';
       favoriteBtn.title = favorite ? 'Unfavorite' : 'Favorite';
@@ -1702,20 +1315,13 @@
         favoriteAction();
       };
       headerRight.appendChild(favoriteBtn);
-      
-      // Card actions will be appended by the caller
       header.appendChild(headerRight);
-      
       card.appendChild(header);
-      
       return card;
     }
-
-    // Helper Function to Create Card Actions
     function createCardActions(actionsArray) {
       const actionsDiv = document.createElement('div');
       actionsDiv.className = 'card-actions';
-      
       actionsArray.forEach(actionObj => {
         const btn = document.createElement('button');
         btn.title = actionObj.title;
@@ -1726,11 +1332,8 @@
         };
         actionsDiv.appendChild(btn);
       });
-      
       return actionsDiv;
     }
-
-    // Helper Function to Format Recurrence Text
     function formatRecurrence(item) {
       if (item.recurrence === 'daily') return 'Daily';
       if (item.recurrence === 'weekly') return 'Weekly';
@@ -1738,55 +1341,36 @@
       if (item.recurrence === 'custom') return 'Custom Days (' + item.customDays.join(', ') + ')';
       return 'None';
     }
-
-    // Function to Render Notes Inside a Notebook
     function renderNotesInsideNotebook(notebookId, container) {
-      // Clear any existing notes
       container.innerHTML = '';
-
-      // Find the notebook by ID
       const notebook = notebooks.find(nb => nb.id === notebookId);
       if (!notebook) return;
-
-      // Filter notes associated with this notebook
       const associatedNotes = notes.filter(note => note.notebook === notebook.name);
-
       if (associatedNotes.length === 0) {
         container.innerHTML = '<p style="color: #555; font-size: 0.8rem;">No notes in this notebook.</p>';
         return;
       }
-
-      // Create note cards
       associatedNotes.forEach(note => {
         const noteCard = document.createElement('div');
         noteCard.className = 'nested-note-card';
         noteCard.title = note.title || 'Untitled Note';
-
-        // Note Title
         const noteTitle = document.createElement('div');
         noteTitle.className = 'nested-note-title';
         noteTitle.textContent = note.title || 'Untitled';
         noteCard.appendChild(noteTitle);
-
-        // Note Snippet
         if (note.body) {
           const noteSnippet = document.createElement('div');
           noteSnippet.className = 'nested-note-snippet';
           noteSnippet.textContent = note.body.length > 50 ? note.body.substring(0, 50) + '...' : note.body;
           noteCard.appendChild(noteSnippet);
         }
-
-        // Click event to navigate to the note
         noteCard.onclick = () => {
           navigate('notes', `note-${note.id}`);
-          closeSearch(); // Close search modal if open
+          closeSearch();
         };
-
         container.appendChild(noteCard);
       });
     }
-
-    // Add Notebook (Modified to Include Notification)
     function addNotebook() {
       const input = document.getElementById('new-notebook-input');
       const name = input.value.trim();
@@ -1805,10 +1389,8 @@
       renderNotebooks();
       renderDashboardFavorites();
       showNotification('Notebook added successfully.', 'success');
-      addNotification(`New notebook "${name}" created.`);
+      addNotification(`Notebook "${name}" created.`);
     }
-
-    // Delete Notebook (Modified to Include Notification)
     function deleteNotebook(id) {
       const notebook = notebooks.find(nb => nb.id === id);
       if (!notebook) return;
@@ -1818,7 +1400,6 @@
       }
       if (confirm(`Are you sure you want to delete the notebook "${notebook.name}"?`)) {
         notebooks = notebooks.filter(nb => nb.id !== id);
-        // Unassign notebook from notes
         notes = notes.map(note => {
           if (note.notebook === notebook.name) {
             return { ...note, notebook: '', favorite: note.favorite };
@@ -1830,12 +1411,10 @@
         renderNotebooks();
         renderNotes();
         renderDashboardFavorites();
-        showNotification('Notebook deleted successfully.', 'success');
-        addNotification(`Notebook "${notebook.name}" was deleted.`);
+        showNotification('Notebook deleted.', 'success');
+        addNotification(`Notebook "${notebook.name}" deleted.`);
       }
     }
-
-    // Open Edit Modal
     function openEditModal(type, id) {
       switch(type) {
         case 'notebook':
@@ -1853,12 +1432,8 @@
         case 'habit':
           openEditHabitModal(id);
           break;
-        default:
-          break;
       }
     }
-
-    // Close Edit Modal
     function closeEditModal(type) {
       switch(type) {
         case 'notebook':
@@ -1876,12 +1451,8 @@
         case 'habit':
           document.getElementById('edit-habit-modal').style.display = 'none';
           break;
-        default:
-          break;
       }
     }
-
-    // Open Edit Notebook Modal
     function openEditNotebookModal(id) {
       const notebook = notebooks.find(nb => nb.id === id);
       if (!notebook) return;
@@ -1889,8 +1460,6 @@
       document.getElementById('edit-notebook-form').setAttribute('data-id', id);
       document.getElementById('edit-notebook-modal').style.display = 'block';
     }
-
-    // Handle Edit Notebook Form Submission
     document.getElementById('edit-notebook-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const id = this.getAttribute('data-id');
@@ -1907,7 +1476,6 @@
       if (!notebook) return;
       const oldName = notebook.name;
       notebook.name = newName;
-      // Update notebook name in notes
       notes = notes.map(note => {
         if (note.notebook === oldName) {
           return { ...note, notebook: newName };
@@ -1920,11 +1488,9 @@
       renderNotes();
       renderDashboardFavorites();
       closeEditModal('notebook');
-      showNotification('Notebook updated successfully.', 'success');
-      addNotification(`Notebook "${oldName}" was renamed to "${newName}".`);
+      showNotification('Notebook updated.', 'success');
+      addNotification(`Notebook "${oldName}" renamed to "${newName}".`);
     });
-
-    // Open Edit Tag Modal
     function openEditTagModal(id) {
       const tag = tags.find(t => t.id === id);
       if (!tag) return;
@@ -1932,8 +1498,6 @@
       document.getElementById('edit-tag-form').setAttribute('data-id', id);
       document.getElementById('edit-tag-modal').style.display = 'block';
     }
-
-    // Handle Edit Tag Form Submission
     document.getElementById('edit-tag-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const id = this.getAttribute('data-id');
@@ -1943,17 +1507,16 @@
         return;
       }
       if (tags.some(t => t.name.toLowerCase() === newName.toLowerCase() && t.id !== id)) {
-        showNotification('Another tag with this name already exists.', 'error');
+        showNotification('Tag already exists.', 'error');
         return;
       }
       const tag = tags.find(t => t.id === id);
       if (!tag) return;
       const oldName = tag.name;
       tag.name = newName;
-      // Update tag name in notes
       notes = notes.map(note => {
-        if (note.tags.includes(tag.name)) {
-          return { ...note, tags: note.tags.map(t => t === tag.name ? newName : t) };
+        if (note.tags.includes(oldName)) {
+          return { ...note, tags: note.tags.map(t => t === oldName ? newName : t) };
         }
         return note;
       });
@@ -1963,18 +1526,14 @@
       renderNotes();
       renderDashboardFavorites();
       closeEditModal('tag');
-      showNotification('Tag updated successfully.', 'success');
-      addNotification(`Tag "${oldName}" was renamed to "${newName}".`);
+      showNotification('Tag updated.', 'success');
+      addNotification(`Tag "${oldName}" renamed to "${newName}".`);
     });
-
-    // Open Edit Note Modal
     function openEditNoteModal(id) {
       const note = notes.find(n => n.id === id);
       if (!note) return;
       document.getElementById('edit-note-title').value = note.title || '';
       document.getElementById('edit-note-body').value = note.body || '';
-      
-      // Populate tags
       const editNoteTagsContainer = document.getElementById('edit-note-tags');
       editNoteTagsContainer.innerHTML = '';
       tags.forEach(tag => {
@@ -1988,8 +1547,6 @@
         editNoteTagsContainer.appendChild(label);
       });
       document.getElementById('edit-note-new-tags').value = '';
-      
-      // Populate notebook select
       const editNoteNotebookSelect = document.getElementById('edit-note-notebook');
       editNoteNotebookSelect.innerHTML = '<option value="">No Notebook</option>';
       notebooks.forEach(nb => {
@@ -1999,15 +1556,10 @@
         if (nb.name === note.notebook) option.selected = true;
         editNoteNotebookSelect.appendChild(option);
       });
-      
-      // Clear attachments input
       document.getElementById('edit-note-attachments').value = '';
-      
       document.getElementById('edit-note-form').setAttribute('data-id', id);
       document.getElementById('edit-note-modal').style.display = 'block';
     }
-
-    // Handle Edit Note Form Submission
     document.getElementById('edit-note-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const id = this.getAttribute('data-id');
@@ -2017,47 +1569,40 @@
       const newTagsInput = document.getElementById('edit-note-new-tags');
       const notebookSelect = document.getElementById('edit-note-notebook');
       const attachmentsInput = document.getElementById('edit-note-attachments');
-
       const selectedTags = Array.from(tagsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
       const newTags = newTagsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
       let allNoteTags = [...selectedTags, ...newTags];
-      allNoteTags = [...new Set(allNoteTags)]; // Remove duplicates
-
-      // Add new tags to tags list
+      allNoteTags = [...new Set(allNoteTags)];
       newTags.forEach(tag => {
         if (!tags.some(t => t.name.toLowerCase() === tag.toLowerCase())) {
           tags.push({ id: generateUUID(), name: tag, favorite: false });
         }
       });
-
       const notebook = notebookSelect.value;
-
       const attachments = [];
       const files = attachmentsInput.files;
-      const validFileTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
-      
+      const validFileTypes = [
+        'image/jpeg','image/png','image/gif','application/pdf','application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/plain'
+      ];
       if (files.length > 0) {
         let filesProcessed = 0;
         for (let file of files) {
-          if (file.size > 2 * 1024 * 1024) { // 2MB limit
-            showNotification(`File "${file.name}" exceeds the 2MB limit and was not added.`, 'error');
+          if (file.size > 2 * 1024 * 1024) {
+            showNotification(`File "${file.name}" exceeds 2MB limit.`, 'error');
             filesProcessed++;
             if (filesProcessed === files.length) finalizeEditNote();
             continue;
           }
           if (!validFileTypes.includes(file.type)) {
-            showNotification(`File type of "${file.name}" is not supported and was not added.`, 'error');
+            showNotification(`File type "${file.name}" not supported.`, 'error');
             filesProcessed++;
             if (filesProcessed === files.length) finalizeEditNote();
             continue;
           }
           const reader = new FileReader();
-          reader.onload = function(e) {
-            attachments.push({
-              name: file.name,
-              type: file.type,
-              data: e.target.result
-            });
+          reader.onload = function(e2) {
+            attachments.push({ name: file.name, type: file.type, data: e2.target.result });
             filesProcessed++;
             if (filesProcessed === files.length) finalizeEditNote();
           };
@@ -2066,7 +1611,6 @@
       } else {
         finalizeEditNote();
       }
-
       function finalizeEditNote() {
         const note = notes.find(n => n.id === id);
         if (!note) return;
@@ -2074,7 +1618,6 @@
         note.body = body;
         note.tags = allNoteTags;
         note.notebook = notebook;
-
         if (attachments.length > 0) {
           note.attachments = note.attachments.concat(attachments);
         }
@@ -2084,37 +1627,27 @@
         renderNotes();
         renderDashboardFavorites();
         closeEditModal('note');
-        showNotification('Note updated successfully.', 'success');
-        addNotification(`Note "${title || 'Untitled'}" was edited.`);
+        showNotification('Note updated.', 'success');
+        addNotification(`Note "${title || 'Untitled'}" edited.`);
       }
     });
-
-    // Open Edit Task Modal
     function openEditTaskModal(id) {
       const task = tasks.find(t => t.id === id);
       if (!task) return;
       document.getElementById('edit-task-description').value = task.description;
       document.getElementById('edit-task-due-date').value = task.dueDate || '';
-      
-      // Set recurrence
       const recurrenceRadios = document.getElementsByName('edit-task-recurrence');
       recurrenceRadios.forEach(radio => {
         if (radio.value === task.recurrence) radio.checked = true;
-        else radio.checked = false;
       });
       toggleEditTaskCustomDays(task.recurrence === 'custom');
-
-      // Set custom days
       const editTaskCustomDaysDiv = document.getElementById('edit-task-custom-days');
       editTaskCustomDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         cb.checked = task.customDays.includes(cb.value);
       });
-
       document.getElementById('edit-task-form').setAttribute('data-id', id);
       document.getElementById('edit-task-modal').style.display = 'block';
     }
-
-    // Toggle Edit Task Custom Days
     function toggleEditTaskCustomDays(show) {
       const customDaysDiv = document.getElementById('edit-task-custom-days');
       if (show) {
@@ -2124,8 +1657,6 @@
         customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
       }
     }
-
-    // Handle Edit Task Form Submission
     document.getElementById('edit-task-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const id = this.getAttribute('data-id');
@@ -2133,67 +1664,52 @@
       const dueDate = document.getElementById('edit-task-due-date').value;
       const recurrenceRadios = document.getElementsByName('edit-task-recurrence');
       let recurrence = 'none';
-      recurrenceRadios.forEach(radio => {
-        if (radio.checked) recurrence = radio.value;
+      recurrenceRadios.forEach(r => {
+        if (r.checked) recurrence = r.value;
       });
-
       let customDays = [];
       if (recurrence === 'custom') {
         const checkboxes = document.getElementById('edit-task-custom-days').querySelectorAll('input[type="checkbox"]:checked');
         customDays = Array.from(checkboxes).map(cb => cb.value);
         if (customDays.length === 0) {
-          showNotification('Please select at least one day for custom recurrence.', 'error');
+          showNotification('Select at least one day for custom recurrence.', 'error');
           return;
         }
       }
-
       if (!description) {
         showNotification('Task description cannot be empty.', 'error');
         return;
       }
-
       const task = tasks.find(t => t.id === id);
       if (!task) return;
-
       const oldDescription = task.description;
       task.description = description;
       task.dueDate = dueDate;
       task.recurrence = recurrence;
       task.customDays = recurrence === 'custom' ? customDays : [];
-
       saveData();
       renderTasks();
       renderDashboardFavorites();
       closeEditModal('task');
-      showNotification('Task updated successfully.', 'success');
-      addNotification(`Task "${oldDescription}" was edited.`);
+      showNotification('Task updated.', 'success');
+      addNotification(`Task "${oldDescription}" edited.`);
     });
-
-    // Open Edit Habit Modal
     function openEditHabitModal(id) {
       const habit = habits.find(h => h.id === id);
       if (!habit) return;
       document.getElementById('edit-habit-description').value = habit.description;
-      
-      // Set recurrence
       const recurrenceRadios = document.getElementsByName('edit-habit-recurrence');
-      recurrenceRadios.forEach(radio => {
-        if (radio.value === habit.recurrence) radio.checked = true;
-        else radio.checked = false;
+      recurrenceRadios.forEach(r => {
+        if (r.value === habit.recurrence) r.checked = true;
       });
       toggleEditHabitCustomDays(habit.recurrence === 'custom');
-
-      // Set custom days
       const editHabitCustomDaysDiv = document.getElementById('edit-habit-custom-days');
       editHabitCustomDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         cb.checked = habit.customDays.includes(cb.value);
       });
-
       document.getElementById('edit-habit-form').setAttribute('data-id', id);
       document.getElementById('edit-habit-modal').style.display = 'block';
     }
-
-    // Toggle Edit Habit Custom Days
     function toggleEditHabitCustomDays(show) {
       const customDaysDiv = document.getElementById('edit-habit-custom-days');
       if (show) {
@@ -2203,50 +1719,41 @@
         customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
       }
     }
-
-    // Handle Edit Habit Form Submission
     document.getElementById('edit-habit-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const id = this.getAttribute('data-id');
       const description = document.getElementById('edit-habit-description').value.trim();
       const recurrenceRadios = document.getElementsByName('edit-habit-recurrence');
       let recurrence = 'none';
-      recurrenceRadios.forEach(radio => {
-        if (radio.checked) recurrence = radio.value;
+      recurrenceRadios.forEach(r => {
+        if (r.checked) recurrence = r.value;
       });
-
       let customDays = [];
       if (recurrence === 'custom') {
         const checkboxes = document.getElementById('edit-habit-custom-days').querySelectorAll('input[type="checkbox"]:checked');
         customDays = Array.from(checkboxes).map(cb => cb.value);
         if (customDays.length === 0) {
-          showNotification('Please select at least one day for custom recurrence.', 'error');
+          showNotification('Select at least one day for custom recurrence.', 'error');
           return;
         }
       }
-
       if (!description) {
         showNotification('Habit description cannot be empty.', 'error');
         return;
       }
-
       const habit = habits.find(h => h.id === id);
       if (!habit) return;
-
       const oldDescription = habit.description;
       habit.description = description;
       habit.recurrence = recurrence;
       habit.customDays = recurrence === 'custom' ? customDays : [];
-
       saveData();
       renderHabits();
       renderDashboardFavorites();
       closeEditModal('habit');
-      showNotification('Habit updated successfully.', 'success');
-      addNotification(`Habit "${oldDescription}" was edited.`);
+      showNotification('Habit updated.', 'success');
+      addNotification(`Habit "${oldDescription}" edited.`);
     });
-
-    // Add Tag (Modified to Include Notification)
     function addTag() {
       const input = document.getElementById('new-tag-input');
       const name = input.value.trim();
@@ -2258,26 +1765,23 @@
         showNotification('Tag already exists.', 'error');
         return;
       }
-      tags.push({ id: generateUUID(), name, favorite: false }); // Assign unique 'id'
+      tags.push({ id: generateUUID(), name, favorite: false });
       input.value = '';
       saveData();
       populateTagSelectors();
       renderTags();
       renderDashboardFavorites();
-      showNotification('Tag added successfully.', 'success');
-      addNotification(`New tag "${name}" created.`);
+      showNotification('Tag added.', 'success');
+      addNotification(`Tag "${name}" created.`);
     }
-
-    // Delete Tag (Modified to Include Notification)
     function deleteTag(id) {
       const tag = tags.find(t => t.id === id);
       if (!tag) return;
-      if (confirm(`Are you sure you want to delete the tag "${tag.name}"? This will remove it from all notes.`)) {
+      if (confirm(`Delete tag "${tag.name}"? It will be removed from all notes.`)) {
         tags = tags.filter(t => t.id !== id);
-        // Remove tag from notes
         notes = notes.map(note => {
           if (note.tags.includes(tag.name)) {
-            return { ...note, tags: note.tags.filter(t => t !== tag.name) };
+            return { ...note, tags: note.tags.filter(tg => tg !== tag.name) };
           }
           return note;
         });
@@ -2286,12 +1790,10 @@
         renderTags();
         renderNotes();
         renderDashboardFavorites();
-        showNotification('Tag deleted successfully.', 'success');
-        addNotification(`Tag "${tag.name}" was deleted.`);
+        showNotification('Tag deleted.', 'success');
+        addNotification(`Tag "${tag.name}" deleted.`);
       }
     }
-
-    // Add Note (Modified to Include Notification)
     function addNote() {
       const titleInput = document.getElementById('note-title');
       const bodyInput = document.getElementById('note-body');
@@ -2299,49 +1801,42 @@
       const newTagsInput = document.getElementById('note-new-tags');
       const notebookSelect = document.getElementById('note-notebook-select');
       const attachmentsInput = document.getElementById('note-attachments');
-
       const title = titleInput.value.trim();
       const body = bodyInput.value.trim();
       const selectedTags = Array.from(tagsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
       const newTags = newTagsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
       let allNoteTags = [...selectedTags, ...newTags];
-      allNoteTags = [...new Set(allNoteTags)]; // Remove duplicates
-
-      // Add new tags to tags list
+      allNoteTags = [...new Set(allNoteTags)];
       newTags.forEach(tag => {
         if (!tags.some(t => t.name.toLowerCase() === tag.toLowerCase())) {
           tags.push({ id: generateUUID(), name: tag, favorite: false });
         }
       });
-
       const notebook = notebookSelect.value;
-
       const attachments = [];
       const files = attachmentsInput.files;
-      const validFileTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
-      
+      const validFileTypes = [
+        'image/jpeg','image/png','image/gif','application/pdf','application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/plain'
+      ];
       if (files.length > 0) {
         let filesProcessed = 0;
         for (let file of files) {
-          if (file.size > 2 * 1024 * 1024) { // 2MB limit
-            showNotification(`File "${file.name}" exceeds the 2MB limit and was not added.`, 'error');
+          if (file.size > 2 * 1024 * 1024) {
+            showNotification(`File "${file.name}" exceeds 2MB limit.`, 'error');
             filesProcessed++;
             if (filesProcessed === files.length) finalizeAddNote();
             continue;
           }
           if (!validFileTypes.includes(file.type)) {
-            showNotification(`File type of "${file.name}" is not supported and was not added.`, 'error');
+            showNotification(`File type "${file.name}" not supported.`, 'error');
             filesProcessed++;
             if (filesProcessed === files.length) finalizeAddNote();
             continue;
           }
           const reader = new FileReader();
-          reader.onload = function(e) {
-            attachments.push({
-              name: file.name,
-              type: file.type,
-              data: e.target.result
-            });
+          reader.onload = function(e2) {
+            attachments.push({ name: file.name, type: file.type, data: e2.target.result });
             filesProcessed++;
             if (filesProcessed === files.length) finalizeAddNote();
           };
@@ -2350,7 +1845,6 @@
       } else {
         finalizeAddNote();
       }
-
       function finalizeAddNote() {
         const note = {
           id: generateUUID(),
@@ -2367,11 +1861,10 @@
         renderTags();
         renderNotes();
         renderDashboardFavorites();
-        showNotification('Note added successfully.', 'success');
-        addNotification(`New note "${title || 'Untitled'}" created.`);
+        showNotification('Note added.', 'success');
+        addNotification(`Note "${title || 'Untitled'}" created.`);
         clearNoteForm();
       }
-
       function clearNoteForm() {
         titleInput.value = '';
         bodyInput.value = '';
@@ -2381,52 +1874,44 @@
         attachmentsInput.value = '';
       }
     }
-
-    // Delete Note (Modified to Include Trash Functionality and Notification)
     function deleteNote(id) {
       const note = notes.find(n => n.id === id);
       if (!note) return;
-      if (confirm('Are you sure you want to delete this note? It will be moved to Trash.')) {
+      if (confirm('Delete this note? It will be moved to Trash.')) {
         notes = notes.filter(n => n.id !== id);
-        trashedNotes.unshift(note); // Add to trash at beginning
+        trashedNotes.unshift(note);
         saveData();
         renderNotes();
         renderDashboardFavorites();
-        renderTrash(); // Ensure Trash is updated immediately
+        renderTrash();
         showNotification('Note moved to Trash.', 'success');
-        addNotification(`Note "${note.title || 'Untitled'}" was moved to Trash.`);
+        addNotification(`Note "${note.title || 'Untitled'}" moved to Trash.`);
       }
     }
-
-    // Add Task (Modified to Include Notification)
     function addTask() {
       const descInput = document.getElementById('task-input');
       const dueDateInput = document.getElementById('task-due-date');
       const recurrenceRadios = document.getElementsByName('task-recurrence');
       const customDaysDiv = document.getElementById('task-custom-days');
-
       const description = descInput.value.trim();
       const dueDate = dueDateInput.value;
       let recurrence = 'none';
       recurrenceRadios.forEach(radio => {
         if (radio.checked) recurrence = radio.value;
       });
-
       let customDays = [];
       if (recurrence === 'custom') {
         const checkboxes = customDaysDiv.querySelectorAll('input[type="checkbox"]:checked');
         customDays = Array.from(checkboxes).map(cb => cb.value);
         if (customDays.length === 0) {
-          showNotification('Please select at least one day for custom recurrence.', 'error');
+          showNotification('Select at least one day for custom recurrence.', 'error');
           return;
         }
       }
-
       if (!description) {
         showNotification('Task description cannot be empty.', 'error');
         return;
       }
-
       const task = {
         id: generateUUID(),
         description,
@@ -2438,26 +1923,21 @@
         lastCompleted: null,
         favorite: false
       };
-
       tasks.push(task);
       saveData();
       renderTasks();
       renderDashboardFavorites();
-      showNotification('Task added successfully.', 'success');
-      addNotification(`New task "${description}" created.`);
+      showNotification('Task added.', 'success');
+      addNotification(`Task "${description}" created.`);
       clearTaskForm();
     }
-
-    // Clear Task Form
     function clearTaskForm() {
       document.getElementById('task-input').value = '';
       document.getElementById('task-due-date').value = '';
-      document.querySelectorAll('input[name="task-recurrence"]').forEach(radio => radio.checked = false);
+      document.querySelectorAll('input[name="task-recurrence"]').forEach(r => r.checked = false);
       document.querySelector('input[name="task-recurrence"][value="none"]').checked = true;
       toggleTaskCustomDays(false);
     }
-
-    // Toggle Task Custom Days
     function toggleTaskCustomDays(show) {
       const customDaysDiv = document.getElementById('task-custom-days');
       if (show) {
@@ -2467,8 +1947,6 @@
         customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
       }
     }
-
-    // Toggle Task Completion (Modified to Include Notification)
     function toggleTaskCompletion(id) {
       const task = tasks.find(t => t.id === id);
       if (!task) return;
@@ -2476,60 +1954,52 @@
       if (task.completed) {
         task.lastCompleted = new Date().toDateString();
         task.streak += 1;
-        showNotification('Task marked as completed!', 'success');
-        addNotification(`Task "${task.description}" was marked as completed.`);
+        showNotification('Task marked complete.', 'success');
+        addNotification(`Task "${task.description}" marked complete.`);
       } else {
         task.lastCompleted = null;
         if (task.streak > 0) task.streak -= 1;
-        showNotification('Task marked as incomplete.', 'success');
-        addNotification(`Task "${task.description}" was marked as incomplete.`);
+        showNotification('Task marked incomplete.', 'success');
+        addNotification(`Task "${task.description}" marked incomplete.`);
       }
       saveData();
       renderTasks();
       renderDashboardFavorites();
     }
-
-    // Delete Task (Modified to Include Notification)
     function deleteTask(id) {
       const task = tasks.find(t => t.id === id);
       if (!task) return;
-      if (confirm('Are you sure you want to delete this task?')) {
+      if (confirm('Delete this task?')) {
         tasks = tasks.filter(t => t.id !== id);
         saveData();
         renderTasks();
         renderDashboardFavorites();
-        showNotification('Task deleted successfully.', 'success');
-        addNotification(`Task "${task.description}" was deleted.`);
+        showNotification('Task deleted.', 'success');
+        addNotification(`Task "${task.description}" deleted.`);
       }
     }
-
-    // Add Habit (Modified to Include Notification)
     function addHabit() {
       const descInput = document.getElementById('habit-input');
       const recurrenceRadios = document.getElementsByName('habit-recurrence');
       const customDaysDiv = document.getElementById('habit-custom-days');
-
       const description = descInput.value.trim();
       if (!description) {
         showNotification('Habit description cannot be empty.', 'error');
         return;
       }
-
       let recurrence = 'none';
       recurrenceRadios.forEach(radio => {
         if (radio.checked) recurrence = radio.value;
       });
-
       let customDays = [];
       if (recurrence === 'custom') {
         const checkboxes = customDaysDiv.querySelectorAll('input[type="checkbox"]:checked');
         customDays = Array.from(checkboxes).map(cb => cb.value);
         if (customDays.length === 0) {
-          showNotification('Please select at least one day for custom recurrence.', 'error');
+          showNotification('Select at least one day for custom recurrence.', 'error');
           return;
         }
       }
-
       const habit = {
         id: generateUUID(),
         description,
@@ -2540,25 +2010,20 @@
         lastCompleted: null,
         favorite: false
       };
-
       habits.push(habit);
       saveData();
       renderHabits();
       renderDashboardFavorites();
-      showNotification('Habit added successfully.', 'success');
-      addNotification(`New habit "${description}" created.`);
+      showNotification('Habit added.', 'success');
+      addNotification(`Habit "${description}" created.`);
       clearHabitForm();
     }
-
-    // Clear Habit Form
     function clearHabitForm() {
       document.getElementById('habit-input').value = '';
-      document.querySelectorAll('input[name="habit-recurrence"]').forEach(radio => radio.checked = false);
+      document.querySelectorAll('input[name="habit-recurrence"]').forEach(r => r.checked = false);
       document.querySelector('input[name="habit-recurrence"][value="none"]').checked = true;
       toggleHabitCustomDays(false);
     }
-
-    // Toggle Habit Custom Days
     function toggleHabitCustomDays(show) {
       const customDaysDiv = document.getElementById('habit-custom-days');
       if (show) {
@@ -2568,8 +2033,6 @@
         customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
       }
     }
-
-    // Toggle Habit Completion (Modified to Include Notification)
     function toggleHabitCompletion(id) {
       const habit = habits.find(h => h.id === id);
       if (!habit) return;
@@ -2577,34 +2040,30 @@
       if (habit.completed) {
         habit.lastCompleted = new Date().toDateString();
         habit.streak += 1;
-        showNotification('Habit marked as completed!', 'success');
-        addNotification(`Habit "${habit.description}" was marked as completed.`);
+        showNotification('Habit marked complete.', 'success');
+        addNotification(`Habit "${habit.description}" marked complete.`);
       } else {
         habit.lastCompleted = null;
         if (habit.streak > 0) habit.streak -= 1;
-        showNotification('Habit marked as incomplete.', 'success');
-        addNotification(`Habit "${habit.description}" was marked as incomplete.`);
+        showNotification('Habit marked incomplete.', 'success');
+        addNotification(`Habit "${habit.description}" marked incomplete.`);
       }
       saveData();
       renderHabits();
       renderDashboardFavorites();
     }
-
-    // Delete Habit (Modified to Include Notification)
     function deleteHabit(id) {
       const habit = habits.find(h => h.id === id);
       if (!habit) return;
-      if (confirm('Are you sure you want to delete this habit?')) {
+      if (confirm('Delete this habit?')) {
         habits = habits.filter(h => h.id !== id);
         saveData();
         renderHabits();
         renderDashboardFavorites();
-        showNotification('Habit deleted successfully.', 'success');
-        addNotification(`Habit "${habit.description}" was deleted.`);
+        showNotification('Habit deleted.', 'success');
+        addNotification(`Habit "${habit.description}" deleted.`);
       }
     }
-
-    // Toggle Favorite (Modified to Include Notification)
     function toggleFavorite(type, identifier) {
       switch(type) {
         case 'notebooks':
@@ -2612,9 +2071,9 @@
           if (notebook) {
             notebook.favorite = !notebook.favorite;
             if (notebook.favorite) {
-              addNotification(`Notebook "${notebook.name}" was added to favorites.`);
+              addNotification(`Notebook "${notebook.name}" favorited.`);
             } else {
-              addNotification(`Notebook "${notebook.name}" was removed from favorites.`);
+              addNotification(`Notebook "${notebook.name}" unfavorited.`);
             }
           }
           break;
@@ -2623,9 +2082,9 @@
           if (tag) {
             tag.favorite = !tag.favorite;
             if (tag.favorite) {
-              addNotification(`Tag "${tag.name}" was added to favorites.`);
+              addNotification(`Tag "${tag.name}" favorited.`);
             } else {
-              addNotification(`Tag "${tag.name}" was removed from favorites.`);
+              addNotification(`Tag "${tag.name}" unfavorited.`);
             }
           }
           break;
@@ -2634,9 +2093,9 @@
           if (note) {
             note.favorite = !note.favorite;
             if (note.favorite) {
-              addNotification(`Note "${note.title || 'Untitled'}" was added to favorites.`);
+              addNotification(`Note "${note.title || 'Untitled'}" favorited.`);
             } else {
-              addNotification(`Note "${note.title || 'Untitled'}" was removed from favorites.`);
+              addNotification(`Note "${note.title || 'Untitled'}" unfavorited.`);
             }
           }
           break;
@@ -2645,9 +2104,9 @@
           if (task) {
             task.favorite = !task.favorite;
             if (task.favorite) {
-              addNotification(`Task "${task.description}" was added to favorites.`);
+              addNotification(`Task "${task.description}" favorited.`);
             } else {
-              addNotification(`Task "${task.description}" was removed from favorites.`);
+              addNotification(`Task "${task.description}" unfavorited.`);
             }
           }
           break;
@@ -2656,21 +2115,17 @@
           if (habit) {
             habit.favorite = !habit.favorite;
             if (habit.favorite) {
-              addNotification(`Habit "${habit.description}" was added to favorites.`);
+              addNotification(`Habit "${habit.description}" favorited.`);
             } else {
-              addNotification(`Habit "${habit.description}" was removed from favorites.`);
+              addNotification(`Habit "${habit.description}" unfavorited.`);
             }
           }
-          break;
-        default:
           break;
       }
       saveData();
       renderAll();
       showNotification('Favorite status updated.', 'success');
     }
-
-    // Render Dashboard Favorites
     function renderDashboardFavorites() {
       renderFavoriteNotebooks();
       renderFavoriteTags();
@@ -2678,46 +2133,32 @@
       renderFavoriteTasks();
       renderFavoriteHabits();
     }
-
     function renderFavoriteNotebooks() {
       const favNotebooksList = document.getElementById('favorites-dashboard-notebooks-list');
       favNotebooksList.innerHTML = '';
       const favoriteNotebooks = notebooks.filter(nb => nb.favorite);
-      
       if (favoriteNotebooks.length === 0) {
         favNotebooksList.innerHTML = '<p>No favorite notebooks.</p>';
         return;
       }
-
       favoriteNotebooks.forEach(nb => {
         const card = createCard(nb.name || 'Untitled', 'notebooks', nb.id, 'book', nb.favorite, () => toggleFavorite('notebooks', nb.id));
-        card.id = `notebook-${nb.id}`; // Assign unique ID to the card
-
-        // Add an expand/collapse icon
+        card.id = `notebook-${nb.id}`;
         const expandIcon = document.createElement('i');
         expandIcon.className = 'fas fa-chevron-right expand-icon';
         card.querySelector('.card-header-left').appendChild(expandIcon);
-
-        // Create a container for nested notes
         const nestedNotesContainer = document.createElement('div');
         nestedNotesContainer.className = 'nested-notes';
         card.appendChild(nestedNotesContainer);
-
-        // Toggle functionality
         card.onclick = (e) => {
-          // Prevent triggering on favorite button or action buttons
           if (e.target.closest('.favorite-btn') || e.target.closest('.card-actions')) return;
-
           const isVisible = nestedNotesContainer.style.display === 'grid';
           nestedNotesContainer.style.display = isVisible ? 'none' : 'grid';
           expandIcon.classList.toggle('expanded', !isVisible);
-
           if (!isVisible) {
             renderNotesInsideNotebook(nb.id, nestedNotesContainer);
           }
         };
-
-        // Actions for non-Personal notebooks
         if (nb.name.toLowerCase() !== 'personal') {
           const actions = createCardActions([
             { icon: 'edit', title: 'Edit', action: () => openEditModal('notebook', nb.id) },
@@ -2725,68 +2166,54 @@
           ]);
           card.querySelector('.card-header-right').appendChild(actions);
         }
-
         card.ondblclick = () => {
           if (nb.name.toLowerCase() !== 'personal') {
             openEditModal('notebook', nb.id);
           } else {
-            showNotification('The "Personal" notebook cannot be renamed.', 'error');
+            showNotification('Cannot rename "Personal" notebook.', 'error');
           }
         };
-
         favNotebooksList.appendChild(card);
       });
     }
-
     function renderFavoriteTags() {
       const favTagsList = document.getElementById('favorites-dashboard-tags-list');
       favTagsList.innerHTML = '';
       const favoriteTags = tags.filter(tag => tag.favorite);
-      
       if (favoriteTags.length === 0) {
         favTagsList.innerHTML = '<p>No favorite tags.</p>';
         return;
       }
-
       favoriteTags.forEach(tag => {
         const card = createCard(tag.name || 'Untitled', 'tags', tag.id, 'tags', tag.favorite, () => toggleFavorite('tags', tag.id));
-        card.id = `tag-${tag.id}`; // Assign unique ID to the card
-
+        card.id = `tag-${tag.id}`;
         const actions = createCardActions([
           { icon: 'edit', title: 'Edit', action: () => openEditModal('tag', tag.id) },
           { icon: 'trash', title: 'Delete', action: () => deleteTag(tag.id) }
         ]);
         card.querySelector('.card-header-right').appendChild(actions);
-
         card.ondblclick = () => {
           openEditModal('tag', tag.id);
         };
-
         favTagsList.appendChild(card);
       });
     }
-
     function renderFavoriteNotes() {
       const favNotesList = document.getElementById('favorites-dashboard-notes-list');
       favNotesList.innerHTML = '';
       const favoriteNotes = notes.filter(note => note.favorite);
-      
       if (favoriteNotes.length === 0) {
         favNotesList.innerHTML = '<p>No favorite notes.</p>';
         return;
       }
-
       favoriteNotes.forEach(note => {
         const card = createCard(note.title || 'Untitled', 'notes', note.id, 'sticky-note', note.favorite, () => toggleFavorite('notes', note.id));
-        card.id = `note-${note.id}`; // Assign unique ID to the card
-
+        card.id = `note-${note.id}`;
         const actions = createCardActions([
           { icon: 'edit', title: 'Edit', action: () => openEditModal('note', note.id) },
           { icon: 'trash', title: 'Delete', action: () => deleteNote(note.id) }
         ]);
         card.querySelector('.card-header-right').appendChild(actions);
-
-        // Details
         if (note.body) {
           const snippet = note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body;
           const body = document.createElement('div');
@@ -2794,21 +2221,18 @@
           body.textContent = snippet;
           card.appendChild(body);
         }
-
         if (note.tags.length > 0) {
           const tagDiv = document.createElement('div');
           tagDiv.className = 'details';
           tagDiv.textContent = 'Tags: ' + note.tags.join(', ');
           card.appendChild(tagDiv);
         }
-
         if (note.notebook) {
           const nbDiv = document.createElement('div');
           nbDiv.className = 'details';
           nbDiv.textContent = 'Notebook: ' + note.notebook;
           card.appendChild(nbDiv);
         }
-
         if (note.attachments.length > 0) {
           const attachDiv = document.createElement('div');
           attachDiv.className = 'attachments';
@@ -2828,102 +2252,164 @@
           });
           card.appendChild(attachDiv);
         }
-
         card.ondblclick = () => {
           openEditModal('note', note.id);
         };
-
         favNotesList.appendChild(card);
       });
     }
-
     function renderFavoriteTasks() {
       const favTasksList = document.getElementById('favorites-dashboard-tasks-list');
       favTasksList.innerHTML = '';
       const favoriteTasks = tasks.filter(task => task.favorite);
-      
       if (favoriteTasks.length === 0) {
         favTasksList.innerHTML = '<p>No favorite tasks.</p>';
         return;
       }
-
       favoriteTasks.forEach(task => {
         const card = createCard(task.description || 'Untitled', 'tasks', task.id, 'tasks', task.favorite, () => toggleFavorite('tasks', task.id));
-        card.id = `task-${task.id}`; // Assign unique ID to the card
-
+        card.id = `task-${task.id}`;
         const actions = createCardActions([
           { icon: task.completed ? 'undo' : 'check', title: task.completed ? 'Mark as Incomplete' : 'Mark as Complete', action: () => toggleTaskCompletion(task.id) },
           { icon: 'edit', title: 'Edit', action: () => openEditModal('task', task.id) },
           { icon: 'trash', title: 'Delete', action: () => deleteTask(task.id) }
         ]);
         card.querySelector('.card-header-right').appendChild(actions);
-
-        // Details
         if (task.dueDate) {
           const dueDate = document.createElement('div');
           dueDate.className = 'details';
           dueDate.textContent = 'Due: ' + task.dueDate;
           card.appendChild(dueDate);
         }
-
         if (task.recurrence !== 'none') {
           const recurrence = document.createElement('div');
           recurrence.className = 'details';
           recurrence.textContent = 'Recurs: ' + formatRecurrence(task);
           card.appendChild(recurrence);
         }
-
         card.ondblclick = () => {
           openEditModal('task', task.id);
         };
-
         favTasksList.appendChild(card);
       });
     }
-
     function renderFavoriteHabits() {
       const favHabitsList = document.getElementById('favorites-dashboard-habits-list');
       favHabitsList.innerHTML = '';
       const favoriteHabits = habits.filter(habit => habit.favorite);
-      
       if (favoriteHabits.length === 0) {
         favHabitsList.innerHTML = '<p>No favorite habits.</p>';
         return;
       }
-
       favoriteHabits.forEach(habit => {
         const card = createCard(habit.description || 'Untitled', 'habits', habit.id, 'heartbeat', habit.favorite, () => toggleFavorite('habits', habit.id));
-        card.id = `habit-${habit.id}`; // Assign unique ID to the card
-
+        card.id = `habit-${habit.id}`;
         const actions = createCardActions([
           { icon: habit.completed ? 'undo' : 'check', title: habit.completed ? 'Mark as Incomplete' : 'Mark as Complete', action: () => toggleHabitCompletion(habit.id) },
           { icon: 'edit', title: 'Edit', action: () => openEditModal('habit', habit.id) },
           { icon: 'trash', title: 'Delete', action: () => deleteHabit(habit.id) }
         ]);
         card.querySelector('.card-header-right').appendChild(actions);
-
-        // Details
         if (habit.recurrence !== 'none') {
           const recurDiv = document.createElement('div');
           recurDiv.className = 'details';
           recurDiv.textContent = 'Recurs: ' + formatRecurrence(habit);
           card.appendChild(recurDiv);
         }
-
         card.ondblclick = () => {
           openEditModal('habit', habit.id);
         };
-
         favHabitsList.appendChild(card);
       });
     }
-
-    // Function to Render Sidebar (Summary)
-    function renderSidebar() {
-      // Placeholder for additional sidebar summaries if needed
+    function renderTrash() {
+      const trashList = document.getElementById('trash-list');
+      trashList.innerHTML = '';
+      if (trashedNotes.length === 0) {
+        const emptyMessage = document.createElement('p');
+        emptyMessage.textContent = 'Trash is empty.';
+        emptyMessage.style.color = '#555';
+        emptyMessage.style.fontSize = '0.9rem';
+        trashList.appendChild(emptyMessage);
+        return;
+      }
+      trashedNotes.forEach(note => {
+        const card = createCard(note.title || 'Untitled', 'notes', note.id, 'sticky-note', note.favorite, () => toggleFavorite('notes', note.id));
+        card.id = `trash-note-${note.id}`;
+        const actions = createCardActions([
+          { icon: 'undo', title: 'Restore', action: () => restoreNote(note.id) },
+          { icon: 'trash', title: 'Delete Permanently', action: () => permanentlyDeleteNote(note.id) }
+        ]);
+        card.querySelector('.card-header-right').appendChild(actions);
+        if (note.body) {
+          const snippet = note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body;
+          const body = document.createElement('div');
+          body.className = 'details';
+          body.textContent = snippet;
+          card.appendChild(body);
+        }
+        if (note.tags.length > 0) {
+          const tagDiv = document.createElement('div');
+          tagDiv.className = 'details';
+          tagDiv.textContent = 'Tags: ' + note.tags.join(', ');
+          card.appendChild(tagDiv);
+        }
+        if (note.notebook) {
+          const nbDiv = document.createElement('div');
+          nbDiv.className = 'details';
+          nbDiv.textContent = 'Notebook: ' + note.notebook;
+          card.appendChild(nbDiv);
+        }
+        if (note.attachments.length > 0) {
+          const attachDiv = document.createElement('div');
+          attachDiv.className = 'attachments';
+          note.attachments.forEach(att => {
+            if (att.type.startsWith('image/')) {
+              const img = document.createElement('img');
+              img.src = att.data;
+              img.alt = att.name;
+              attachDiv.appendChild(img);
+            } else {
+              const link = document.createElement('a');
+              link.href = att.data;
+              link.download = att.name;
+              link.textContent = att.name;
+              attachDiv.appendChild(link);
+            }
+          });
+          card.appendChild(attachDiv);
+        }
+        card.ondblclick = () => {
+          restoreNote(note.id);
+        };
+        trashList.appendChild(card);
+      });
     }
-
-    // Show Notification
+    function restoreNote(id) {
+      const noteIndex = trashedNotes.findIndex(n => n.id === id);
+      if (noteIndex === -1) return;
+      const note = trashedNotes.splice(noteIndex, 1)[0];
+      notes.push(note);
+      saveData();
+      renderTrash();
+      renderNotes();
+      renderDashboardFavorites();
+      showNotification('Note restored.', 'success');
+      addNotification(`Note "${note.title || 'Untitled'}" restored.`);
+    }
+    function permanentlyDeleteNote(id) {
+      const noteIndex = trashedNotes.findIndex(n => n.id === id);
+      if (noteIndex === -1) return;
+      const note = trashedNotes[noteIndex];
+      if (confirm(`Permanently delete note "${note.title || 'Untitled'}"?`)) {
+        trashedNotes.splice(noteIndex, 1);
+        saveData();
+        renderTrash();
+        renderDashboardFavorites();
+        showNotification('Note permanently deleted.', 'success');
+        addNotification(`Note "${note.title || 'Untitled'}" permanently deleted.`);
+      }
+    }
     function showNotification(message, type) {
       const notif = document.getElementById('notification');
       notif.textContent = message;
@@ -2933,8 +2419,6 @@
         notif.classList.remove('show');
       }, 3000);
     }
-
-    // Navigate between sections and optionally scroll to an item
     function navigate(section, itemId = null) {
       const sections = document.querySelectorAll('.kanban-column');
       sections.forEach(sec => {
@@ -2953,74 +2437,54 @@
           item.classList.remove('active');
         }
       });
-
-      // **Call renderTrash() when navigating to 'trash' to ensure it's up-to-date**
       if (section === 'trash') {
         renderTrash();
       }
-
       if (itemId) {
         setTimeout(() => {
           const element = document.getElementById(itemId);
           if (element) {
-            // Calculate the offset position considering the fixed header (60px height)
             const headerOffset = 60;
             const elementPosition = element.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: 'smooth'
-            });
-
-            // Highlight the element
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
             element.style.boxShadow = '0 0 10px 2px rgba(100, 100, 255, 0.7)';
             setTimeout(() => {
               element.style.boxShadow = 'none';
             }, 2000);
           }
-        }, 500); // Delay to ensure the section is displayed
+        }, 500);
       }
     }
-
-    // Reset Streaks for Tasks and Habits
     function resetStreaks() {
       const today = new Date();
-      const todayStr = today.toLocaleDateString(undefined, { weekday: 'long' });
-
       tasks.forEach(task => {
         if (task.lastCompleted) {
           const last = new Date(task.lastCompleted);
-          const diffTime = today - last;
-          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-          if (shouldResetStreak(task.recurrence, diffDays, last, todayStr)) {
+          const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+          if (shouldResetStreak(task.recurrence, diffDays, last, today.toLocaleDateString(undefined, { weekday: 'long' }))) {
             task.streak = 0;
             task.lastCompleted = null;
-            addNotification(`Streak for task "${task.description}" has been reset.`);
+            addNotification(`Streak reset for task "${task.description}".`);
           }
         }
       });
-
       habits.forEach(habit => {
         if (habit.lastCompleted) {
           const last = new Date(habit.lastCompleted);
-          const diffTime = today - last;
-          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-          if (shouldResetStreak(habit.recurrence, diffDays, last, todayStr)) {
+          const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+          if (shouldResetStreak(habit.recurrence, diffDays, last, today.toLocaleDateString(undefined, { weekday: 'long' }))) {
             habit.streak = 0;
             habit.lastCompleted = null;
-            addNotification(`Streak for habit "${habit.description}" has been reset.`);
+            addNotification(`Streak reset for habit "${habit.description}".`);
           }
         }
       });
-
       saveData();
       renderTasks();
       renderHabits();
       renderDashboardFavorites();
     }
-
-    // Helper Function to Determine If Streak Should Reset
     function shouldResetStreak(recurrence, diffDays, lastDate, todayStr) {
       const today = new Date();
       switch(recurrence) {
@@ -3029,61 +2493,37 @@
         case 'weekly':
           return diffDays > 7;
         case 'monthly':
-          return !isSameMonth(lastDate, today);
+          return !(lastDate.getMonth() === today.getMonth() && lastDate.getFullYear() === today.getFullYear());
         case 'custom':
-          // For custom recurrence, check if today is a scheduled day
-          return false; // Streak reset logic can be customized as needed
+          return false;
         default:
           return false;
       }
     }
-
-    // Check if two dates are in the same month and year
-    function isSameMonth(d1, d2) {
-      return d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
-    }
-
-    // Check Streaks on Load
-    resetStreaks();
-
-    // Handle Search
-
-    // Function to Open the Search Modal
     function openSearch() {
       document.getElementById('search-modal').style.display = 'block';
-      document.getElementById('search-input').focus(); // Focus on the search input
+      document.getElementById('search-input').focus();
     }
-
-    // Function to Close the Search Modal
     function closeSearch() {
       document.getElementById('search-modal').style.display = 'none';
-      document.getElementById('search-input').value = ''; // Clear search input
-      document.getElementById('search-results').innerHTML = ''; // Clear previous results
+      document.getElementById('search-input').value = '';
+      document.getElementById('search-results').innerHTML = '';
     }
-
-    // Function to Perform Search
     function performSearch() {
       const query = document.getElementById('search-input').value.trim().toLowerCase();
       const resultsContainer = document.getElementById('search-results');
-      resultsContainer.innerHTML = ''; // Clear previous results
-
+      resultsContainer.innerHTML = '';
       if (query === '') {
         resultsContainer.innerHTML = '<p>Please enter a search term.</p>';
         return;
       }
-
-      // Helper function to highlight search terms
       function highlight(text) {
         const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
         return text.replace(regex, '<span class="highlight">$1</span>');
       }
-
-      // Helper function to escape RegExp special characters
       function escapeRegExp(string) {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }
-
-      // Search Notebooks
       const matchedNotebooks = notebooks.filter(nb => nb.name.toLowerCase().includes(query));
       if (matchedNotebooks.length > 0) {
         const section = document.createElement('div');
@@ -3098,8 +2538,6 @@
         });
         resultsContainer.appendChild(section);
       }
-
-      // Search Tags
       const matchedTags = tags.filter(tag => tag.name.toLowerCase().includes(query));
       if (matchedTags.length > 0) {
         const section = document.createElement('div');
@@ -3114,9 +2552,7 @@
         });
         resultsContainer.appendChild(section);
       }
-
-      // Search Notes
-      const matchedNotes = notes.filter(note => 
+      const matchedNotes = notes.filter(note =>
         (note.title && note.title.toLowerCase().includes(query)) ||
         (note.body && note.body.toLowerCase().includes(query))
       );
@@ -3133,8 +2569,6 @@
         });
         resultsContainer.appendChild(section);
       }
-
-      // Search Tasks
       const matchedTasks = tasks.filter(task => task.description.toLowerCase().includes(query));
       if (matchedTasks.length > 0) {
         const section = document.createElement('div');
@@ -3149,8 +2583,6 @@
         });
         resultsContainer.appendChild(section);
       }
-
-      // Search Habits
       const matchedHabits = habits.filter(habit => habit.description.toLowerCase().includes(query));
       if (matchedHabits.length > 0) {
         const section = document.createElement('div');
@@ -3165,8 +2597,6 @@
         });
         resultsContainer.appendChild(section);
       }
-
-      // If no results found
       if (
         matchedNotebooks.length === 0 &&
         matchedTags.length === 0 &&
@@ -3177,68 +2607,33 @@
         resultsContainer.innerHTML = '<p>No results found.</p>';
       }
     }
-
-    // Notifications Functions
-
-    // Function to Add a New Notification
-    function addNotification(message) {
-      const notification = {
-        id: generateUUID(),
-        message: message,
-        timestamp: new Date().toLocaleString(),
-        read: false
-      };
-      notifications.unshift(notification); // Add to the beginning
-      saveData();
-      updateNotificationBadge();
-    }
-
-    // Function to Update the Notification Badge Count
-    function updateNotificationBadge() {
-      const badge = document.getElementById('notification-badge');
-      const unreadCount = notifications.filter(notif => !notif.read).length;
-      badge.textContent = unreadCount;
-      badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
-    }
-
-    // Function to Open Notifications Modal
     function openNotifications() {
       document.getElementById('notifications-modal').style.display = 'block';
       renderNotifications();
     }
-
-    // Function to Close Notifications Modal
     function closeNotifications() {
       document.getElementById('notifications-modal').style.display = 'none';
-      renderNotifications(); // Update read status
+      renderNotifications();
     }
-
-    // Function to Render Notifications in Modal
     function renderNotifications() {
       const notificationsList = document.getElementById('notifications-list');
       notificationsList.innerHTML = '';
-
       if (notifications.length === 0) {
         notificationsList.innerHTML = '<p>No notifications.</p>';
         return;
       }
-
       notifications.forEach(notif => {
         const notifDiv = document.createElement('div');
         notifDiv.className = 'notification-item';
         notifDiv.style.backgroundColor = notif.read ? '#f9f9f9' : '#e0f7fa';
-
         notifDiv.innerHTML = `
           <p>${notif.message}</p>
-          <small>${notif.timestamp}</small>
+          <small>${notif.timestamp || ''}</small>
           <button onclick="markAsRead('${notif.id}')">${notif.read ? 'Mark as Unread' : 'Mark as Read'}</button>
         `;
-
         notificationsList.appendChild(notifDiv);
       });
     }
-
-    // Function to Mark a Notification as Read/Unread
     function markAsRead(id) {
       const notif = notifications.find(n => n.id === id);
       if (notif) {
@@ -3248,146 +2643,45 @@
         updateNotificationBadge();
       }
     }
-
-    // Initialize Notification Badge on Load
     function initializeNotifications() {
       updateNotificationBadge();
     }
-
-    // Function to Check for Upcoming Events
+    function updateNotificationBadge() {
+      const badge = document.getElementById('notification-badge');
+      const unreadCount = notifications.filter(notif => !notif.read).length;
+      badge.textContent = unreadCount;
+      badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+    }
+    function addNotification(message) {
+      const notification = {
+        id: generateUUID(),
+        message,
+        timestamp: new Date().toLocaleString(),
+        read: false
+      };
+      notifications.unshift(notification);
+      saveData();
+      updateNotificationBadge();
+    }
     function checkUpcomingEvents() {
       const today = new Date();
-      const todayStr = today.toLocaleDateString(undefined, { weekday: 'long' });
-
-      // Check for Tasks nearing due dates (e.g., within 2 days)
       tasks.forEach(task => {
         if (task.dueDate && !task.completed) {
           const dueDate = new Date(task.dueDate);
-          const diffTime = dueDate - today;
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
           if (diffDays >= 0 && diffDays <= 2) {
             addNotification(`Task "${task.description}" is due on ${task.dueDate}.`);
           }
         }
       });
-
-      // Check for Habits scheduled today
       habits.forEach(habit => {
         if (habit.recurrence === 'daily') {
-          addNotification(`Habit "${habit.description}" is scheduled for today.`);
-        } else if (habit.recurrence === 'custom' && habit.customDays.includes(todayStr)) {
-          addNotification(`Habit "${habit.description}" is scheduled for today.`);
+          addNotification(`Habit "${habit.description}" is scheduled today.`);
+        } else if (habit.recurrence === 'custom' && habit.customDays.includes(today.toLocaleDateString(undefined, { weekday: 'long' }))) {
+          addNotification(`Habit "${habit.description}" is scheduled today.`);
         }
-        // Add more conditions for other recurrence types if needed
       });
     }
-
-    // Render Trash Section
-    function renderTrash() {
-      const trashList = document.getElementById('trash-list');
-      trashList.innerHTML = '';
-
-      if (trashedNotes.length === 0) {
-        // **Added: Display a message when Trash is empty**
-        const emptyMessage = document.createElement('p');
-        emptyMessage.textContent = 'Trash is empty.';
-        emptyMessage.style.color = '#555';
-        emptyMessage.style.fontSize = '0.9rem';
-        trashList.appendChild(emptyMessage);
-        return;
-      }
-
-      trashedNotes.forEach(note => {
-        const card = createCard(note.title || 'Untitled', 'notes', note.id, 'sticky-note', note.favorite, () => toggleFavorite('notes', note.id));
-        card.id = `trash-note-${note.id}`; // Assign unique ID to the card
-
-        const actions = createCardActions([
-          { icon: 'undo', title: 'Restore', action: () => restoreNote(note.id) },
-          { icon: 'trash', title: 'Delete Permanently', action: () => permanentlyDeleteNote(note.id) }
-        ]);
-        card.querySelector('.card-header-right').appendChild(actions);
-
-        // Details
-        if (note.body) {
-          const snippet = note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body;
-          const body = document.createElement('div');
-          body.className = 'details';
-          body.textContent = snippet;
-          card.appendChild(body);
-        }
-
-        if (note.tags.length > 0) {
-          const tagDiv = document.createElement('div');
-          tagDiv.className = 'details';
-          tagDiv.textContent = 'Tags: ' + note.tags.join(', ');
-          card.appendChild(tagDiv);
-        }
-
-        if (note.notebook) {
-          const nbDiv = document.createElement('div');
-          nbDiv.className = 'details';
-          nbDiv.textContent = 'Notebook: ' + note.notebook;
-          card.appendChild(nbDiv);
-        }
-
-        if (note.attachments.length > 0) {
-          const attachDiv = document.createElement('div');
-          attachDiv.className = 'attachments';
-          note.attachments.forEach(att => {
-            if (att.type.startsWith('image/')) {
-              const img = document.createElement('img');
-              img.src = att.data;
-              img.alt = att.name;
-              attachDiv.appendChild(img);
-            } else {
-              const link = document.createElement('a');
-              link.href = att.data;
-              link.download = att.name;
-              link.textContent = att.name;
-              attachDiv.appendChild(link);
-            }
-          });
-          card.appendChild(attachDiv);
-        }
-
-        card.ondblclick = () => {
-          restoreNote(note.id);
-        };
-
-        trashList.appendChild(card);
-      });
-    }
-
-    // Function to Restore a Note from Trash
-    function restoreNote(id) {
-      const noteIndex = trashedNotes.findIndex(n => n.id === id);
-      if (noteIndex === -1) return;
-      const note = trashedNotes.splice(noteIndex, 1)[0];
-      notes.push(note);
-      saveData();
-      renderTrash();
-      renderNotes();
-      renderDashboardFavorites();
-      showNotification('Note restored successfully.', 'success');
-      addNotification(`Note "${note.title || 'Untitled'}" was restored from Trash.`);
-    }
-
-    // Function to Permanently Delete a Note from Trash
-    function permanentlyDeleteNote(id) {
-      const noteIndex = trashedNotes.findIndex(n => n.id === id);
-      if (noteIndex === -1) return;
-      const note = trashedNotes[noteIndex];
-      if (confirm(`Are you sure you want to permanently delete the note "${note.title || 'Untitled'}"? This action cannot be undone.`)) {
-        trashedNotes.splice(noteIndex, 1);
-        saveData();
-        renderTrash();
-        renderDashboardFavorites();
-        showNotification('Note permanently deleted.', 'success');
-        addNotification(`Note "${note.title || 'Untitled'}" was permanently deleted.`);
-      }
-    }
-
-    // Close the modal when clicking outside of it
     window.onclick = function(event) {
       const searchModal = document.getElementById('search-modal');
       if (event.target == searchModal) {
@@ -3395,42 +2689,34 @@
         document.getElementById('search-input').value = '';
         document.getElementById('search-results').innerHTML = '';
       }
-
       const notificationsModal = document.getElementById('notifications-modal');
       if (event.target == notificationsModal) {
         notificationsModal.style.display = 'none';
         renderNotifications();
       }
-
       const editNotebookModal = document.getElementById('edit-notebook-modal');
       if (event.target == editNotebookModal) {
         editNotebookModal.style.display = 'none';
       }
-
       const editTagModal = document.getElementById('edit-tag-modal');
       if (event.target == editTagModal) {
         editTagModal.style.display = 'none';
       }
-
       const editNoteModal = document.getElementById('edit-note-modal');
       if (event.target == editNoteModal) {
         editNoteModal.style.display = 'none';
       }
-
       const editTaskModal = document.getElementById('edit-task-modal');
       if (event.target == editTaskModal) {
         editTaskModal.style.display = 'none';
       }
-
       const editHabitModal = document.getElementById('edit-habit-modal');
       if (event.target == editHabitModal) {
         editHabitModal.style.display = 'none';
       }
     };
-
-    // Function to Show Profile (Placeholder)
     function showProfile() {
-      showNotification('Profile feature is under development.', 'error');
+      showNotification('Profile feature not implemented.', 'error');
     }
   </script>
 </body>
