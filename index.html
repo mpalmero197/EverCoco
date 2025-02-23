@@ -66,6 +66,10 @@
     .nav-item.active {
       border-bottom: 2px solid var(--accent-color);
     }
+    /* In sidebar mode, hide the text so only icons show */
+    .sidebar-mode .header-nav .nav-item span {
+      display: none;
+    }
     .header-right {
       position: relative;
       display: flex;
@@ -600,7 +604,6 @@
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
-      padding: 5px;
       overflow: hidden;
     }
     .nested-note-card:hover {
@@ -633,6 +636,12 @@
   </style>
 </head>
 <body>
+  <!-- If loaded in sidebar mode, the URL should include "?sidebar=true" -->
+  <script>
+    if (window.location.search.indexOf('sidebar=true') !== -1) {
+      document.body.classList.add('sidebar-mode');
+    }
+  </script>
   <header>
     <div class="logo">
       <i class="fas fa-feather-alt"></i>
