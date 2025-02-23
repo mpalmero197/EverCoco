@@ -66,13 +66,13 @@
     .nav-item.active {
       border-bottom: 2px solid var(--accent-color);
     }
-    /* Sidebar mode: hide text labels and adjust spacing */
-    .sidebar-mode .header-nav .nav-item span {
+    /* When in mobile-sidebar mode, hide the text labels */
+    .mobile-sidebar .header-nav .nav-item span {
       display: none;
     }
-    .sidebar-mode .header-nav .nav-item {
-      margin: 0 10px;
-      padding: 0;
+    .mobile-sidebar .header-nav .nav-item {
+      gap: 0;
+      padding: 0 10px;
     }
     .header-right {
       position: relative;
@@ -640,11 +640,22 @@
   </style>
 </head>
 <body>
-  <!-- If loaded in sidebar mode, the URL should include "?sidebar=true" -->
+  <!-- Check for sidebar mode via URL and for mobile window size -->
   <script>
+    // Add sidebar-mode if URL contains "sidebar=true"
     if (window.location.search.indexOf('sidebar=true') !== -1) {
       document.body.classList.add('sidebar-mode');
     }
+    // Automatically add mobile-sidebar class if window width is less than 768px
+    function checkMobileSidebar() {
+      if (window.innerWidth < 768) {
+        document.body.classList.add('mobile-sidebar');
+      } else {
+        document.body.classList.remove('mobile-sidebar');
+      }
+    }
+    checkMobileSidebar();
+    window.addEventListener('resize', checkMobileSidebar);
   </script>
   <header>
     <div class="logo">
@@ -1148,9 +1159,7 @@
           { icon: 'trash', title: 'Delete', action: () => deleteTag(tag.id) }
         ]);
         card.querySelector('.card-header-right').appendChild(actions);
-        card.ondblclick = () => {
-          openEditModal('tag', tag.id);
-        };
+        card.ondblclick = () => { openEditModal('tag', tag.id); };
         tagsList.appendChild(card);
       });
     }
@@ -1204,9 +1213,7 @@
           });
           card.appendChild(attachDiv);
         }
-        card.ondblclick = () => {
-          openEditModal('note', note.id);
-        };
+        card.ondblclick = () => { openEditModal('note', note.id); };
         notesList.appendChild(card);
       });
     }
@@ -1234,9 +1241,7 @@
           recurrence.textContent = 'Recurs: ' + formatRecurrence(task);
           card.appendChild(recurrence);
         }
-        card.ondblclick = () => {
-          openEditModal('task', task.id);
-        };
+        card.ondblclick = () => { openEditModal('task', task.id); };
         tasksList.appendChild(card);
       });
     }
@@ -1258,9 +1263,7 @@
           recurDiv.textContent = 'Recurs: ' + formatRecurrence(habit);
           card.appendChild(recurDiv);
         }
-        card.ondblclick = () => {
-          openEditModal('habit', habit.id);
-        };
+        card.ondblclick = () => { openEditModal('habit', habit.id); };
         habitsList.appendChild(card);
       });
     }
@@ -1624,9 +1627,7 @@
       const dueDate = document.getElementById('edit-task-due-date').value;
       const recurrenceRadios = document.getElementsByName('edit-task-recurrence');
       let recurrence = 'none';
-      recurrenceRadios.forEach(r => {
-        if (r.checked) recurrence = r.value;
-      });
+      recurrenceRadios.forEach(r => { if (r.checked) recurrence = r.value; });
       let customDays = [];
       if (recurrence === 'custom') {
         const checkboxes = document.getElementById('edit-task-custom-days').querySelectorAll('input[type="checkbox"]:checked');
@@ -1659,14 +1660,10 @@
       if (!habit) return;
       document.getElementById('edit-habit-description').value = habit.description;
       const recurrenceRadios = document.getElementsByName('edit-habit-recurrence');
-      recurrenceRadios.forEach(r => {
-        if (r.value === habit.recurrence) r.checked = true;
-      });
+      recurrenceRadios.forEach(r => { if (r.value === habit.recurrence) r.checked = true; });
       toggleEditHabitCustomDays(habit.recurrence === 'custom');
       const editHabitCustomDaysDiv = document.getElementById('edit-habit-custom-days');
-      editHabitCustomDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-        cb.checked = habit.customDays.includes(cb.value);
-      });
+      editHabitCustomDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = habit.customDays.includes(cb.value); });
       document.getElementById('edit-habit-form').setAttribute('data-id', id);
       document.getElementById('edit-habit-modal').style.display = 'block';
     }
@@ -1685,9 +1682,7 @@
       const description = document.getElementById('edit-habit-description').value.trim();
       const recurrenceRadios = document.getElementsByName('edit-habit-recurrence');
       let recurrence = 'none';
-      recurrenceRadios.forEach(r => {
-        if (r.checked) recurrence = r.value;
-      });
+      recurrenceRadios.forEach(r => { if (r.checked) recurrence = r.value; });
       let customDays = [];
       if (recurrence === 'custom') {
         const checkboxes = document.getElementById('edit-habit-custom-days').querySelectorAll('input[type="checkbox"]:checked');
@@ -1841,7 +1836,7 @@
         addNotification(`Note "${note.title}" deleted.`);
       }
     }
-    // Restored functionality for dashboard favorites
+    // Dashboard favorites rendering
     function renderDashboardFavorites() {
       const nbContainer = document.getElementById('favorites-dashboard-notebooks-list');
       const tagContainer = document.getElementById('favorites-dashboard-tags-list');
@@ -1881,7 +1876,7 @@
         habitContainer.appendChild(div);
       });
     }
-    // Restored notifications functionality
+    // Notifications functionality
     function renderNotifications() {
       const container = document.getElementById('notifications-list');
       container.innerHTML = '';
@@ -1911,7 +1906,7 @@
       saveData();
       renderNotifications();
     }
-    // Restored trash functionality
+    // Trash functionality
     function renderTrash() {
       const trashList = document.getElementById('trash-list');
       trashList.innerHTML = '';
@@ -1969,9 +1964,7 @@
       const notification = document.getElementById('notification');
       notification.textContent = message;
       notification.className = 'notification show ' + type;
-      setTimeout(() => {
-        notification.className = 'notification';
-      }, 3000);
+      setTimeout(() => { notification.className = 'notification'; }, 3000);
     }
     function openSearch() {
       document.getElementById('search-modal').style.display = 'block';
@@ -1996,9 +1989,7 @@
       // Update active nav indicator
       const navItems = document.querySelectorAll('.header-nav .nav-item');
       navItems.forEach(item => item.classList.remove('active'));
-      if (navItem) {
-        navItem.classList.add('active');
-      }
+      if (navItem) { navItem.classList.add('active'); }
       // Show the corresponding section
       const sections = ['dashboard', 'notebooks', 'tags', 'notes', 'tasks', 'habits', 'trash'];
       sections.forEach(sec => {
@@ -2007,21 +1998,11 @@
     }
     function toggleFavorite(type, id) {
       switch(type) {
-        case 'notebooks':
-          notebooks = notebooks.map(nb => nb.id === id ? { ...nb, favorite: !nb.favorite } : nb);
-          break;
-        case 'tags':
-          tags = tags.map(tag => tag.id === id ? { ...tag, favorite: !tag.favorite } : tag);
-          break;
-        case 'notes':
-          notes = notes.map(note => note.id === id ? { ...note, favorite: !note.favorite } : note);
-          break;
-        case 'tasks':
-          tasks = tasks.map(task => task.id === id ? { ...task, favorite: !task.favorite } : task);
-          break;
-        case 'habits':
-          habits = habits.map(habit => habit.id === id ? { ...habit, favorite: !habit.favorite } : habit);
-          break;
+        case 'notebooks': notebooks = notebooks.map(nb => nb.id === id ? { ...nb, favorite: !nb.favorite } : nb); break;
+        case 'tags': tags = tags.map(tag => tag.id === id ? { ...tag, favorite: !tag.favorite } : tag); break;
+        case 'notes': notes = notes.map(note => note.id === id ? { ...note, favorite: !note.favorite } : note); break;
+        case 'tasks': tasks = tasks.map(task => task.id === id ? { ...task, favorite: !task.favorite } : task); break;
+        case 'habits': habits = habits.map(habit => habit.id === id ? { ...habit, favorite: !habit.favorite } : habit); break;
       }
       saveData();
       renderAll();
@@ -2050,15 +2031,9 @@
         customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
       }
     }
-    function resetStreaks() {
-      // Placeholder for resetting streaks functionality
-    }
-    function initializeNotifications() {
-      // Placeholder for notifications initialization
-    }
-    function checkUpcomingEvents() {
-      // Placeholder for checking upcoming events
-    }
+    function resetStreaks() { /* Placeholder */ }
+    function initializeNotifications() { /* Placeholder */ }
+    function checkUpcomingEvents() { /* Placeholder */ }
   </script>
 </body>
 </html>
