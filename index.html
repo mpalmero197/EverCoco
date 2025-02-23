@@ -497,16 +497,16 @@
       background-color: #f9f9f9;
       border-radius: 4px;
       margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .notification-item p {
       margin: 0;
       font-size: 0.95rem;
     }
-    .notification-item small {
-      color: #777;
-    }
     .notification-item button {
-      margin-top: 5px;
+      margin-left: 10px;
       background-color: var(--secondary-color);
       color: var(--background-color);
       border: none;
@@ -639,31 +639,31 @@
       <span>EverCoco</span>
     </div>
     <nav class="header-nav">
-      <div class="nav-item active" onclick="navigate('dashboard')">
+      <div class="nav-item active" onclick="navigate('dashboard', this)">
         <i class="fas fa-tachometer-alt"></i>
         <span>Dashboard</span>
       </div>
-      <div class="nav-item" onclick="navigate('notebooks')">
+      <div class="nav-item" onclick="navigate('notebooks', this)">
         <i class="fas fa-book"></i>
         <span>Notebooks</span>
       </div>
-      <div class="nav-item" onclick="navigate('tags')">
+      <div class="nav-item" onclick="navigate('tags', this)">
         <i class="fas fa-tags"></i>
         <span>Tags</span>
       </div>
-      <div class="nav-item" onclick="navigate('notes')">
+      <div class="nav-item" onclick="navigate('notes', this)">
         <i class="fas fa-sticky-note"></i>
         <span>Notes</span>
       </div>
-      <div class="nav-item" onclick="navigate('tasks')">
+      <div class="nav-item" onclick="navigate('tasks', this)">
         <i class="fas fa-tasks"></i>
         <span>Tasks</span>
       </div>
-      <div class="nav-item" onclick="navigate('habits')">
+      <div class="nav-item" onclick="navigate('habits', this)">
         <i class="fas fa-heartbeat"></i>
         <span>Habits</span>
       </div>
-      <div class="nav-item" onclick="navigate('trash')">
+      <div class="nav-item" onclick="navigate('trash', this)">
         <i class="fas fa-trash"></i>
         <span>Trash</span>
       </div>
@@ -993,6 +993,7 @@
       resetStreaks();
       initializeNotifications();
       checkUpcomingEvents();
+      updateNotificationBadge();
     };
     function loadData() {
       try {
@@ -1067,6 +1068,13 @@
       localStorage.setItem('EverCoco_notifications', JSON.stringify(notifications));
       localStorage.setItem('EverCoco_trashedNotes', JSON.stringify(trashedNotes));
       localStorage.setItem('EverCoco_scratchpad', scratchpadContent);
+      updateNotificationBadge();
+    }
+    function updateNotificationBadge() {
+      const badge = document.getElementById('notification-badge');
+      const count = notifications.length;
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline-block' : 'none';
     }
     function ensurePersonalNotebook() {
       const personalExists = notebooks.some(nb => nb.name.toLowerCase() === 'personal');
@@ -1312,7 +1320,8 @@
       favoriteBtn.innerHTML = favorite ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
       favoriteBtn.onclick = (e) => {
         e.stopPropagation();
-        favoriteAction();
+        toggleFavorite(type, identifier);
+        renderAll();
       };
       headerRight.appendChild(favoriteBtn);
       header.appendChild(headerRight);
@@ -1365,7 +1374,11 @@
           noteCard.appendChild(noteSnippet);
         }
         noteCard.onclick = () => {
-          navigate('notes', `note-${note.id}`);
+          navigate('notes', null);
+          const element = document.getElementById(`note-${note.id}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
           closeSearch();
         };
         container.appendChild(noteCard);
@@ -1848,764 +1861,179 @@
       function finalizeAddNote() {
         const note = {
           id: generateUUID(),
-          title,
-          body,
+          title: title || 'Untitled',
+          body: body,
           tags: allNoteTags,
-          notebook,
-          attachments,
+          notebook: notebook,
+          attachments: attachments,
           favorite: false
         };
         notes.push(note);
-        saveData();
-        populateTagSelectors();
-        renderTags();
-        renderNotes();
-        renderDashboardFavorites();
-        showNotification('Note added.', 'success');
-        addNotification(`Note "${title || 'Untitled'}" created.`);
-        clearNoteForm();
-      }
-      function clearNoteForm() {
         titleInput.value = '';
         bodyInput.value = '';
         newTagsInput.value = '';
-        tagsContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-        notebookSelect.value = '';
-        attachmentsInput.value = '';
+        saveData();
+        populateTagSelectors();
+        renderNotes();
+        renderDashboardFavorites();
+        showNotification('Note added.', 'success');
+        addNotification(`Note "${note.title}" created.`);
       }
     }
     function deleteNote(id) {
       const note = notes.find(n => n.id === id);
       if (!note) return;
-      if (confirm('Delete this note? It will be moved to Trash.')) {
+      if (confirm(`Are you sure you want to delete the note "${note.title}"?`)) {
         notes = notes.filter(n => n.id !== id);
-        trashedNotes.unshift(note);
+        trashedNotes.push(note);
         saveData();
         renderNotes();
         renderDashboardFavorites();
         renderTrash();
-        showNotification('Note moved to Trash.', 'success');
-        addNotification(`Note "${note.title || 'Untitled'}" moved to Trash.`);
+        showNotification('Note deleted.', 'success');
+        addNotification(`Note "${note.title}" deleted.`);
       }
     }
-    function addTask() {
-      const descInput = document.getElementById('task-input');
-      const dueDateInput = document.getElementById('task-due-date');
-      const recurrenceRadios = document.getElementsByName('task-recurrence');
-      const customDaysDiv = document.getElementById('task-custom-days');
-      const description = descInput.value.trim();
-      const dueDate = dueDateInput.value;
-      let recurrence = 'none';
-      recurrenceRadios.forEach(radio => {
-        if (radio.checked) recurrence = radio.value;
-      });
-      let customDays = [];
-      if (recurrence === 'custom') {
-        const checkboxes = customDaysDiv.querySelectorAll('input[type="checkbox"]:checked');
-        customDays = Array.from(checkboxes).map(cb => cb.value);
-        if (customDays.length === 0) {
-          showNotification('Select at least one day for custom recurrence.', 'error');
-          return;
-        }
-      }
-      if (!description) {
-        showNotification('Task description cannot be empty.', 'error');
-        return;
-      }
-      const task = {
-        id: generateUUID(),
-        description,
-        dueDate,
-        recurrence,
-        customDays,
-        completed: false,
-        streak: 0,
-        lastCompleted: null,
-        favorite: false
-      };
-      tasks.push(task);
-      saveData();
-      renderTasks();
-      renderDashboardFavorites();
-      showNotification('Task added.', 'success');
-      addNotification(`Task "${description}" created.`);
-      clearTaskForm();
-    }
-    function clearTaskForm() {
-      document.getElementById('task-input').value = '';
-      document.getElementById('task-due-date').value = '';
-      document.querySelectorAll('input[name="task-recurrence"]').forEach(r => r.checked = false);
-      document.querySelector('input[name="task-recurrence"][value="none"]').checked = true;
-      toggleTaskCustomDays(false);
-    }
-    function toggleTaskCustomDays(show) {
-      const customDaysDiv = document.getElementById('task-custom-days');
-      if (show) {
-        customDaysDiv.style.display = 'flex';
-      } else {
-        customDaysDiv.style.display = 'none';
-        customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-      }
-    }
-    function toggleTaskCompletion(id) {
-      const task = tasks.find(t => t.id === id);
-      if (!task) return;
-      task.completed = !task.completed;
-      if (task.completed) {
-        task.lastCompleted = new Date().toDateString();
-        task.streak += 1;
-        showNotification('Task marked complete.', 'success');
-        addNotification(`Task "${task.description}" marked complete.`);
-      } else {
-        task.lastCompleted = null;
-        if (task.streak > 0) task.streak -= 1;
-        showNotification('Task marked incomplete.', 'success');
-        addNotification(`Task "${task.description}" marked incomplete.`);
-      }
-      saveData();
-      renderTasks();
-      renderDashboardFavorites();
-    }
-    function deleteTask(id) {
-      const task = tasks.find(t => t.id === id);
-      if (!task) return;
-      if (confirm('Delete this task?')) {
-        tasks = tasks.filter(t => t.id !== id);
-        saveData();
-        renderTasks();
-        renderDashboardFavorites();
-        showNotification('Task deleted.', 'success');
-        addNotification(`Task "${task.description}" deleted.`);
-      }
-    }
-    function addHabit() {
-      const descInput = document.getElementById('habit-input');
-      const recurrenceRadios = document.getElementsByName('habit-recurrence');
-      const customDaysDiv = document.getElementById('habit-custom-days');
-      const description = descInput.value.trim();
-      if (!description) {
-        showNotification('Habit description cannot be empty.', 'error');
-        return;
-      }
-      let recurrence = 'none';
-      recurrenceRadios.forEach(radio => {
-        if (radio.checked) recurrence = radio.value;
-      });
-      let customDays = [];
-      if (recurrence === 'custom') {
-        const checkboxes = customDaysDiv.querySelectorAll('input[type="checkbox"]:checked');
-        customDays = Array.from(checkboxes).map(cb => cb.value);
-        if (customDays.length === 0) {
-          showNotification('Select at least one day for custom recurrence.', 'error');
-          return;
-        }
-      }
-      const habit = {
-        id: generateUUID(),
-        description,
-        recurrence,
-        customDays,
-        completed: false,
-        streak: 0,
-        lastCompleted: null,
-        favorite: false
-      };
-      habits.push(habit);
-      saveData();
-      renderHabits();
-      renderDashboardFavorites();
-      showNotification('Habit added.', 'success');
-      addNotification(`Habit "${description}" created.`);
-      clearHabitForm();
-    }
-    function clearHabitForm() {
-      document.getElementById('habit-input').value = '';
-      document.querySelectorAll('input[name="habit-recurrence"]').forEach(r => r.checked = false);
-      document.querySelector('input[name="habit-recurrence"][value="none"]').checked = true;
-      toggleHabitCustomDays(false);
-    }
-    function toggleHabitCustomDays(show) {
-      const customDaysDiv = document.getElementById('habit-custom-days');
-      if (show) {
-        customDaysDiv.style.display = 'flex';
-      } else {
-        customDaysDiv.style.display = 'none';
-        customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-      }
-    }
-    function toggleHabitCompletion(id) {
-      const habit = habits.find(h => h.id === id);
-      if (!habit) return;
-      habit.completed = !habit.completed;
-      if (habit.completed) {
-        habit.lastCompleted = new Date().toDateString();
-        habit.streak += 1;
-        showNotification('Habit marked complete.', 'success');
-        addNotification(`Habit "${habit.description}" marked complete.`);
-      } else {
-        habit.lastCompleted = null;
-        if (habit.streak > 0) habit.streak -= 1;
-        showNotification('Habit marked incomplete.', 'success');
-        addNotification(`Habit "${habit.description}" marked incomplete.`);
-      }
-      saveData();
-      renderHabits();
-      renderDashboardFavorites();
-    }
-    function deleteHabit(id) {
-      const habit = habits.find(h => h.id === id);
-      if (!habit) return;
-      if (confirm('Delete this habit?')) {
-        habits = habits.filter(h => h.id !== id);
-        saveData();
-        renderHabits();
-        renderDashboardFavorites();
-        showNotification('Habit deleted.', 'success');
-        addNotification(`Habit "${habit.description}" deleted.`);
-      }
-    }
-    function toggleFavorite(type, identifier) {
-      switch(type) {
-        case 'notebooks':
-          const notebook = notebooks.find(nb => nb.id === identifier);
-          if (notebook) {
-            notebook.favorite = !notebook.favorite;
-            if (notebook.favorite) {
-              addNotification(`Notebook "${notebook.name}" favorited.`);
-            } else {
-              addNotification(`Notebook "${notebook.name}" unfavorited.`);
-            }
-          }
-          break;
-        case 'tags':
-          const tag = tags.find(t => t.id === identifier);
-          if (tag) {
-            tag.favorite = !tag.favorite;
-            if (tag.favorite) {
-              addNotification(`Tag "${tag.name}" favorited.`);
-            } else {
-              addNotification(`Tag "${tag.name}" unfavorited.`);
-            }
-          }
-          break;
-        case 'notes':
-          const note = notes.find(n => n.id === identifier);
-          if (note) {
-            note.favorite = !note.favorite;
-            if (note.favorite) {
-              addNotification(`Note "${note.title || 'Untitled'}" favorited.`);
-            } else {
-              addNotification(`Note "${note.title || 'Untitled'}" unfavorited.`);
-            }
-          }
-          break;
-        case 'tasks':
-          const task = tasks.find(t => t.id === identifier);
-          if (task) {
-            task.favorite = !task.favorite;
-            if (task.favorite) {
-              addNotification(`Task "${task.description}" favorited.`);
-            } else {
-              addNotification(`Task "${task.description}" unfavorited.`);
-            }
-          }
-          break;
-        case 'habits':
-          const habit = habits.find(h => h.id === identifier);
-          if (habit) {
-            habit.favorite = !habit.favorite;
-            if (habit.favorite) {
-              addNotification(`Habit "${habit.description}" favorited.`);
-            } else {
-              addNotification(`Habit "${habit.description}" unfavorited.`);
-            }
-          }
-          break;
-      }
-      saveData();
-      renderAll();
-      showNotification('Favorite status updated.', 'success');
-    }
+    // Restored functionality for dashboard favorites
     function renderDashboardFavorites() {
-      renderFavoriteNotebooks();
-      renderFavoriteTags();
-      renderFavoriteNotes();
-      renderFavoriteTasks();
-      renderFavoriteHabits();
-    }
-    function renderFavoriteNotebooks() {
-      const favNotebooksList = document.getElementById('favorites-dashboard-notebooks-list');
-      favNotebooksList.innerHTML = '';
-      const favoriteNotebooks = notebooks.filter(nb => nb.favorite);
-      if (favoriteNotebooks.length === 0) {
-        favNotebooksList.innerHTML = '<p>No favorite notebooks.</p>';
-        return;
-      }
-      favoriteNotebooks.forEach(nb => {
-        const card = createCard(nb.name || 'Untitled', 'notebooks', nb.id, 'book', nb.favorite, () => toggleFavorite('notebooks', nb.id));
-        card.id = `notebook-${nb.id}`;
-        const expandIcon = document.createElement('i');
-        expandIcon.className = 'fas fa-chevron-right expand-icon';
-        card.querySelector('.card-header-left').appendChild(expandIcon);
-        const nestedNotesContainer = document.createElement('div');
-        nestedNotesContainer.className = 'nested-notes';
-        card.appendChild(nestedNotesContainer);
-        card.onclick = (e) => {
-          if (e.target.closest('.favorite-btn') || e.target.closest('.card-actions')) return;
-          const isVisible = nestedNotesContainer.style.display === 'grid';
-          nestedNotesContainer.style.display = isVisible ? 'none' : 'grid';
-          expandIcon.classList.toggle('expanded', !isVisible);
-          if (!isVisible) {
-            renderNotesInsideNotebook(nb.id, nestedNotesContainer);
-          }
-        };
-        if (nb.name.toLowerCase() !== 'personal') {
-          const actions = createCardActions([
-            { icon: 'edit', title: 'Edit', action: () => openEditModal('notebook', nb.id) },
-            { icon: 'trash', title: 'Delete', action: () => deleteNotebook(nb.id) }
-          ]);
-          card.querySelector('.card-header-right').appendChild(actions);
-        }
-        card.ondblclick = () => {
-          if (nb.name.toLowerCase() !== 'personal') {
-            openEditModal('notebook', nb.id);
-          } else {
-            showNotification('Cannot rename "Personal" notebook.', 'error');
-          }
-        };
-        favNotebooksList.appendChild(card);
+      const nbContainer = document.getElementById('favorites-dashboard-notebooks-list');
+      const tagContainer = document.getElementById('favorites-dashboard-tags-list');
+      const noteContainer = document.getElementById('favorites-dashboard-notes-list');
+      const taskContainer = document.getElementById('favorites-dashboard-tasks-list');
+      const habitContainer = document.getElementById('favorites-dashboard-habits-list');
+      
+      nbContainer.innerHTML = '';
+      tagContainer.innerHTML = '';
+      noteContainer.innerHTML = '';
+      taskContainer.innerHTML = '';
+      habitContainer.innerHTML = '';
+      
+      notebooks.filter(nb => nb.favorite).forEach(nb => {
+        let div = document.createElement('div');
+        div.textContent = nb.name;
+        nbContainer.appendChild(div);
+      });
+      tags.filter(tag => tag.favorite).forEach(tag => {
+        let div = document.createElement('div');
+        div.textContent = tag.name;
+        tagContainer.appendChild(div);
+      });
+      notes.filter(note => note.favorite).forEach(note => {
+        let div = document.createElement('div');
+        div.textContent = note.title || 'Untitled';
+        noteContainer.appendChild(div);
+      });
+      tasks.filter(task => task.favorite).forEach(task => {
+        let div = document.createElement('div');
+        div.textContent = task.description || 'Untitled';
+        taskContainer.appendChild(div);
+      });
+      habits.filter(habit => habit.favorite).forEach(habit => {
+        let div = document.createElement('div');
+        div.textContent = habit.description || 'Untitled';
+        habitContainer.appendChild(div);
       });
     }
-    function renderFavoriteTags() {
-      const favTagsList = document.getElementById('favorites-dashboard-tags-list');
-      favTagsList.innerHTML = '';
-      const favoriteTags = tags.filter(tag => tag.favorite);
-      if (favoriteTags.length === 0) {
-        favTagsList.innerHTML = '<p>No favorite tags.</p>';
-        return;
-      }
-      favoriteTags.forEach(tag => {
-        const card = createCard(tag.name || 'Untitled', 'tags', tag.id, 'tags', tag.favorite, () => toggleFavorite('tags', tag.id));
-        card.id = `tag-${tag.id}`;
-        const actions = createCardActions([
-          { icon: 'edit', title: 'Edit', action: () => openEditModal('tag', tag.id) },
-          { icon: 'trash', title: 'Delete', action: () => deleteTag(tag.id) }
-        ]);
-        card.querySelector('.card-header-right').appendChild(actions);
-        card.ondblclick = () => {
-          openEditModal('tag', tag.id);
+    // Restored notifications functionality
+    function renderNotifications() {
+      const container = document.getElementById('notifications-list');
+      container.innerHTML = '';
+      notifications.forEach(notification => {
+        let item = document.createElement('div');
+        item.className = 'notification-item';
+        let p = document.createElement('p');
+        p.textContent = notification.message;
+        item.appendChild(p);
+        let btn = document.createElement('button');
+        btn.textContent = 'Delete';
+        btn.onclick = function(e) {
+          e.stopPropagation();
+          deleteNotification(notification.id);
         };
-        favTagsList.appendChild(card);
+        item.appendChild(btn);
+        container.appendChild(item);
       });
     }
-    function renderFavoriteNotes() {
-      const favNotesList = document.getElementById('favorites-dashboard-notes-list');
-      favNotesList.innerHTML = '';
-      const favoriteNotes = notes.filter(note => note.favorite);
-      if (favoriteNotes.length === 0) {
-        favNotesList.innerHTML = '<p>No favorite notes.</p>';
-        return;
-      }
-      favoriteNotes.forEach(note => {
-        const card = createCard(note.title || 'Untitled', 'notes', note.id, 'sticky-note', note.favorite, () => toggleFavorite('notes', note.id));
-        card.id = `note-${note.id}`;
-        const actions = createCardActions([
-          { icon: 'edit', title: 'Edit', action: () => openEditModal('note', note.id) },
-          { icon: 'trash', title: 'Delete', action: () => deleteNote(note.id) }
-        ]);
-        card.querySelector('.card-header-right').appendChild(actions);
-        if (note.body) {
-          const snippet = note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body;
-          const body = document.createElement('div');
-          body.className = 'details';
-          body.textContent = snippet;
-          card.appendChild(body);
-        }
-        if (note.tags.length > 0) {
-          const tagDiv = document.createElement('div');
-          tagDiv.className = 'details';
-          tagDiv.textContent = 'Tags: ' + note.tags.join(', ');
-          card.appendChild(tagDiv);
-        }
-        if (note.notebook) {
-          const nbDiv = document.createElement('div');
-          nbDiv.className = 'details';
-          nbDiv.textContent = 'Notebook: ' + note.notebook;
-          card.appendChild(nbDiv);
-        }
-        if (note.attachments.length > 0) {
-          const attachDiv = document.createElement('div');
-          attachDiv.className = 'attachments';
-          note.attachments.forEach(att => {
-            if (att.type.startsWith('image/')) {
-              const img = document.createElement('img');
-              img.src = att.data;
-              img.alt = att.name;
-              attachDiv.appendChild(img);
-            } else {
-              const link = document.createElement('a');
-              link.href = att.data;
-              link.download = att.name;
-              link.textContent = att.name;
-              attachDiv.appendChild(link);
-            }
-          });
-          card.appendChild(attachDiv);
-        }
-        card.ondblclick = () => {
-          openEditModal('note', note.id);
-        };
-        favNotesList.appendChild(card);
-      });
+    function addNotification(message) {
+      notifications.push({ id: generateUUID(), message: message });
+      saveData();
+      renderNotifications();
     }
-    function renderFavoriteTasks() {
-      const favTasksList = document.getElementById('favorites-dashboard-tasks-list');
-      favTasksList.innerHTML = '';
-      const favoriteTasks = tasks.filter(task => task.favorite);
-      if (favoriteTasks.length === 0) {
-        favTasksList.innerHTML = '<p>No favorite tasks.</p>';
-        return;
-      }
-      favoriteTasks.forEach(task => {
-        const card = createCard(task.description || 'Untitled', 'tasks', task.id, 'tasks', task.favorite, () => toggleFavorite('tasks', task.id));
-        card.id = `task-${task.id}`;
-        const actions = createCardActions([
-          { icon: task.completed ? 'undo' : 'check', title: task.completed ? 'Mark as Incomplete' : 'Mark as Complete', action: () => toggleTaskCompletion(task.id) },
-          { icon: 'edit', title: 'Edit', action: () => openEditModal('task', task.id) },
-          { icon: 'trash', title: 'Delete', action: () => deleteTask(task.id) }
-        ]);
-        card.querySelector('.card-header-right').appendChild(actions);
-        if (task.dueDate) {
-          const dueDate = document.createElement('div');
-          dueDate.className = 'details';
-          dueDate.textContent = 'Due: ' + task.dueDate;
-          card.appendChild(dueDate);
-        }
-        if (task.recurrence !== 'none') {
-          const recurrence = document.createElement('div');
-          recurrence.className = 'details';
-          recurrence.textContent = 'Recurs: ' + formatRecurrence(task);
-          card.appendChild(recurrence);
-        }
-        card.ondblclick = () => {
-          openEditModal('task', task.id);
-        };
-        favTasksList.appendChild(card);
-      });
+    function deleteNotification(id) {
+      notifications = notifications.filter(n => n.id !== id);
+      saveData();
+      renderNotifications();
     }
-    function renderFavoriteHabits() {
-      const favHabitsList = document.getElementById('favorites-dashboard-habits-list');
-      favHabitsList.innerHTML = '';
-      const favoriteHabits = habits.filter(habit => habit.favorite);
-      if (favoriteHabits.length === 0) {
-        favHabitsList.innerHTML = '<p>No favorite habits.</p>';
-        return;
-      }
-      favoriteHabits.forEach(habit => {
-        const card = createCard(habit.description || 'Untitled', 'habits', habit.id, 'heartbeat', habit.favorite, () => toggleFavorite('habits', habit.id));
-        card.id = `habit-${habit.id}`;
-        const actions = createCardActions([
-          { icon: habit.completed ? 'undo' : 'check', title: habit.completed ? 'Mark as Incomplete' : 'Mark as Complete', action: () => toggleHabitCompletion(habit.id) },
-          { icon: 'edit', title: 'Edit', action: () => openEditModal('habit', habit.id) },
-          { icon: 'trash', title: 'Delete', action: () => deleteHabit(habit.id) }
-        ]);
-        card.querySelector('.card-header-right').appendChild(actions);
-        if (habit.recurrence !== 'none') {
-          const recurDiv = document.createElement('div');
-          recurDiv.className = 'details';
-          recurDiv.textContent = 'Recurs: ' + formatRecurrence(habit);
-          card.appendChild(recurDiv);
-        }
-        card.ondblclick = () => {
-          openEditModal('habit', habit.id);
-        };
-        favHabitsList.appendChild(card);
-      });
-    }
+    // Restored trash functionality
     function renderTrash() {
       const trashList = document.getElementById('trash-list');
       trashList.innerHTML = '';
-      if (trashedNotes.length === 0) {
-        const emptyMessage = document.createElement('p');
-        emptyMessage.textContent = 'Trash is empty.';
-        emptyMessage.style.color = '#555';
-        emptyMessage.style.fontSize = '0.9rem';
-        trashList.appendChild(emptyMessage);
-        return;
-      }
       trashedNotes.forEach(note => {
-        const card = createCard(note.title || 'Untitled', 'notes', note.id, 'sticky-note', note.favorite, () => toggleFavorite('notes', note.id));
+        const card = createCard(note.title || 'Untitled', 'notes', note.id, 'sticky-note', note.favorite, () => {});
         card.id = `trash-note-${note.id}`;
-        const actions = createCardActions([
-          { icon: 'undo', title: 'Restore', action: () => restoreNote(note.id) },
-          { icon: 'trash', title: 'Delete Permanently', action: () => permanentlyDeleteNote(note.id) }
-        ]);
-        card.querySelector('.card-header-right').appendChild(actions);
-        if (note.body) {
-          const snippet = note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body;
-          const body = document.createElement('div');
-          body.className = 'details';
-          body.textContent = snippet;
-          card.appendChild(body);
-        }
-        if (note.tags.length > 0) {
-          const tagDiv = document.createElement('div');
-          tagDiv.className = 'details';
-          tagDiv.textContent = 'Tags: ' + note.tags.join(', ');
-          card.appendChild(tagDiv);
-        }
-        if (note.notebook) {
-          const nbDiv = document.createElement('div');
-          nbDiv.className = 'details';
-          nbDiv.textContent = 'Notebook: ' + note.notebook;
-          card.appendChild(nbDiv);
-        }
-        if (note.attachments.length > 0) {
-          const attachDiv = document.createElement('div');
-          attachDiv.className = 'attachments';
-          note.attachments.forEach(att => {
-            if (att.type.startsWith('image/')) {
-              const img = document.createElement('img');
-              img.src = att.data;
-              img.alt = att.name;
-              attachDiv.appendChild(img);
-            } else {
-              const link = document.createElement('a');
-              link.href = att.data;
-              link.download = att.name;
-              link.textContent = att.name;
-              attachDiv.appendChild(link);
-            }
-          });
-          card.appendChild(attachDiv);
-        }
-        card.ondblclick = () => {
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'card-actions';
+        
+        const restoreBtn = document.createElement('button');
+        restoreBtn.title = 'Restore';
+        restoreBtn.innerHTML = '<i class="fas fa-undo"></i>';
+        restoreBtn.onclick = function(e) {
+          e.stopPropagation();
           restoreNote(note.id);
         };
+        actionsDiv.appendChild(restoreBtn);
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.title = 'Delete Permanently';
+        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        deleteBtn.onclick = function(e) {
+          e.stopPropagation();
+          deleteTrashedNote(note.id);
+        };
+        actionsDiv.appendChild(deleteBtn);
+        
+        card.appendChild(actionsDiv);
         trashList.appendChild(card);
       });
     }
     function restoreNote(id) {
-      const noteIndex = trashedNotes.findIndex(n => n.id === id);
-      if (noteIndex === -1) return;
-      const note = trashedNotes.splice(noteIndex, 1)[0];
-      notes.push(note);
-      saveData();
-      renderTrash();
-      renderNotes();
-      renderDashboardFavorites();
-      showNotification('Note restored.', 'success');
-      addNotification(`Note "${note.title || 'Untitled'}" restored.`);
-    }
-    function permanentlyDeleteNote(id) {
-      const noteIndex = trashedNotes.findIndex(n => n.id === id);
-      if (noteIndex === -1) return;
-      const note = trashedNotes[noteIndex];
-      if (confirm(`Permanently delete note "${note.title || 'Untitled'}"?`)) {
-        trashedNotes.splice(noteIndex, 1);
+      const note = trashedNotes.find(n => n.id === id);
+      if (note) {
+        trashedNotes = trashedNotes.filter(n => n.id !== id);
+        notes.push(note);
         saveData();
         renderTrash();
+        renderNotes();
         renderDashboardFavorites();
+        showNotification('Note restored.', 'success');
+        addNotification(`Note "${note.title || 'Untitled'}" restored.`);
+      }
+    }
+    function deleteTrashedNote(id) {
+      if (confirm('Are you sure you want to permanently delete this note?')) {
+        trashedNotes = trashedNotes.filter(n => n.id !== id);
+        saveData();
+        renderTrash();
         showNotification('Note permanently deleted.', 'success');
-        addNotification(`Note "${note.title || 'Untitled'}" permanently deleted.`);
+        addNotification('A note was permanently deleted.');
       }
     }
     function showNotification(message, type) {
-      const notif = document.getElementById('notification');
-      notif.textContent = message;
-      notif.className = 'notification ' + (type === 'error' ? 'error' : 'success');
-      notif.classList.add('show');
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = 'notification show ' + type;
       setTimeout(() => {
-        notif.classList.remove('show');
+        notification.className = 'notification';
       }, 3000);
-    }
-    function navigate(section, itemId = null) {
-      const sections = document.querySelectorAll('.kanban-column');
-      sections.forEach(sec => {
-        if (sec.id === section + '-section') {
-          sec.style.display = 'flex';
-        } else {
-          sec.style.display = 'none';
-        }
-      });
-      const navItems = document.querySelectorAll('.nav-item');
-      navItems.forEach(item => {
-        const span = item.querySelector('span');
-        if (span && span.textContent.trim().toLowerCase() === section.toLowerCase()) {
-          item.classList.add('active');
-        } else {
-          item.classList.remove('active');
-        }
-      });
-      if (section === 'trash') {
-        renderTrash();
-      }
-      if (itemId) {
-        setTimeout(() => {
-          const element = document.getElementById(itemId);
-          if (element) {
-            const headerOffset = 60;
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-            element.style.boxShadow = '0 0 10px 2px rgba(100, 100, 255, 0.7)';
-            setTimeout(() => {
-              element.style.boxShadow = 'none';
-            }, 2000);
-          }
-        }, 500);
-      }
-    }
-    function resetStreaks() {
-      const today = new Date();
-      tasks.forEach(task => {
-        if (task.lastCompleted) {
-          const last = new Date(task.lastCompleted);
-          const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
-          if (shouldResetStreak(task.recurrence, diffDays, last, today.toLocaleDateString(undefined, { weekday: 'long' }))) {
-            task.streak = 0;
-            task.lastCompleted = null;
-            addNotification(`Streak reset for task "${task.description}".`);
-          }
-        }
-      });
-      habits.forEach(habit => {
-        if (habit.lastCompleted) {
-          const last = new Date(habit.lastCompleted);
-          const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
-          if (shouldResetStreak(habit.recurrence, diffDays, last, today.toLocaleDateString(undefined, { weekday: 'long' }))) {
-            habit.streak = 0;
-            habit.lastCompleted = null;
-            addNotification(`Streak reset for habit "${habit.description}".`);
-          }
-        }
-      });
-      saveData();
-      renderTasks();
-      renderHabits();
-      renderDashboardFavorites();
-    }
-    function shouldResetStreak(recurrence, diffDays, lastDate, todayStr) {
-      const today = new Date();
-      switch(recurrence) {
-        case 'daily':
-          return diffDays > 1;
-        case 'weekly':
-          return diffDays > 7;
-        case 'monthly':
-          return !(lastDate.getMonth() === today.getMonth() && lastDate.getFullYear() === today.getFullYear());
-        case 'custom':
-          return false;
-        default:
-          return false;
-      }
     }
     function openSearch() {
       document.getElementById('search-modal').style.display = 'block';
-      document.getElementById('search-input').focus();
     }
     function closeSearch() {
       document.getElementById('search-modal').style.display = 'none';
-      document.getElementById('search-input').value = '';
-      document.getElementById('search-results').innerHTML = '';
     }
     function performSearch() {
-      const query = document.getElementById('search-input').value.trim().toLowerCase();
-      const resultsContainer = document.getElementById('search-results');
-      resultsContainer.innerHTML = '';
-      if (query === '') {
-        resultsContainer.innerHTML = '<p>Please enter a search term.</p>';
-        return;
-      }
-      function highlight(text) {
-        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
-        return text.replace(regex, '<span class="highlight">$1</span>');
-      }
-      function escapeRegExp(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      }
-      const matchedNotebooks = notebooks.filter(nb => nb.name.toLowerCase().includes(query));
-      if (matchedNotebooks.length > 0) {
-        const section = document.createElement('div');
-        section.className = 'search-category';
-        section.innerHTML = `<h4>Notebooks</h4>`;
-        matchedNotebooks.forEach(nb => {
-          const item = document.createElement('div');
-          item.className = 'search-item';
-          item.innerHTML = highlight(nb.name);
-          item.onclick = () => navigate('notebooks', `notebook-${nb.id}`);
-          section.appendChild(item);
-        });
-        resultsContainer.appendChild(section);
-      }
-      const matchedTags = tags.filter(tag => tag.name.toLowerCase().includes(query));
-      if (matchedTags.length > 0) {
-        const section = document.createElement('div');
-        section.className = 'search-category';
-        section.innerHTML = `<h4>Tags</h4>`;
-        matchedTags.forEach(tag => {
-          const item = document.createElement('div');
-          item.className = 'search-item';
-          item.innerHTML = highlight(tag.name);
-          item.onclick = () => navigate('tags', `tag-${tag.id}`);
-          section.appendChild(item);
-        });
-        resultsContainer.appendChild(section);
-      }
-      const matchedNotes = notes.filter(note =>
-        (note.title && note.title.toLowerCase().includes(query)) ||
-        (note.body && note.body.toLowerCase().includes(query))
-      );
-      if (matchedNotes.length > 0) {
-        const section = document.createElement('div');
-        section.className = 'search-category';
-        section.innerHTML = `<h4>Notes</h4>`;
-        matchedNotes.forEach(note => {
-          const item = document.createElement('div');
-          item.className = 'search-item';
-          item.innerHTML = highlight(note.title || 'Untitled');
-          item.onclick = () => navigate('notes', `note-${note.id}`);
-          section.appendChild(item);
-        });
-        resultsContainer.appendChild(section);
-      }
-      const matchedTasks = tasks.filter(task => task.description.toLowerCase().includes(query));
-      if (matchedTasks.length > 0) {
-        const section = document.createElement('div');
-        section.className = 'search-category';
-        section.innerHTML = `<h4>Tasks</h4>`;
-        matchedTasks.forEach(task => {
-          const item = document.createElement('div');
-          item.className = 'search-item';
-          item.innerHTML = highlight(task.description);
-          item.onclick = () => navigate('tasks', `task-${task.id}`);
-          section.appendChild(item);
-        });
-        resultsContainer.appendChild(section);
-      }
-      const matchedHabits = habits.filter(habit => habit.description.toLowerCase().includes(query));
-      if (matchedHabits.length > 0) {
-        const section = document.createElement('div');
-        section.className = 'search-category';
-        section.innerHTML = `<h4>Habits</h4>`;
-        matchedHabits.forEach(habit => {
-          const item = document.createElement('div');
-          item.className = 'search-item';
-          item.innerHTML = highlight(habit.description);
-          item.onclick = () => navigate('habits', `habit-${habit.id}`);
-          section.appendChild(item);
-        });
-        resultsContainer.appendChild(section);
-      }
-      if (
-        matchedNotebooks.length === 0 &&
-        matchedTags.length === 0 &&
-        matchedNotes.length === 0 &&
-        matchedTasks.length === 0 &&
-        matchedHabits.length === 0
-      ) {
-        resultsContainer.innerHTML = '<p>No results found.</p>';
-      }
+      // Placeholder for search functionality
     }
     function openNotifications() {
       document.getElementById('notifications-modal').style.display = 'block';
@@ -2613,110 +2041,76 @@
     }
     function closeNotifications() {
       document.getElementById('notifications-modal').style.display = 'none';
-      renderNotifications();
     }
-    function renderNotifications() {
-      const notificationsList = document.getElementById('notifications-list');
-      notificationsList.innerHTML = '';
-      if (notifications.length === 0) {
-        notificationsList.innerHTML = '<p>No notifications.</p>';
-        return;
+    function showProfile() {
+      // Placeholder for profile functionality
+    }
+    function navigate(section, navItem) {
+      // Update active nav indicator
+      const navItems = document.querySelectorAll('.header-nav .nav-item');
+      navItems.forEach(item => item.classList.remove('active'));
+      if (navItem) {
+        navItem.classList.add('active');
       }
-      notifications.forEach(notif => {
-        const notifDiv = document.createElement('div');
-        notifDiv.className = 'notification-item';
-        notifDiv.style.backgroundColor = notif.read ? '#f9f9f9' : '#e0f7fa';
-        notifDiv.innerHTML = `
-          <p>${notif.message}</p>
-          <small>${notif.timestamp || ''}</small>
-          <button onclick="markAsRead('${notif.id}')">${notif.read ? 'Mark as Unread' : 'Mark as Read'}</button>
-        `;
-        notificationsList.appendChild(notifDiv);
+      // Show the corresponding section
+      const sections = ['dashboard', 'notebooks', 'tags', 'notes', 'tasks', 'habits', 'trash'];
+      sections.forEach(sec => {
+        document.getElementById(sec + '-section').style.display = sec === section ? 'block' : 'none';
       });
     }
-    function markAsRead(id) {
-      const notif = notifications.find(n => n.id === id);
-      if (notif) {
-        notif.read = !notif.read;
-        saveData();
-        renderNotifications();
-        updateNotificationBadge();
+    function toggleFavorite(type, id) {
+      switch(type) {
+        case 'notebooks':
+          notebooks = notebooks.map(nb => nb.id === id ? { ...nb, favorite: !nb.favorite } : nb);
+          break;
+        case 'tags':
+          tags = tags.map(tag => tag.id === id ? { ...tag, favorite: !tag.favorite } : tag);
+          break;
+        case 'notes':
+          notes = notes.map(note => note.id === id ? { ...note, favorite: !note.favorite } : note);
+          break;
+        case 'tasks':
+          tasks = tasks.map(task => task.id === id ? { ...task, favorite: !task.favorite } : task);
+          break;
+        case 'habits':
+          habits = habits.map(habit => habit.id === id ? { ...habit, favorite: !habit.favorite } : habit);
+          break;
       }
+      saveData();
+      renderAll();
+    }
+    function toggleTaskCompletion(id) {
+      tasks = tasks.map(task => task.id === id ? { ...task, completed: !task.completed } : task);
+      saveData();
+      renderTasks();
+    }
+    function toggleHabitCompletion(id) {
+      habits = habits.map(habit => habit.id === id ? { ...habit, completed: !habit.completed } : habit);
+      saveData();
+      renderHabits();
+    }
+    function toggleTaskCustomDays(show) {
+      const customDaysDiv = document.getElementById('task-custom-days');
+      customDaysDiv.style.display = show ? 'flex' : 'none';
+      if (!show) {
+        customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+      }
+    }
+    function toggleHabitCustomDays(show) {
+      const customDaysDiv = document.getElementById('habit-custom-days');
+      customDaysDiv.style.display = show ? 'flex' : 'none';
+      if (!show) {
+        customDaysDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+      }
+    }
+    function resetStreaks() {
+      // Placeholder for resetting streaks functionality
     }
     function initializeNotifications() {
-      updateNotificationBadge();
-    }
-    function updateNotificationBadge() {
-      const badge = document.getElementById('notification-badge');
-      const unreadCount = notifications.filter(notif => !notif.read).length;
-      badge.textContent = unreadCount;
-      badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
-    }
-    function addNotification(message) {
-      const notification = {
-        id: generateUUID(),
-        message,
-        timestamp: new Date().toLocaleString(),
-        read: false
-      };
-      notifications.unshift(notification);
-      saveData();
-      updateNotificationBadge();
+      // Placeholder for notifications initialization
     }
     function checkUpcomingEvents() {
-      const today = new Date();
-      tasks.forEach(task => {
-        if (task.dueDate && !task.completed) {
-          const dueDate = new Date(task.dueDate);
-          const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-          if (diffDays >= 0 && diffDays <= 2) {
-            addNotification(`Task "${task.description}" is due on ${task.dueDate}.`);
-          }
-        }
-      });
-      habits.forEach(habit => {
-        if (habit.recurrence === 'daily') {
-          addNotification(`Habit "${habit.description}" is scheduled today.`);
-        } else if (habit.recurrence === 'custom' && habit.customDays.includes(today.toLocaleDateString(undefined, { weekday: 'long' }))) {
-          addNotification(`Habit "${habit.description}" is scheduled today.`);
-        }
-      });
-    }
-    window.onclick = function(event) {
-      const searchModal = document.getElementById('search-modal');
-      if (event.target == searchModal) {
-        searchModal.style.display = 'none';
-        document.getElementById('search-input').value = '';
-        document.getElementById('search-results').innerHTML = '';
-      }
-      const notificationsModal = document.getElementById('notifications-modal');
-      if (event.target == notificationsModal) {
-        notificationsModal.style.display = 'none';
-        renderNotifications();
-      }
-      const editNotebookModal = document.getElementById('edit-notebook-modal');
-      if (event.target == editNotebookModal) {
-        editNotebookModal.style.display = 'none';
-      }
-      const editTagModal = document.getElementById('edit-tag-modal');
-      if (event.target == editTagModal) {
-        editTagModal.style.display = 'none';
-      }
-      const editNoteModal = document.getElementById('edit-note-modal');
-      if (event.target == editNoteModal) {
-        editNoteModal.style.display = 'none';
-      }
-      const editTaskModal = document.getElementById('edit-task-modal');
-      if (event.target == editTaskModal) {
-        editTaskModal.style.display = 'none';
-      }
-      const editHabitModal = document.getElementById('edit-habit-modal');
-      if (event.target == editHabitModal) {
-        editHabitModal.style.display = 'none';
-      }
-    };
-    function showProfile() {
-      showNotification('Profile feature not implemented.', 'error');
+      // Placeholder for checking upcoming events
     }
   </script>
 </body>
