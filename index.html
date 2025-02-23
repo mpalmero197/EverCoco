@@ -66,9 +66,13 @@
     .nav-item.active {
       border-bottom: 2px solid var(--accent-color);
     }
-    /* In sidebar mode, hide the text so only icons show */
+    /* Sidebar mode: hide text labels and adjust spacing */
     .sidebar-mode .header-nav .nav-item span {
       display: none;
+    }
+    .sidebar-mode .header-nav .nav-item {
+      margin: 0 10px;
+      padding: 0;
     }
     .header-right {
       position: relative;
@@ -1005,68 +1009,24 @@
       updateNotificationBadge();
     };
     function loadData() {
-      try {
-        notebooks = JSON.parse(localStorage.getItem('EverCoco_notebooks')) || [];
-      } catch(e) {
-        notebooks = [];
-      }
-      try {
-        tags = JSON.parse(localStorage.getItem('EverCoco_tags')) || [];
-      } catch(e) {
-        tags = [];
-      }
-      try {
-        notes = JSON.parse(localStorage.getItem('EverCoco_notes')) || [];
-      } catch(e) {
-        notes = [];
-      }
-      try {
-        tasks = JSON.parse(localStorage.getItem('EverCoco_tasks')) || [];
-      } catch(e) {
-        tasks = [];
-      }
-      try {
-        habits = JSON.parse(localStorage.getItem('EverCoco_habits')) || [];
-      } catch(e) {
-        habits = [];
-      }
-      try {
-        notifications = JSON.parse(localStorage.getItem('EverCoco_notifications')) || [];
-      } catch(e) {
-        notifications = [];
-      }
-      try {
-        trashedNotes = JSON.parse(localStorage.getItem('EverCoco_trashedNotes')) || [];
-      } catch(e) {
-        trashedNotes = [];
-      }
-      try {
-        scratchpadContent = localStorage.getItem('EverCoco_scratchpad') || '';
-      } catch(e) {
-        scratchpadContent = '';
-      }
+      try { notebooks = JSON.parse(localStorage.getItem('EverCoco_notebooks')) || []; } catch(e) { notebooks = []; }
+      try { tags = JSON.parse(localStorage.getItem('EverCoco_tags')) || []; } catch(e) { tags = []; }
+      try { notes = JSON.parse(localStorage.getItem('EverCoco_notes')) || []; } catch(e) { notes = []; }
+      try { tasks = JSON.parse(localStorage.getItem('EverCoco_tasks')) || []; } catch(e) { tasks = []; }
+      try { habits = JSON.parse(localStorage.getItem('EverCoco_habits')) || []; } catch(e) { habits = []; }
+      try { notifications = JSON.parse(localStorage.getItem('EverCoco_notifications')) || []; } catch(e) { notifications = []; }
+      try { trashedNotes = JSON.parse(localStorage.getItem('EverCoco_trashedNotes')) || []; } catch(e) { trashedNotes = []; }
+      try { scratchpadContent = localStorage.getItem('EverCoco_scratchpad') || ''; } catch(e) { scratchpadContent = ''; }
       tags = tags.map(tag => {
-        if (typeof tag === 'string') {
-          return { id: generateUUID(), name: tag, favorite: false };
-        }
-        if (!tag.id) {
-          tag.id = generateUUID();
-        }
+        if (typeof tag === 'string') { return { id: generateUUID(), name: tag, favorite: false }; }
+        if (!tag.id) { tag.id = generateUUID(); }
         if (tag.favorite === undefined) tag.favorite = false;
         return tag;
       });
-      notebooks.forEach(nb => {
-        if (nb.favorite === undefined) nb.favorite = false;
-      });
-      notes.forEach(note => {
-        if (note.favorite === undefined) note.favorite = false;
-      });
-      tasks.forEach(task => {
-        if (task.favorite === undefined) task.favorite = false;
-      });
-      habits.forEach(habit => {
-        if (habit.favorite === undefined) habit.favorite = false;
-      });
+      notebooks.forEach(nb => { if (nb.favorite === undefined) nb.favorite = false; });
+      notes.forEach(note => { if (note.favorite === undefined) note.favorite = false; });
+      tasks.forEach(task => { if (task.favorite === undefined) task.favorite = false; });
+      habits.forEach(habit => { if (habit.favorite === undefined) habit.favorite = false; });
     }
     function saveData() {
       localStorage.setItem('EverCoco_notebooks', JSON.stringify(notebooks));
@@ -1385,9 +1345,7 @@
         noteCard.onclick = () => {
           navigate('notes', null);
           const element = document.getElementById(`note-${note.id}`);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
+          if (element) { element.scrollIntoView({ behavior: 'smooth' }); }
           closeSearch();
         };
         container.appendChild(noteCard);
@@ -1439,40 +1397,20 @@
     }
     function openEditModal(type, id) {
       switch(type) {
-        case 'notebook':
-          openEditNotebookModal(id);
-          break;
-        case 'tag':
-          openEditTagModal(id);
-          break;
-        case 'note':
-          openEditNoteModal(id);
-          break;
-        case 'task':
-          openEditTaskModal(id);
-          break;
-        case 'habit':
-          openEditHabitModal(id);
-          break;
+        case 'notebook': openEditNotebookModal(id); break;
+        case 'tag': openEditTagModal(id); break;
+        case 'note': openEditNoteModal(id); break;
+        case 'task': openEditTaskModal(id); break;
+        case 'habit': openEditHabitModal(id); break;
       }
     }
     function closeEditModal(type) {
       switch(type) {
-        case 'notebook':
-          document.getElementById('edit-notebook-modal').style.display = 'none';
-          break;
-        case 'tag':
-          document.getElementById('edit-tag-modal').style.display = 'none';
-          break;
-        case 'note':
-          document.getElementById('edit-note-modal').style.display = 'none';
-          break;
-        case 'task':
-          document.getElementById('edit-task-modal').style.display = 'none';
-          break;
-        case 'habit':
-          document.getElementById('edit-habit-modal').style.display = 'none';
-          break;
+        case 'notebook': document.getElementById('edit-notebook-modal').style.display = 'none'; break;
+        case 'tag': document.getElementById('edit-tag-modal').style.display = 'none'; break;
+        case 'note': document.getElementById('edit-note-modal').style.display = 'none'; break;
+        case 'task': document.getElementById('edit-task-modal').style.display = 'none'; break;
+        case 'habit': document.getElementById('edit-habit-modal').style.display = 'none'; break;
       }
     }
     function openEditNotebookModal(id) {
